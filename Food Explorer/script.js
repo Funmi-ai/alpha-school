@@ -1107,6 +1107,7 @@ let currentSearch       = '';
 let lastGameId          = null;
 let currentDetailFoodId = null;
 let inDeepDive          = false;
+let gameQueue           = [];
 
 /* ============================================================
    UTILITY
@@ -1498,12 +1499,24 @@ const gameGroups = [
 
 let currentGameFood = null;
 
+function shuffleGameQueue() {
+  /* Fisher-Yates shuffle of every food id */
+  const ids = foodData.map(f => f.id);
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  /* Avoid the last-shown food appearing first in the new deck */
+  if (lastGameId && ids[0] === lastGameId && ids.length > 1) {
+    [ids[0], ids[1]] = [ids[1], ids[0]];
+  }
+  gameQueue = ids;
+}
+
 function pickGameFood() {
-  const pool = lastGameId
-    ? foodData.filter(f => f.id !== lastGameId)
-    : foodData;
-  const idx  = Math.floor(Math.random() * pool.length);
-  return pool[idx];
+  if (gameQueue.length === 0) shuffleGameQueue();
+  const id = gameQueue.shift();
+  return foodData.find(f => f.id === id);
 }
 
 function startGame() {
