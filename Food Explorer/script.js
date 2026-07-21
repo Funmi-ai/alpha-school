@@ -367,7 +367,7 @@ const foodData = [
     searchKeywords: ['sweet potato', 'starchy carbohydrates', 'carbs']
   },
 
-  { id: 'plantain', name: 'Plantain', emoji: '🌿',
+  { id: 'plantain', name: 'Plantain', emoji: '🍌',
     group: 'Starchy carbohydrates',
     nutrientRoles: ['Carbohydrates', 'Fibre'],
     vitamins: ['Vitamin A', 'Vitamin C', 'B vitamins'],
