@@ -763,7 +763,7 @@ const foodData = [
     searchKeywords: ['sweets', 'candy', 'lolly', 'foods to enjoy less often', 'treat']
   },
 
-  { id: 'crisps', name: 'Crisps', emoji: '🥔',
+  { id: 'crisps', name: 'Crisps', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><path d="M18 4c5-1 11 2 13 8s0 14-6 17-14 1-17-5S5 8 12 5c2-1 4-1 6-1z" fill="#F9C623" stroke="#C89A10" stroke-width="1.5"/><path d="M7 19 Q18 11 29 19" fill="none" stroke="#C89A10" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="23" r="1.2" fill="rgba(255,255,255,0.6)"/><circle cx="22" cy="24" r="1.2" fill="rgba(255,255,255,0.6)"/><circle cx="26" cy="16" r="1.2" fill="rgba(255,255,255,0.6)"/><circle cx="14" cy="13" r="1.2" fill="rgba(255,255,255,0.6)"/></svg>',
     group: 'Foods to enjoy less often',
     nutrientRoles: ['Carbohydrates'],
     vitamins: [],
