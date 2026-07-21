@@ -1520,6 +1520,8 @@ function pickGameFood() {
 }
 
 function startGame() {
+  gameQueue  = [];   // always deal a fresh full deck on game start
+  lastGameId = null;
   $('game-intro').classList.add('hidden');
   $('game-play').classList.remove('hidden');
   nextGameFood();
