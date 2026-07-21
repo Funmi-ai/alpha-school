@@ -265,7 +265,7 @@ const foodData = [
 
   /* ── STARCHY CARBOHYDRATES ── */
 
-  { id: 'oats', name: 'Oats', emoji: '🌾',
+  { id: 'oats', name: 'Oats', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><path d="M13 12 Q14 9 13 6" fill="none" stroke="#BBB" stroke-width="1.4" stroke-linecap="round"/><path d="M18 11 Q19 8 18 5" fill="none" stroke="#BBB" stroke-width="1.4" stroke-linecap="round"/><path d="M23 12 Q24 9 23 6" fill="none" stroke="#BBB" stroke-width="1.4" stroke-linecap="round"/><path d="M6 18 Q7 29 18 30 Q29 29 30 18Z" fill="#F5ECD7" stroke="#C8A96E" stroke-width="1.5"/><ellipse cx="18" cy="18" rx="12" ry="3" fill="#D4B896" stroke="#C8A96E" stroke-width="1.5"/></svg>',
     group: 'Starchy carbohydrates',
     nutrientRoles: ['Carbohydrates', 'Fibre'],
     vitamins: ['B vitamins'],
@@ -367,7 +367,7 @@ const foodData = [
     searchKeywords: ['sweet potato', 'starchy carbohydrates', 'carbs']
   },
 
-  { id: 'plantain', name: 'Plantain', emoji: '🍌',
+  { id: 'plantain', name: 'Plantain', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><path d="M5 27 Q4 20 8 14 Q15 8 25 9 Q31 10 32 16 Q33 22 27 26 Q19 31 5 27Z" fill="#5DB861" stroke="#3A7F3D" stroke-width="1.4"/><path d="M8 22 Q16 15 29 17" fill="none" stroke="#3A7F3D" stroke-width="1.3" stroke-linecap="round"/><path d="M5 27 Q3 29 4 31" fill="none" stroke="#3A7F3D" stroke-width="1.5" stroke-linecap="round"/><path d="M32 16 Q34 13 32 11" fill="none" stroke="#3A7F3D" stroke-width="1.2" stroke-linecap="round"/></svg>',
     group: 'Starchy carbohydrates',
     nutrientRoles: ['Carbohydrates', 'Fibre'],
     vitamins: ['Vitamin A', 'Vitamin C', 'B vitamins'],
@@ -384,7 +384,7 @@ const foodData = [
     searchKeywords: ['plantain', 'starchy carbohydrates', 'carbs']
   },
 
-  { id: 'yam', name: 'Yam', emoji: '🍠',
+  { id: 'yam', name: 'Yam', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><path d="M3 21 Q3 14 7 11 Q15 7 25 10 Q31 12 32 18 Q33 23 29 27 Q21 31 12 30 Q5 28 3 21Z" fill="#5C3318" stroke="#2E1608" stroke-width="1.4"/><path d="M6 15 Q18 12 30 16" fill="none" stroke="#2E1608" stroke-width="0.9" opacity="0.5"/><path d="M5 22 Q18 19 31 22" fill="none" stroke="#2E1608" stroke-width="0.9" opacity="0.5"/><path d="M13 8 Q12 11 13 15" fill="none" stroke="#2E1608" stroke-width="1" opacity="0.5"/><path d="M21 7 Q20 11 21 15" fill="none" stroke="#2E1608" stroke-width="1" opacity="0.5"/></svg>',
     group: 'Starchy carbohydrates',
     nutrientRoles: ['Carbohydrates', 'Fibre'],
     vitamins: ['Vitamin C', 'B vitamins'],
@@ -401,7 +401,7 @@ const foodData = [
     searchKeywords: ['yam', 'starchy carbohydrates', 'carbs']
   },
 
-  { id: 'cassava', name: 'Cassava', emoji: '🥖',
+  { id: 'cassava', name: 'Cassava', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><path d="M3 20 Q3 13 7 10 Q18 7 29 10 Q33 13 33 20 Q33 26 29 29 Q18 32 7 29 Q3 26 3 20Z" fill="#B8874A" stroke="#7A5520" stroke-width="1.3"/><path d="M7 13 Q18 11 29 13" fill="none" stroke="#9B6B2F" stroke-width="0.9" opacity="0.5"/><path d="M7 27 Q18 25 29 27" fill="none" stroke="#9B6B2F" stroke-width="0.9" opacity="0.5"/><line x1="14" y1="9" x2="14" y2="30" stroke="#7A5520" stroke-width="0.8" opacity="0.4"/><line x1="22" y1="8" x2="22" y2="31" stroke="#7A5520" stroke-width="0.8" opacity="0.4"/></svg>',
     group: 'Starchy carbohydrates',
     nutrientRoles: ['Carbohydrates', 'Fibre'],
     vitamins: ['Vitamin C'],
@@ -539,7 +539,7 @@ const foodData = [
     searchKeywords: ['lentils', 'dal', 'dhal', 'protein foods', 'protein', 'legumes']
   },
 
-  { id: 'chickpeas', name: 'Chickpeas', emoji: '🫘',
+  { id: 'chickpeas', name: 'Chickpeas', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><circle cx="11" cy="19" r="6" fill="#E8C97A" stroke="#B8943A" stroke-width="1.3"/><path d="M8 16 Q11 13 14 16" fill="none" stroke="#B8943A" stroke-width="1.1" stroke-linecap="round"/><circle cx="25" cy="15" r="6" fill="#E8C97A" stroke="#B8943A" stroke-width="1.3"/><path d="M22 12 Q25 9 28 12" fill="none" stroke="#B8943A" stroke-width="1.1" stroke-linecap="round"/><circle cx="22" cy="25" r="6" fill="#E8C97A" stroke="#B8943A" stroke-width="1.3"/><path d="M19 22 Q22 19 25 22" fill="none" stroke="#B8943A" stroke-width="1.1" stroke-linecap="round"/></svg>',
     group: 'Protein foods',
     nutrientRoles: ['Protein', 'Carbohydrates', 'Fibre'],
     vitamins: ['Folate', 'B vitamins'],
@@ -556,7 +556,7 @@ const foodData = [
     searchKeywords: ['chickpeas', 'garbanzo', 'hummus', 'protein foods', 'protein', 'legumes']
   },
 
-  { id: 'tofu', name: 'Tofu', emoji: '🧊',
+  { id: 'tofu', name: 'Tofu', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><rect x="15" y="8" width="17" height="12" rx="2" fill="#EEEADB" stroke="#B8B4A0" stroke-width="1.2"/><rect x="15" y="8" width="17" height="3.5" rx="2" fill="#F8F5EC" stroke="#B8B4A0" stroke-width="1.2"/><rect x="4" y="16" width="17" height="12" rx="2" fill="#F5F2E5" stroke="#B8B4A0" stroke-width="1.2"/><rect x="4" y="16" width="17" height="3.5" rx="2" fill="#FDFBF5" stroke="#B8B4A0" stroke-width="1.2"/></svg>',
     group: 'Protein foods',
     nutrientRoles: ['Protein', 'Healthy fats'],
     vitamins: ['Vitamin B12'],
@@ -609,7 +609,7 @@ const foodData = [
     searchKeywords: ['milk', 'dairy', 'dairy and alternatives']
   },
 
-  { id: 'yoghurt', name: 'Yoghurt', emoji: '🍦',
+  { id: 'yoghurt', name: 'Yoghurt', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><path d="M9 14 Q10 28 12 29 Q18 31 24 29 Q26 28 27 14Z" fill="#FFF5FA" stroke="#D088B0" stroke-width="1.4"/><ellipse cx="18" cy="14" rx="9" ry="2.5" fill="#ECC8E0" stroke="#D088B0" stroke-width="1.4"/><path d="M24.5 14 Q28 12 29 13" fill="none" stroke="#D088B0" stroke-width="1.3" stroke-linecap="round"/><path d="M10 22 Q18 23.5 26 22" fill="none" stroke="#D088B0" stroke-width="1" opacity="0.5"/></svg>',
     group: 'Dairy and alternatives',
     nutrientRoles: ['Protein', 'Carbohydrates'],
     vitamins: ['Vitamin B12', 'B vitamins'],
@@ -731,7 +731,7 @@ const foodData = [
     searchKeywords: ['cookie', 'biscuit', 'snack', 'foods to enjoy less often', 'treat']
   },
 
-  { id: 'brownie', name: 'Brownie', emoji: '🍫',
+  { id: 'brownie', name: 'Brownie', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><rect x="5" y="10" width="26" height="18" rx="3" fill="#5C2E0A" stroke="#3A1A04" stroke-width="1.4"/><rect x="5" y="10" width="26" height="5" rx="3" fill="#7A3D10" stroke="#3A1A04" stroke-width="1.4"/><line x1="18" y1="10" x2="18" y2="28" stroke="#3A1A04" stroke-width="1" opacity="0.4"/><line x1="5" y1="19" x2="31" y2="19" stroke="#3A1A04" stroke-width="1" opacity="0.4"/></svg>',
     group: 'Foods to enjoy less often',
     nutrientRoles: ['Carbohydrates'],
     vitamins: [],
