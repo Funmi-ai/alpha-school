@@ -1,0 +1,13 @@
+[build]
+  publish = "."
+
+# Clean redirect aliases so shared links have no spaces or %20
+[[redirects]]
+  from = "/food-explorer"
+  to   = "/Food Explorer/food-explorer.html"
+  status = 200
+
+[[redirects]]
+  from = "/money-jar"
+  to   = "/Money Jar Tracker/money-jar.html"
+  status = 200

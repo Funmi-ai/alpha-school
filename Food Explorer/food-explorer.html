@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Explorer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <h1 class="site-title"><span aria-hidden="true">🍎</span> Food Explorer</h1>
+    <p class="site-subtitle">Choose a food. Let's discover what it gives your body.</p>
+  </header>
+
+  <main>
+
+    <!-- Search -->
+    <section class="search-section" aria-label="Search for a food">
+      <label for="food-search" class="search-label">Search for a food</label>
+      <input
+        type="search"
+        id="food-search"
+        class="search-input"
+        placeholder="Type a food, like apple or egg"
+        autocomplete="off"
+        aria-controls="food-grid"
+      >
+    </section>
+
+    <!-- Group filters -->
+    <section class="filter-section" aria-label="Filter by food group">
+      <h2 class="sr-only">Filter by food group</h2>
+      <div class="filter-row" role="group" aria-label="Food group filters">
+        <button class="filter-btn active" data-group="all" aria-pressed="true" aria-label="Show all foods">
+          <span class="filter-emoji" aria-hidden="true">🌈</span>
+          <span class="filter-label">All foods</span>
+        </button>
+        <button class="filter-btn grp-fruit" data-group="Fruit and vegetables" aria-pressed="false" aria-label="Filter: Fruit and vegetables">
+          <span class="filter-emoji" aria-hidden="true">🥦</span>
+          <span class="filter-label">Fruit &amp; Veg</span>
+        </button>
+        <button class="filter-btn grp-carbs" data-group="Starchy carbohydrates" aria-pressed="false" aria-label="Filter: Starchy carbohydrates">
+          <span class="filter-emoji" aria-hidden="true">🍞</span>
+          <span class="filter-label">Starchy carbs</span>
+        </button>
+        <button class="filter-btn grp-protein" data-group="Protein foods" aria-pressed="false" aria-label="Filter: Protein foods">
+          <span class="filter-emoji" aria-hidden="true">🥚</span>
+          <span class="filter-label">Protein foods</span>
+        </button>
+        <button class="filter-btn grp-dairy" data-group="Dairy and alternatives" aria-pressed="false" aria-label="Filter: Dairy and alternatives">
+          <span class="filter-emoji" aria-hidden="true">🥛</span>
+          <span class="filter-label">Dairy &amp; alt</span>
+        </button>
+        <button class="filter-btn grp-oils" data-group="Oils and spreads" aria-pressed="false" aria-label="Filter: Oils and spreads">
+          <span class="filter-emoji" aria-hidden="true">🫒</span>
+          <span class="filter-label">Oils &amp; spreads</span>
+        </button>
+        <button class="filter-btn grp-sometimes" data-group="Foods to enjoy less often" aria-pressed="false" aria-label="Filter: Foods to enjoy less often">
+          <span class="filter-emoji" aria-hidden="true">🍪</span>
+          <span class="filter-label">Enjoy less often</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Food grid -->
+    <section class="cards-section" aria-label="Food cards">
+      <div id="food-grid" class="food-grid" aria-live="polite" aria-label="Food list"></div>
+      <p id="no-results" class="no-results hidden" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- Food detail overlay -->
+    <div id="detail-overlay" class="detail-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="detail-name">
+      <div class="detail-panel">
+        <button id="detail-back" class="back-btn hidden" aria-label="Go back to food details">← Back</button>
+        <button id="close-detail" class="close-btn" aria-label="Close food details">✕</button>
+        <div id="detail-body" class="detail-body"></div>
+        <button id="choose-another" class="choose-another-btn">
+          <span aria-hidden="true">🔄</span> Choose another food
+        </button>
+      </div>
+    </div>
+
+    <!-- Guessing Game -->
+    <section class="game-section" aria-label="Guess the food group game">
+      <h2 class="game-heading"><span aria-hidden="true">🎮</span> Guess the Food Group</h2>
+      <div class="game-box">
+        <div id="game-intro" class="game-intro">
+          <p class="game-intro-text">Can you guess which group a food belongs to?</p>
+          <button id="start-game" class="start-btn">Start the game!</button>
+        </div>
+        <div id="game-play" class="game-play hidden">
+          <div id="game-food" class="game-food" aria-live="polite"></div>
+          <p class="game-prompt">Which group does it belong to?</p>
+          <div id="game-choices" class="game-choices" role="group" aria-label="Choose a food group"></div>
+          <div id="game-feedback" class="game-feedback hidden" aria-live="polite"></div>
+          <button id="next-food" class="next-btn hidden">Next food <span aria-hidden="true">➡️</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- For grown-ups -->
+    <section class="grownups-section">
+      <details class="grownups-details">
+        <summary class="grownups-summary">For grown-ups</summary>
+        <div class="grownups-body">
+          <p>This activity provides general food education, not individual medical or allergy advice. Food needs vary between children. Speak to an appropriate healthcare professional about allergies, supplements, restricted diets or concerns about a child's growth or eating.</p>
+          <p>Whole nuts can be a choking risk for children under five. Use appropriately prepared forms such as smooth nut butter, and supervise young children while eating.</p>
+        </div>
+      </details>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

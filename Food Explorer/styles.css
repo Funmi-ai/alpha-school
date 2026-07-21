@@ -1,0 +1,710 @@
+/* === Reset === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden], .hidden { display: none !important; }
+
+/* === Variables === */
+:root {
+  --c-bg:        #fff8f0;
+  --c-header:    #ff6b35;
+  --c-text:      #2d2d2d;
+  --c-muted:     #5a5a5a;
+  --c-card:      #ffffff;
+  --c-shadow:    0 3px 14px rgba(0,0,0,0.10);
+  --c-focus:     #e65100;
+  --radius-lg:   20px;
+  --radius-md:   14px;
+  --radius-sm:   10px;
+
+  /* group colours */
+  --fruit:       #4caf50;
+  --fruit-lt:    #e8f5e9;
+  --carbs:       #f59e0b;
+  --carbs-lt:    #fffbeb;
+  --protein:     #ef4444;
+  --protein-lt:  #fef2f2;
+  --dairy:       #3b82f6;
+  --dairy-lt:    #eff6ff;
+  --oils:        #8b5cf6;
+  --oils-lt:     #f5f3ff;
+  --sometimes:   #6b7280;
+  --sometimes-lt:#f3f4f6;
+}
+
+/* === Base === */
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-size: 18px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* === Header === */
+.site-header {
+  background: var(--c-header);
+  color: #fff;
+  text-align: center;
+  padding: 1.5rem 1rem 1.25rem;
+}
+
+.site-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.site-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  opacity: 0.92;
+  margin-top: 0.4rem;
+}
+
+/* === Search === */
+.search-section {
+  max-width: 680px;
+  margin: 2rem auto 0;
+  padding: 0 1rem;
+}
+
+.search-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--c-muted);
+  margin-bottom: 0.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1.2rem;
+  font-family: inherit;
+  border: 3px solid #e0e0e0;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  color: var(--c-text);
+  transition: border-color 0.15s;
+  appearance: none;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--c-header);
+  box-shadow: 0 0 0 3px rgba(255,107,53,0.2);
+}
+
+/* === Filters === */
+.filter-section {
+  max-width: 960px;
+  margin: 1.5rem auto 0;
+  padding: 0 1rem;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.filter-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.65rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 3px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background: #fff;
+  color: var(--c-muted);
+  box-shadow: var(--c-shadow);
+  transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+  min-width: 90px;
+}
+
+.filter-emoji { font-size: 1.6rem; line-height: 1; }
+.filter-label { line-height: 1.2; text-align: center; }
+
+.filter-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 18px rgba(0,0,0,0.13); }
+.filter-btn:active { transform: scale(0.97); }
+.filter-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+
+/* active/selected state */
+.filter-btn.active                          { border-color: #ff6b35; background: #fff3ee; color: #c23f00; }
+.filter-btn.grp-fruit.active                { border-color: var(--fruit); background: var(--fruit-lt); color: #2e7d32; }
+.filter-btn.grp-carbs.active                { border-color: var(--carbs); background: var(--carbs-lt); color: #92400e; }
+.filter-btn.grp-protein.active              { border-color: var(--protein); background: var(--protein-lt); color: #991b1b; }
+.filter-btn.grp-dairy.active                { border-color: var(--dairy); background: var(--dairy-lt); color: #1e3a8a; }
+.filter-btn.grp-oils.active                 { border-color: var(--oils); background: var(--oils-lt); color: #5b21b6; }
+.filter-btn.grp-sometimes.active            { border-color: var(--sometimes); background: var(--sometimes-lt); color: #374151; }
+
+/* === Cards section === */
+.cards-section {
+  max-width: 960px;
+  margin: 1.5rem auto 0;
+  padding: 0 1rem;
+}
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 1rem;
+}
+
+/* === Food card === */
+.food-card {
+  background: var(--c-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--c-shadow);
+  padding: 1.1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+  text-align: center;
+  min-height: 170px;
+}
+
+.food-card:hover  { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.13); }
+.food-card:active { transform: scale(0.97); }
+.food-card:focus-visible { outline: none; border-color: var(--c-focus); box-shadow: 0 0 0 4px rgba(255,107,53,0.25); }
+
+.food-card.grp-fruit     { border-top: 5px solid var(--fruit);     }
+.food-card.grp-carbs     { border-top: 5px solid var(--carbs);     }
+.food-card.grp-protein   { border-top: 5px solid var(--protein);   }
+.food-card.grp-dairy     { border-top: 5px solid var(--dairy);     }
+.food-card.grp-oils      { border-top: 5px solid var(--oils);      }
+.food-card.grp-sometimes { border-top: 5px solid var(--sometimes); }
+
+.card-emoji  { font-size: 2.8rem; line-height: 1; }
+.card-name   { font-size: 1.05rem; font-weight: 800; line-height: 1.2; }
+.card-group  { font-size: 0.78rem; color: var(--c-muted); line-height: 1.3; }
+.card-clue   {
+  font-size: 0.78rem; font-weight: 700; padding: 0.2rem 0.6rem;
+  border-radius: 20px; color: #fff; margin-top: auto;
+}
+
+.clue-carbs     { background: var(--carbs);     }
+.clue-protein   { background: var(--protein);   }
+.clue-fats      { background: #10b981;           }
+.clue-fibre     { background: #6d28d9;           }
+.clue-energy    { background: #f59e0b;           }
+.clue-vitamins  { background: #0ea5e9;           }
+
+/* === No results === */
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: var(--c-muted);
+}
+
+/* === Detail overlay === */
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.detail-panel {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  max-width: 640px;
+  width: 100%;
+  padding: 2rem 1.75rem 1.75rem;
+  position: relative;
+  margin: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #f0f0f0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--c-text);
+  transition: background 0.12s;
+}
+.close-btn:hover { background: #e0e0e0; }
+.close-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+
+/* detail sections */
+.detail-hero { text-align: center; padding-bottom: 1.25rem; border-bottom: 2px solid #f0f0f0; }
+.detail-hero .d-emoji { font-size: 4rem; line-height: 1; display: block; }
+.detail-hero h2 { font-size: 2rem; font-weight: 900; margin-top: 0.4rem; }
+.detail-group-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.detail-section { margin-top: 1.25rem; }
+.detail-section h3 {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-muted);
+  margin-bottom: 0.6rem;
+}
+
+/* nutrient tags */
+.tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tag {
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: inherit;
+  border: none;
+}
+.tag.tag--link {
+  cursor: pointer;
+  transition: opacity 0.12s, transform 0.1s;
+}
+.tag.tag--link:hover  { opacity: 0.82; }
+.tag.tag--link:active { transform: scale(0.96); }
+.tag.tag--link:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.tag-carbs   { background: var(--carbs); color: #fff; }
+.tag-protein { background: var(--protein); }
+.tag-fats    { background: #10b981; }
+.tag-fibre   { background: #6d28d9; }
+
+/* vitamin pills */
+.vit-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.vit-pill {
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: #e8f4fd;
+  color: #1565c0;
+  border: 1px solid #bbdefb;
+}
+
+/* benefits */
+.benefit-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+.benefit-list li::before { content: "✔ "; color: var(--fruit); font-weight: 700; }
+.benefit-list li { font-size: 1rem; }
+
+/* daily guidance */
+.daily-box {
+  background: #f0fdf4;
+  border-left: 4px solid var(--fruit);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.daily-box p + p { margin-top: 0.5rem; font-style: italic; color: var(--c-muted); font-size: 0.88rem; }
+
+/* fact box */
+.fact-box {
+  background: #fffbeb;
+  border-left: 4px solid var(--carbs);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
+/* talk about it */
+.talk-box {
+  background: #f5f3ff;
+  border-left: 4px solid var(--oils);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #3730a3;
+}
+
+.choose-another-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-family: inherit;
+  background: var(--c-header);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.12s, transform 0.1s;
+}
+.choose-another-btn:hover  { background: #e65100; }
+.choose-another-btn:active { transform: scale(0.98); }
+.choose-another-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+
+/* group badge colours */
+.gbadge-fruit     { background: var(--fruit); }
+.gbadge-carbs     { background: var(--carbs); color: #1c1300; }
+.gbadge-protein   { background: var(--protein); }
+.gbadge-dairy     { background: var(--dairy); }
+.gbadge-oils      { background: var(--oils); }
+.gbadge-sometimes { background: var(--sometimes); }
+
+/* === Game === */
+.game-section {
+  max-width: 680px;
+  margin: 2.5rem auto 0;
+  padding: 0 1rem;
+}
+
+.game-heading {
+  font-size: 1.6rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.game-box {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--c-shadow);
+  padding: 1.75rem;
+}
+
+.game-intro { text-align: center; }
+.game-intro-text { font-size: 1.1rem; margin-bottom: 1.25rem; }
+
+.start-btn {
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 800;
+  padding: 0.85rem 2rem;
+  background: #ff6b35;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.12s, transform 0.1s;
+}
+.start-btn:hover  { background: #e65100; }
+.start-btn:active { transform: scale(0.97); }
+.start-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+
+.game-food {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+.game-food .gf-emoji { font-size: 4rem; display: block; line-height: 1; }
+.game-food .gf-name  { font-size: 1.6rem; font-weight: 900; margin-top: 0.4rem; }
+
+.game-prompt {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.9rem;
+}
+
+.game-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.game-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: 3px solid #e0e0e0;
+  border-radius: var(--radius-md);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, transform 0.1s;
+  text-align: left;
+}
+.game-choice-btn:hover { border-color: #ff6b35; background: #fff3ee; }
+.game-choice-btn:active { transform: scale(0.97); }
+.game-choice-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+.game-choice-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+.game-choice-btn.correct   { border-color: var(--fruit); background: var(--fruit-lt); color: #1b5e20; }
+.game-choice-btn.wrong     { border-color: #ccc; background: #f5f5f5; color: #999; }
+
+.choice-emoji { font-size: 1.4rem; }
+
+.game-feedback {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  text-align: center;
+  font-weight: 600;
+}
+.feedback-match { background: var(--fruit-lt); color: #1b5e20; border: 2px solid var(--fruit); }
+.feedback-look  { background: #fffbeb; color: #78350f; border: 2px solid var(--carbs); }
+
+.next-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.85rem;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 800;
+  background: #ff6b35;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.12s, transform 0.1s;
+}
+.next-btn:hover  { background: #e65100; }
+.next-btn:active { transform: scale(0.97); }
+.next-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+
+/* === Grown-ups === */
+.grownups-section {
+  max-width: 680px;
+  margin: 2rem auto 3rem;
+  padding: 0 1rem;
+}
+
+.grownups-details {
+  background: #f8f8f8;
+  border-radius: var(--radius-md);
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+.grownups-summary {
+  padding: 1rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--c-muted);
+  cursor: pointer;
+  list-style: none;
+}
+.grownups-summary::-webkit-details-marker { display: none; }
+.grownups-summary::before { content: "▸ "; }
+details[open] .grownups-summary::before { content: "▾ "; }
+.grownups-summary:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+
+.grownups-body {
+  padding: 0 1.25rem 1.25rem;
+  font-size: 0.9rem;
+  color: var(--c-muted);
+  line-height: 1.6;
+}
+.grownups-body p + p { margin-top: 0.75rem; }
+
+/* === Reduced motion === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* === Responsive === */
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  .site-title { font-size: 1.8rem; }
+  .food-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .detail-panel { padding: 1.5rem 1.2rem 1.2rem; }
+  .game-choices { grid-template-columns: 1fr; }
+  .filter-btn { min-width: 75px; font-size: 0.8rem; padding: 0.5rem 0.6rem; }
+  .filter-emoji { font-size: 1.3rem; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .food-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+
+/* ===================================================
+   BACK BUTTON (deep dive navigation)
+   =================================================== */
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.35rem 0.9rem;
+  margin-bottom: 0.9rem;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--c-header);
+  background: #fff3ee;
+  border: 2px solid var(--c-header);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.back-btn:hover { background: #ffddd0; }
+.back-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+
+/* ===================================================
+   CLICKABLE VITAMIN PILLS
+   =================================================== */
+
+/* All vit-pills are now <button> elements — reset browser defaults */
+.vit-pill {
+  font-family: inherit;
+  border: 1px solid #bbdefb;
+  cursor: default;
+  text-align: left;
+}
+
+.vit-pill.vit-pill--link {
+  cursor: pointer;
+  border-color: #1565c0;
+  transition: background 0.12s, border-color 0.12s;
+}
+.vit-pill.vit-pill--link:hover {
+  background: #bbdefb;
+  border-color: #0d47a1;
+}
+.vit-pill.vit-pill--link:focus-visible {
+  outline: 3px solid #1565c0;
+  outline-offset: 2px;
+}
+
+/* ===================================================
+   CLICKABLE GROUP BADGE
+   =================================================== */
+
+.detail-group-badge {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.12s, transform 0.1s;
+}
+.detail-group-badge:hover  { opacity: 0.82; }
+.detail-group-badge:active { transform: scale(0.97); }
+.detail-group-badge:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* Small tap hint beneath vitamins list */
+.tap-hint {
+  font-size: 0.75rem;
+  color: #1565c0;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+/* ===================================================
+   DEEP DIVE PANEL CONTENT
+   =================================================== */
+
+.dd-hero {
+  text-align: center;
+  padding-bottom: 1.1rem;
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 0.25rem;
+}
+
+.dd-emoji {
+  font-size: 3.5rem;
+  line-height: 1;
+  display: block;
+}
+
+.dd-name {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-top: 0.3rem;
+  line-height: 1.1;
+}
+
+.dd-bodypart {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: #e8f4fd;
+  color: #1565c0;
+  border: 1px solid #bbdefb;
+}
+
+.dd-section {
+  margin-top: 1.1rem;
+}
+
+.dd-section-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-muted);
+  margin-bottom: 0.5rem;
+}
+
+.dd-headline {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--c-text);
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+
+.dd-benefit-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.dd-benefit-list li { font-size: 0.95rem; }
+.dd-benefit-list li::before { content: "✔ "; color: var(--fruit); font-weight: 700; }
+
+/* Food chips grid inside deep dives */
+.dd-food-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.food-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.35rem 0.75rem;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--c-text);
+  transition: border-color 0.12s, background 0.12s, transform 0.1s;
+}
+.food-chip:hover  { border-color: var(--c-header); background: #fff3ee; color: var(--c-header); }
+.food-chip:active { transform: scale(0.97); }
+.food-chip:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }

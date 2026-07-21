@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpha School</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: #fff8f0;
+      color: #1f2937;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #ff6b35;
+      color: #fff;
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-top: 0.5rem;
+    }
+    main {
+      flex: 1;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    h2 {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6b7280;
+      margin-bottom: 0.25rem;
+    }
+    .resource-card {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.09);
+      padding: 1.5rem 1.75rem;
+      text-decoration: none;
+      color: inherit;
+      border: 3px solid transparent;
+      transition: border-color 0.14s, transform 0.12s, box-shadow 0.12s;
+    }
+    .resource-card:hover {
+      border-color: #ff6b35;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+    }
+    .resource-card:focus-visible {
+      outline: none;
+      border-color: #e65100;
+      box-shadow: 0 0 0 4px rgba(255,107,53,0.25);
+    }
+    .card-emoji { font-size: 3rem; line-height: 1; flex-shrink: 0; }
+    .card-body {}
+    .card-name {
+      font-size: 1.4rem;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+    .card-desc {
+      font-size: 0.92rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+    }
+    .card-arrow {
+      margin-left: auto;
+      font-size: 1.5rem;
+      color: #ff6b35;
+      flex-shrink: 0;
+      transition: transform 0.12s;
+    }
+    .resource-card:hover .card-arrow { transform: translateX(4px); }
+    footer {
+      text-align: center;
+      padding: 1.25rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎒 Alpha School</h1>
+    <p class="subtitle">Learning activities for curious young minds</p>
+  </header>
+  <main>
+    <h2>Activities</h2>
+    <a class="resource-card" href="Food Explorer/food-explorer.html">
+      <span class="card-emoji" aria-hidden="true">🍎</span>
+      <div class="card-body">
+        <div class="card-name">Food Explorer</div>
+        <div class="card-desc">Discover vitamins, food groups and how food helps your body · Ages 4–7</div>
+      </div>
+      <span class="card-arrow" aria-hidden="true">›</span>
+    </a>
+    <a class="resource-card" href="Money Jar Tracker/money-jar.html">
+      <span class="card-emoji" aria-hidden="true">🍪</span>
+      <div class="card-body">
+        <div class="card-name">Money Jar Tracker</div>
+        <div class="card-desc">Save, Spend and Business jars — learn about money · Ages 5–8</div>
+      </div>
+      <span class="card-arrow" aria-hidden="true">›</span>
+    </a>
+  </main>
+  <footer>Open via the launcher for a clean URL &mdash; or open this file directly.</footer>
+</body>
+</html>

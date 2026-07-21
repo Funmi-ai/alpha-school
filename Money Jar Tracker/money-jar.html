@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie Company — Money Jar Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <span class="header-icon" aria-hidden="true">🍪</span>
+    <div>
+      <h1>Cookie Company</h1>
+      <p class="tagline">Money Jar Tracker</p>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Money to sort -->
+    <section class="card sort-section" aria-label="Money to sort">
+      <h2>Money to sort</h2>
+      <p class="sort-prompt">Where should this coin go?</p>
+      <div class="sort-coins" id="sort-coins" role="img" aria-label="Coins still to place in a jar"></div>
+      <p class="sort-total">£<span id="sort-amount">0</span> left to sort</p>
+    </section>
+
+    <!-- Totals -->
+    <div class="totals-row" role="region" aria-label="Money totals">
+      <div class="total-pill">
+        <span class="pill-label">Started with</span>
+        <span class="pill-value">£<span id="total-start">0</span></span>
+      </div>
+      <div class="total-pill">
+        <span class="pill-label">In jars</span>
+        <span class="pill-value">£<span id="total-jars">0</span></span>
+      </div>
+      <div class="total-pill">
+        <span class="pill-label">Still to sort</span>
+        <span class="pill-value">£<span id="total-sort">0</span></span>
+      </div>
+    </div>
+
+    <!-- Three jars -->
+    <section class="jars-grid" aria-label="Money jars">
+
+      <!-- Save jar -->
+      <article class="jar-card" id="jar-save">
+        <div class="jar-header">
+          <span class="jar-icon" aria-hidden="true">⭐</span>
+          <h3>Save</h3>
+        </div>
+        <div class="jar-visual" aria-hidden="true">
+          <div class="jar-shape">
+            <div class="jar-coins" id="coins-save"></div>
+            <div class="jar-glint"></div>
+          </div>
+        </div>
+        <p class="jar-amount">£<span id="amount-save">0</span></p>
+        <div class="goal-panel">
+          <p class="goal-line">Goal: £<span id="goal-target">0</span></p>
+          <p class="goal-line">Still need: £<span id="goal-remaining">0</span></p>
+          <p class="goal-reached" id="goal-reached" aria-live="polite"></p>
+        </div>
+        <div class="jar-buttons">
+          <button class="btn btn-add" onclick="addToJar('save')" aria-label="Add £1 to Save jar">Add £1</button>
+          <button class="btn btn-take" onclick="removeFromJar('save')" aria-label="Take £1 out of Save jar">Take out £1</button>
+        </div>
+      </article>
+
+      <!-- Spend jar -->
+      <article class="jar-card" id="jar-spend">
+        <div class="jar-header">
+          <span class="jar-icon" aria-hidden="true">🛒</span>
+          <h3>Spend</h3>
+        </div>
+        <div class="jar-visual" aria-hidden="true">
+          <div class="jar-shape">
+            <div class="jar-coins" id="coins-spend"></div>
+            <div class="jar-glint"></div>
+          </div>
+        </div>
+        <p class="jar-amount">£<span id="amount-spend">0</span></p>
+        <div class="jar-buttons">
+          <button class="btn btn-add" onclick="addToJar('spend')" aria-label="Add £1 to Spend jar">Add £1</button>
+          <button class="btn btn-take" onclick="removeFromJar('spend')" aria-label="Take £1 out of Spend jar">Take out £1</button>
+        </div>
+      </article>
+
+      <!-- Business jar -->
+      <article class="jar-card" id="jar-business">
+        <div class="jar-header">
+          <span class="jar-icon" aria-hidden="true">🍪</span>
+          <h3>Business</h3>
+        </div>
+        <div class="jar-visual" aria-hidden="true">
+          <div class="jar-shape">
+            <div class="jar-coins" id="coins-business"></div>
+            <div class="jar-glint"></div>
+          </div>
+        </div>
+        <p class="jar-amount">£<span id="amount-business">0</span></p>
+        <div class="question-panel">
+          <p class="question-text" id="question-text" aria-live="polite"></p>
+          <button class="btn btn-next" onclick="nextQuestion()" aria-label="Show next business question">Next question</button>
+        </div>
+        <div class="pl-panel" aria-label="Profit and loss tracker">
+          <h4 class="pl-title">How did we do?</h4>
+          <div class="pl-row">
+            <span class="pl-label">Money in</span>
+            <div class="pl-controls">
+              <button class="btn btn-pl" onclick="changeMoney('in', -1)" aria-label="Remove £1 from money in">−</button>
+              <span class="pl-amount">£<span id="pl-in">0</span></span>
+              <button class="btn btn-pl" onclick="changeMoney('in', 1)" aria-label="Add £1 to money in">+</button>
+            </div>
+          </div>
+          <div class="pl-row">
+            <span class="pl-label">Money out</span>
+            <div class="pl-controls">
+              <button class="btn btn-pl" onclick="changeMoney('out', -1)" aria-label="Remove £1 from money out">−</button>
+              <span class="pl-amount">£<span id="pl-out">0</span></span>
+              <button class="btn btn-pl" onclick="changeMoney('out', 1)" aria-label="Add £1 to money out">+</button>
+            </div>
+          </div>
+          <p class="pl-result" id="pl-result" aria-live="polite"></p>
+        </div>
+        <div class="jar-buttons">
+          <button class="btn btn-add" onclick="addToJar('business')" aria-label="Add £1 to Business jar">Add £1</button>
+          <button class="btn btn-take" onclick="removeFromJar('business')" aria-label="Take £1 out of Business jar">Take out £1</button>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Adult settings -->
+    <section class="card settings-card" aria-label="Adult settings">
+      <button class="settings-toggle" id="settings-toggle"
+              onclick="toggleSettings()"
+              aria-expanded="false"
+              aria-controls="settings-body">
+        Adult settings
+        <span class="toggle-arrow" aria-hidden="true">▾</span>
+      </button>
+      <div class="settings-body" id="settings-body" hidden>
+        <div class="setting-row">
+          <label for="input-starting">Starting amount (£1–£20)</label>
+          <div class="setting-controls">
+            <span aria-hidden="true">£</span>
+            <input type="number" id="input-starting" min="1" max="20" step="1" value="10"
+                   aria-label="Starting amount in whole pounds, 1 to 20">
+            <button class="btn btn-set" onclick="applyStartingAmount()" aria-label="Apply starting amount">Set</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label for="input-goal">Savings goal (£1–£50)</label>
+          <div class="setting-controls">
+            <span aria-hidden="true">£</span>
+            <input type="number" id="input-goal" min="1" max="50" step="1" value="10"
+                   aria-label="Savings goal in whole pounds, 1 to 50">
+            <button class="btn btn-set" onclick="applySavingsGoal()" aria-label="Apply savings goal">Set</button>
+          </div>
+        </div>
+        <div class="setting-row reset-row">
+          <button class="btn btn-reset" onclick="handleReset()" aria-label="Reset the activity">
+            Reset activity
+          </button>
+          <div class="reset-confirm" id="reset-confirm" hidden>
+            <span class="confirm-label">Are you sure?</span>
+            <button class="btn btn-yes-reset" onclick="confirmReset()"
+                    aria-label="Confirm reset, all data will be cleared">Yes, reset</button>
+            <button class="btn btn-cancel" onclick="cancelReset()" aria-label="Cancel reset">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Handle real coins first. The tracker is a tool to help you count, not a person.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
