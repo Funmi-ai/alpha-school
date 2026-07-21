@@ -763,7 +763,7 @@ const foodData = [
     searchKeywords: ['sweets', 'candy', 'lolly', 'foods to enjoy less often', 'treat']
   },
 
-  { id: 'crisps', name: 'Crisps', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><rect x="8" y="5" width="20" height="26" rx="4" fill="#F5C518" stroke="#C89A08" stroke-width="1.5"/><path d="M8 9 Q8 5 12 5 L24 5 Q28 5 28 9 L28 13 L8 13Z" fill="#E8A808"/><path d="M8 23 L28 23 L28 27 Q28 31 24 31 L12 31 Q8 31 8 27Z" fill="#E8A808"/><path d="M11 9 Q18 7 25 9" fill="none" stroke="#C89A08" stroke-width="1.1" stroke-linecap="round" opacity="0.6"/><path d="M11 26.5 Q18 28.5 25 26.5" fill="none" stroke="#C89A08" stroke-width="1.1" stroke-linecap="round" opacity="0.6"/><line x1="8" y1="13" x2="28" y2="13" stroke="#C89A08" stroke-width="1.2" opacity="0.7"/><line x1="8" y1="23" x2="28" y2="23" stroke="#C89A08" stroke-width="1.2" opacity="0.7"/><rect x="8" y="5" width="20" height="26" rx="4" fill="none" stroke="#C89A08" stroke-width="1.5"/></svg>',
+  { id: 'crisps', name: 'Crisps', emoji: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="1em" height="1em" style="vertical-align:-0.15em"><circle cx="10" cy="15" r="8" fill="#F9C623" stroke="#C89A10" stroke-width="1.3"/><circle cx="26" cy="13" r="8" fill="#F5BC18" stroke="#C89A10" stroke-width="1.3"/><circle cx="18" cy="26" r="8" fill="#F9C623" stroke="#C89A10" stroke-width="1.3"/></svg>',
     group: 'Foods to enjoy less often',
     nutrientRoles: ['Carbohydrates'],
     vitamins: [],
