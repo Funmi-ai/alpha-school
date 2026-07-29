@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A plain-language guide to setting up and using Why's That? with your child.">
+  <title>How to use Why's That?</title>
+  <style>
+    :root {
+      --bg:      #080613;
+      --surface: #110B2A;
+      --p:       #7C3AED;
+      --pl:      #A78BFA;
+      --amber:   #F59E0B;
+      --al:      #FCD34D;
+      --text:    #F1EEFF;
+      --muted:   #9088BE;
+      --border:  rgba(167,139,250,.14);
+      --f:       -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--f);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      padding: 48px 24px 80px;
+      line-height: 1.75;
+    }
+
+    /* subtle star hints at edges only */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        radial-gradient(1.5px 1.5px at  3% 10%, rgba(255,255,255,.4) 0%, transparent 100%),
+        radial-gradient(1px   1px   at  6% 60%, rgba(255,255,255,.25) 0%, transparent 100%),
+        radial-gradient(1px   1px   at  2% 85%, rgba(255,255,255,.3)  0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 97%  8%, rgba(255,255,255,.35) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 95% 45%, rgba(255,255,255,.2)  0%, transparent 100%),
+        radial-gradient(1px   1px   at 98% 78%, rgba(255,255,255,.3)  0%, transparent 100%),
+        radial-gradient(2px   2px   at 50%  2%, rgba(255,255,255,.2)  0%, transparent 100%),
+        radial-gradient(1px   1px   at 30% 98%, rgba(255,255,255,.15) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 70% 97%, rgba(255,255,255,.15) 0%, transparent 100%);
+    }
+
+    /* ── PAGE ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 660px;
+      margin: 0 auto;
+      display: flex; flex-direction: column; gap: 48px;
+    }
+
+    /* ── HERO ── */
+    .hero { display: flex; flex-direction: column; gap: 16px; }
+
+    .eyebrow {
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--pl); text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 800; line-height: 1.15;
+      color: var(--al);
+      text-wrap: balance;
+    }
+
+    .hero-lead {
+      font-size: 1rem; color: var(--muted);
+      line-height: 1.8; max-width: 560px;
+    }
+
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--p); color: #fff;
+      text-decoration: none; border-radius: 50px;
+      padding: 12px 26px; font-size: 0.95rem; font-weight: 700;
+      transition: background .15s, transform .1s;
+      align-self: flex-start; margin-top: 4px;
+    }
+    .hero-cta:hover { background: var(--pl); transform: translateY(-1px); }
+
+    /* ── DIVIDER ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── SECTIONS ── */
+    .section { display: flex; flex-direction: column; gap: 20px; }
+
+    .section-label {
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .section-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--p); color: #fff;
+      font-size: 0.78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section h2 {
+      font-size: 1.15rem; font-weight: 800;
+      color: var(--text); line-height: 1.3;
+    }
+
+    .section p {
+      font-size: 0.92rem; color: var(--muted);
+      line-height: 1.85;
+    }
+
+    .section p + p { margin-top: 12px; }
+
+    /* inline steps */
+    .steps-inline {
+      display: flex; flex-direction: column; gap: 10px;
+      padding-left: 4px;
+    }
+
+    .step-inline {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 13px 16px;
+    }
+
+    .step-inline-n {
+      font-size: 0.72rem; font-weight: 800;
+      color: var(--pl); flex-shrink: 0; margin-top: 2px;
+      min-width: 18px;
+    }
+
+    .step-inline-body { display: flex; flex-direction: column; gap: 3px; }
+    .step-inline-title { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .step-inline-desc  { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+    .step-inline-link  { font-size: 0.8rem; color: var(--pl); text-decoration: none; font-weight: 600; }
+    .step-inline-link:hover { text-decoration: underline; }
+
+    /* callout note */
+    .note {
+      background: rgba(245,158,11,.07);
+      border: 1px solid rgba(245,158,11,.25);
+      border-left: 3px solid var(--amber);
+      border-radius: 10px; padding: 14px 18px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .note-label {
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--amber); text-transform: uppercase; letter-spacing: .08em;
+    }
+
+    .note p {
+      font-size: 0.85rem; color: var(--muted); line-height: 1.75;
+    }
+
+    /* cost badge */
+    .cost-row {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(124,58,237,.08);
+      border: 1px solid rgba(124,58,237,.2);
+      border-radius: 12px; padding: 14px 18px;
+    }
+
+    .cost-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+    .cost-text { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+    .cost-text strong { color: var(--text); }
+
+    /* parent view preview */
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .feature-card-title {
+      font-size: 0.82rem; font-weight: 700;
+      color: var(--pl); text-transform: uppercase; letter-spacing: .07em;
+    }
+
+    .feature-card p {
+      font-size: 0.88rem; color: var(--muted); line-height: 1.75;
+    }
+
+    /* footer */
+    .footer {
+      display: flex; flex-direction: column; gap: 14px;
+      align-items: flex-start;
+    }
+
+    .footer p {
+      font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+    }
+
+    .footer-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--p); color: #fff;
+      text-decoration: none; border-radius: 50px;
+      padding: 12px 26px; font-size: 0.95rem; font-weight: 700;
+      transition: background .15s, transform .1s;
+    }
+    .footer-cta:hover { background: var(--pl); transform: translateY(-1px); }
+
+    @media (max-width: 480px) {
+      body { padding: 36px 18px 60px; }
+      .page { gap: 36px; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="eyebrow">Why's That? — Guide for parents</div>
+    <h1>Everything you need to know, in about five minutes.</h1>
+    <p class="hero-lead">Why's That? is a simple website where children can ask whatever they're wondering about — out loud or typed — and get a calm, clear answer read back to them. No login, no subscription, no data leaving their device. You set it up once, and then they can use it on their own.</p>
+    <a href="why-that.html" class="hero-cta">Open Why's That? →</a>
+  </div>
+
+  <hr />
+
+  <!-- SECTION 1: API KEY -->
+  <div class="section">
+    <div class="section-label">
+      <div class="section-num">1</div>
+      <h2>Before you start — getting an API key</h2>
+    </div>
+
+    <p>Why's That? runs on Claude, Anthropic's AI. To use it, you'll need your own API key — a private code that connects the app to your Anthropic account. It takes about three minutes to get one, and the answers are billed directly to you at a very low cost (more on that below).</p>
+
+    <div class="steps-inline">
+      <div class="step-inline">
+        <div class="step-inline-n">01</div>
+        <div class="step-inline-body">
+          <div class="step-inline-title">Create an Anthropic account</div>
+          <div class="step-inline-desc">Free to sign up — you only pay for what you use.</div>
+          <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" class="step-inline-link">console.anthropic.com ↗</a>
+        </div>
+      </div>
+      <div class="step-inline">
+        <div class="step-inline-n">02</div>
+        <div class="step-inline-body">
+          <div class="step-inline-title">Get your API key</div>
+          <div class="step-inline-desc">In the console, go to API Keys → Create Key → Copy the key that starts with sk-ant-</div>
+        </div>
+      </div>
+      <div class="step-inline">
+        <div class="step-inline-n">03</div>
+        <div class="step-inline-body">
+          <div class="step-inline-title">Paste it into Why's That?</div>
+          <div class="step-inline-desc">Open the site, paste your key into the box, and click Start asking. The key saves in your browser — you'll only need to do this once per device.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cost-row">
+      <div class="cost-icon">💰</div>
+      <div class="cost-text">Each question and answer uses roughly 300–500 tokens. At current Anthropic pricing, that's <strong>less than a tenth of a penny per question.</strong> A curious five-year-old asking ten questions a day would cost around 1–2p a week.</div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- SECTION 2: CHILD EXPERIENCE -->
+  <div class="section">
+    <div class="section-label">
+      <div class="section-num">2</div>
+      <h2>What your child sees</h2>
+    </div>
+
+    <p>After setup, the app goes straight to a single microphone button. They tap it, ask their question out loud, and the mic stays open — it won't cut them off if they pause to think. When they've finished, the app finds the answer and reads it back in plain language: three to five sentences, no jargon, with a comparison to something they already know.</p>
+
+    <p>At the end of each answer, there's a short hands-on activity they can try right now — usually something involving water, salt, paper, or a torch (things already in the house). Early readers who can't yet type can use it completely independently, since the whole experience is voice-in and voice-out.</p>
+
+    <p>If they'd rather type than speak, there's a quiet "Type instead" option below the mic. And if the same question comes up again, the answer is cached — so it loads instantly and doesn't use any more credits.</p>
+  </div>
+
+  <hr />
+
+  <!-- SECTION 3: PARENT VIEW -->
+  <div class="section">
+    <div class="section-label">
+      <div class="section-num">3</div>
+      <h2>The parent view</h2>
+    </div>
+
+    <p>At the bottom of the home screen there's a small "For parents →" link. Open it, and you'll see a log of every question your child has asked, grouped by date — the question, the answer they were given, and the activity suggested.</p>
+
+    <div class="feature-card">
+      <div class="feature-card-title">Generate lesson ideas</div>
+      <p>There's a button that sends the full question log to Claude and asks it to suggest three to five lesson ideas or activities based on what your child has actually been curious about. It notes the age range each activity suits, roughly how long it takes, and which of their questions it connects to. You can copy the suggestions or email them to yourself.</p>
+    </div>
+
+    <div class="note">
+      <div class="note-label">Worth knowing</div>
+      <p>The question log is saved in your browser's local storage — which means it lives on the specific device and browser they use the app on. If they switch to a different tablet, or if the browser storage gets cleared, the history starts fresh. There's no cloud account, which is also why there's no signup. The parent view works best when there's one dedicated device they always use it on (and probably sounds like more of a constraint than it is in practice — most kids have a preferred device they return to).</p>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- FOOTER CTA -->
+  <div class="footer">
+    <p>That's everything. The setup takes a few minutes; after that it mostly runs itself. Questions your child asks this week might surprise you — and probably point to a lesson you wouldn't have thought to plan.</p>
+    <a href="why-that.html" class="footer-cta">Open Why's That? →</a>
+  </div>
+
+</div>
+</body>
+</html>
