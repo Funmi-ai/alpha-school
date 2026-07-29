@@ -510,10 +510,19 @@ function showAnswer(answer, imageUrl, imageKeyword, activity) {
     box.classList.add('hidden');
   }
 
-  /* speak answer then activity */
+  /* speak answer then activity; if answer prompts child to repeat, auto-listen after */
+  const shouldRetry = /could you (repeat|say that|ask that)|say that again|didn't (quite|catch)|one more time|try asking again/i.test(answer);
   setTimeout(() => {
     speak(answer, () => {
-      if (activity) setTimeout(() => speak('Here is something you can try. ' + activity), 400);
+      if (activity) {
+        setTimeout(() => {
+          speak('Here is something you can try. ' + activity, () => {
+            if (shouldRetry) setTimeout(startListening, 600);
+          });
+        }, 400);
+      } else if (shouldRetry) {
+        setTimeout(startListening, 600);
+      }
     });
   }, 600);
 }
