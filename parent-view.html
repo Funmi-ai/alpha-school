@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Parents — Why's That?</title>
+  <style>
+    :root {
+      --bg:      #080613;
+      --surface: #110B2A;
+      --surface2: #1C1244;
+      --p:       #7C3AED;
+      --pl:      #A78BFA;
+      --amber:   #F59E0B;
+      --al:      #FCD34D;
+      --text:    #F1EEFF;
+      --muted:   #8B80B8;
+      --r:       16px;
+      --f:       -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--f);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      padding: 32px 20px 60px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        radial-gradient(1.5px 1.5px at  8% 12%, rgba(255,255,255,.4) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 22% 65%, rgba(255,255,255,.25) 0%, transparent 100%),
+        radial-gradient(2px   2px   at 35%  8%, rgba(255,255,255,.3)  0%, transparent 100%),
+        radial-gradient(1px   1px   at 55% 30%, rgba(255,255,255,.35) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 72% 18%, rgba(255,255,255,.2)  0%, transparent 100%),
+        radial-gradient(1px   1px   at 85% 58%, rgba(255,255,255,.3)  0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 92% 40%, rgba(255,255,255,.4)  0%, transparent 100%),
+        radial-gradient(1px   1px   at 45% 78%, rgba(255,255,255,.2)  0%, transparent 100%);
+    }
+
+    .page {
+      position: relative; z-index: 1;
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex; flex-direction: column; gap: 28px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .back-link {
+      font-size: 0.8rem; color: var(--muted);
+      text-decoration: none; display: inline-flex;
+      align-items: center; gap: 4px;
+      transition: color .15s;
+    }
+    .back-link:hover { color: var(--pl); }
+
+    .header h1 {
+      font-size: 1.7rem; font-weight: 800;
+      color: var(--al); margin-top: 8px;
+    }
+
+    .header p {
+      font-size: 0.88rem; color: var(--muted); line-height: 1.65;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      background: var(--surface);
+      border: 1px solid rgba(167,139,250,.15);
+      border-radius: var(--r);
+      padding: 36px 28px;
+      text-align: center;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .empty-icon { font-size: 2rem; }
+    .empty h2 { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .empty p  { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── GENERATE SECTION ── */
+    .generate-bar {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    }
+
+    .btn-generate {
+      background: var(--p); color: #fff; border: none;
+      border-radius: 50px; padding: 11px 24px;
+      font-size: 0.92rem; font-weight: 700;
+      cursor: pointer; font-family: var(--f);
+      transition: background .15s, transform .1s;
+      flex-shrink: 0;
+    }
+    .btn-generate:hover { background: var(--pl); transform: translateY(-1px); }
+    .btn-generate:disabled { opacity: .5; cursor: default; transform: none; }
+
+    .generate-hint { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── LESSON PLAN ── */
+    .lesson-card {
+      background: var(--surface);
+      border: 1px solid rgba(167,139,250,.2);
+      border-radius: var(--r);
+      padding: 28px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .lesson-card.hidden { display: none; }
+
+    .lesson-header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+    }
+
+    .lesson-header h2 {
+      font-size: 1rem; font-weight: 800; color: var(--al);
+    }
+
+    .lesson-actions { display: flex; gap: 8px; }
+
+    .btn-copy, .btn-email {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px; padding: 7px 14px;
+      font-size: 0.8rem; color: var(--text);
+      cursor: pointer; font-family: var(--f);
+      transition: background .15s, border-color .15s;
+    }
+    .btn-copy:hover, .btn-email:hover {
+      background: rgba(167,139,250,.12); border-color: var(--pl);
+    }
+
+    .lesson-body {
+      font-size: 0.9rem; line-height: 1.8;
+      color: var(--text); white-space: pre-wrap;
+    }
+
+    /* ── LOG ── */
+    .log-section { display: flex; flex-direction: column; gap: 20px; }
+
+    .date-group { display: flex; flex-direction: column; gap: 10px; }
+
+    .date-label {
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .qa-card {
+      background: var(--surface);
+      border: 1px solid rgba(167,139,250,.12);
+      border-radius: var(--r);
+      padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    .qa-question {
+      font-size: 0.88rem; font-weight: 700;
+      color: var(--al);
+    }
+
+    .qa-answer {
+      font-size: 0.85rem; line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .qa-activity {
+      font-size: 0.8rem; color: var(--amber);
+      font-style: italic; line-height: 1.6;
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding-top: 8px; margin-top: 2px;
+    }
+
+    /* ── LOADING DOTS (reuse) ── */
+    .dots { display: flex; gap: 6px; }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--pl);
+      animation: bounce .9s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: .18s; }
+    .dot:nth-child(3) { animation-delay: .36s; }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-10px)} }
+
+    .hidden { display: none; }
+
+    @media (max-width: 480px) {
+      body { padding: 24px 16px 48px; }
+      .lesson-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <a href="why-that.html" class="back-link">← Back to Why's That?</a>
+    <h1>For Parents</h1>
+    <p>A log of everything your child has wondered about — and a way to turn their curiosity into lesson ideas.</p>
+  </div>
+
+  <!-- empty state (shown when no questions logged) -->
+  <div id="empty" class="empty hidden">
+    <div class="empty-icon">🔭</div>
+    <h2>No questions yet</h2>
+    <p>Questions your child asks will appear here. Head back to Why's That? and let them explore.</p>
+  </div>
+
+  <!-- generate lesson plan -->
+  <div id="generate-section" class="hidden">
+    <div class="generate-bar">
+      <button id="generate-btn" class="btn-generate">Generate lesson ideas</button>
+      <span class="generate-hint">Uses your API key to suggest activities based on what they've asked.</span>
+    </div>
+  </div>
+
+  <!-- lesson plan output -->
+  <div id="lesson-card" class="lesson-card hidden">
+    <div class="lesson-header">
+      <h2>Lesson ideas</h2>
+      <div class="lesson-actions">
+        <button id="copy-btn" class="btn-copy">Copy</button>
+        <button id="email-btn" class="btn-email">Email to myself</button>
+      </div>
+    </div>
+    <div id="loading-dots" class="dots hidden">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <div id="lesson-body" class="lesson-body"></div>
+  </div>
+
+  <!-- questions log -->
+  <div id="log" class="log-section"></div>
+
+</div>
+<script>
+'use strict';
+
+const MODEL   = 'claude-haiku-4-5-20251001';
+const API_URL = 'https://api.anthropic.com/v1/messages';
+
+const $ = id => document.getElementById(id);
+const getKey = () => localStorage.getItem('why_api_key') || '';
+
+function loadLog() {
+  try {
+    return JSON.parse(localStorage.getItem('why_questions_log') || '[]');
+  } catch { return []; }
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function groupByDate(entries) {
+  const groups = {};
+  entries.slice().reverse().forEach(e => {
+    const label = formatDate(e.timestamp);
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(e);
+  });
+  return groups;
+}
+
+function renderLog(entries) {
+  const log = $('log');
+  log.innerHTML = '';
+
+  if (!entries.length) {
+    $('empty').classList.remove('hidden');
+    $('generate-section').classList.add('hidden');
+    return;
+  }
+
+  $('empty').classList.add('hidden');
+  $('generate-section').classList.remove('hidden');
+
+  const groups = groupByDate(entries);
+  Object.entries(groups).forEach(([date, qs]) => {
+    const group = document.createElement('div');
+    group.className = 'date-group';
+
+    const label = document.createElement('div');
+    label.className = 'date-label';
+    label.textContent = date;
+    group.appendChild(label);
+
+    qs.forEach(q => {
+      const card = document.createElement('div');
+      card.className = 'qa-card';
+
+      const qEl = document.createElement('div');
+      qEl.className = 'qa-question';
+      qEl.textContent = q.question;
+      card.appendChild(qEl);
+
+      if (q.answer) {
+        const aEl = document.createElement('div');
+        aEl.className = 'qa-answer';
+        aEl.textContent = q.answer;
+        card.appendChild(aEl);
+      }
+
+      if (q.activity) {
+        const actEl = document.createElement('div');
+        actEl.className = 'qa-activity';
+        actEl.textContent = '🧪 ' + q.activity;
+        card.appendChild(actEl);
+      }
+
+      group.appendChild(card);
+    });
+
+    log.appendChild(group);
+  });
+}
+
+async function generateLessonPlan(entries) {
+  const key = getKey();
+  if (!key) {
+    alert("No API key found. Head to Why's That? and set one up first.");
+    return;
+  }
+
+  $('lesson-card').classList.remove('hidden');
+  $('loading-dots').classList.remove('hidden');
+  $('lesson-body').textContent = '';
+  $('generate-btn').disabled = true;
+
+  const summary = entries.map(e => `- "${e.question}"`).join('\n');
+
+  const prompt = `A child has asked the following questions through an educational app called Why's That?:\n\n${summary}\n\nBased on these questions, suggest 3 to 5 lesson ideas or hands-on activities for a parent or home educator to explore with the child. For each suggestion:\n- Give it a short title\n- Note the age range it suits (roughly)\n- Estimate how long it takes\n- List 2 to 3 clear learning objectives\n- Describe one hands-on activity or project\n- Note which of the child's questions it connects to\n\nWrite for a parent, not a teacher. Keep it warm, practical, and encouraging. Plain text only — no markdown symbols or asterisks.`;
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type':                              'application/json',
+        'x-api-key':                                 key,
+        'anthropic-version':                         '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model:      MODEL,
+        max_tokens: 1200,
+        messages:   [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+    $('lesson-body').textContent = text;
+
+  } catch (err) {
+    $('lesson-body').textContent = 'Something went wrong generating the lesson plan. Check your API key and try again.';
+    console.error(err);
+  } finally {
+    $('loading-dots').classList.add('hidden');
+    $('generate-btn').disabled = false;
+  }
+}
+
+$('generate-btn').addEventListener('click', () => {
+  generateLessonPlan(loadLog());
+});
+
+$('copy-btn').addEventListener('click', () => {
+  const text = $('lesson-body').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    $('copy-btn').textContent = 'Copied!';
+    setTimeout(() => { $('copy-btn').textContent = 'Copy'; }, 2000);
+  });
+});
+
+$('email-btn').addEventListener('click', () => {
+  const text = $('lesson-body').textContent;
+  if (!text) return;
+  const subject = encodeURIComponent("Lesson ideas from Why's That?");
+  const body    = encodeURIComponent(text);
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+});
+
+/* init */
+renderLog(loadLog());
+</script>
+</body>
+</html>

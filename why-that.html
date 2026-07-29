@@ -315,6 +315,17 @@
     .error-card > span { font-size: 2.5rem; }
     .error-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.65; }
 
+    .for-parents-link {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(139,128,184,.35);
+      padding-bottom: 1px;
+      transition: color .15s, border-color .15s;
+    }
+    .for-parents-link:hover { color: var(--pl); border-color: var(--pl); }
+
     /* gear */
     .reset-btn {
       position: fixed; bottom: 20px; right: 20px;
@@ -386,6 +397,7 @@
         <input id="type-in" class="type-input" type="text" placeholder="Ask your why here…" />
         <button id="type-go" class="type-go">Ask</button>
       </div>
+      <a href="parent-view.html" class="for-parents-link">For parents →</a>
     </div>
 
     <!-- listening -->
