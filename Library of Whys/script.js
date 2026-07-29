@@ -186,10 +186,20 @@ function startListening() {
   };
 
   recognition.onerror = e => {
-    if (e.error === 'no-speech' || e.error === 'aborted') {
+    if (e.error === 'no-speech') {
+      /* keep listening — onend will restart the session */
+    } else if (e.error === 'aborted') {
       showState('idle-state');
     } else {
       showError('Couldn\'t hear that clearly. Try again, or use the type option.');
+    }
+  };
+
+  /* When a session ends without a result, restart automatically
+     as long as the listening screen is still showing */
+  recognition.onend = () => {
+    if (!$('listening-state').classList.contains('hidden')) {
+      startListening();
     }
   };
 
