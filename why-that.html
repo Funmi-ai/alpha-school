@@ -558,22 +558,35 @@ Rules for 'activity':
     recog = new SR();
     recog.lang           = 'en-GB';
     recog.interimResults = false;
-    recog.continuous     = false;
+    recog.continuous     = true;
+
+    let doneTimer = null;
+    let pending   = '';
 
     recog.onresult = e => {
-      const text = e.results[0][0].transcript.trim();
-      if (!text) { showView('idle'); return; }
-      question = text;
-      fetchAnswer();
+      const last = e.results[e.results.length - 1];
+      if (!last.isFinal) return;
+      const text = last[0].transcript.trim();
+      if (!text) return;
+      pending = text;
+      clearTimeout(doneTimer);
+      /* wait 1.5 s of silence before treating the question as complete */
+      doneTimer = setTimeout(() => {
+        question = pending;
+        try { recog.stop(); } catch {}
+        fetchAnswer();
+      }, 1500);
     };
 
     recog.onerror = e => {
-      if (e.error === 'no-speech') { /* onend will restart */ }
+      clearTimeout(doneTimer);
+      if (e.error === 'no-speech') { /* continuous — onend will restart if still listening */ }
       else if (e.error === 'aborted') { showView('idle'); }
       else { showError("Couldn't hear that clearly. Try again, or use the type option."); }
     };
 
     recog.onend = () => {
+      clearTimeout(doneTimer);
       if (!$('listening').classList.contains('hidden')) startListening();
     };
 

@@ -176,18 +176,30 @@ function startListening() {
   recognition.lang            = 'en-GB';
   recognition.interimResults  = false;
   recognition.maxAlternatives = 1;
-  recognition.continuous      = false;
+  recognition.continuous      = true;
+
+  let doneTimer = null;
+  let pending   = '';
 
   recognition.onresult = e => {
-    const text = e.results[0][0].transcript.trim();
-    if (!text) { showState('idle-state'); return; }
-    currentQuestion = text;
-    fetchAnswer();
+    const last = e.results[e.results.length - 1];
+    if (!last.isFinal) return;
+    const text = last[0].transcript.trim();
+    if (!text) return;
+    pending = text;
+    clearTimeout(doneTimer);
+    /* wait 1.5 s of silence before treating the question as complete */
+    doneTimer = setTimeout(() => {
+      currentQuestion = pending;
+      try { recognition.stop(); } catch {}
+      fetchAnswer();
+    }, 1500);
   };
 
   recognition.onerror = e => {
+    clearTimeout(doneTimer);
     if (e.error === 'no-speech') {
-      /* keep listening — onend will restart the session */
+      /* continuous mode — onend will restart if still listening */
     } else if (e.error === 'aborted') {
       showState('idle-state');
     } else {
@@ -195,9 +207,8 @@ function startListening() {
     }
   };
 
-  /* When a session ends without a result, restart automatically
-     as long as the listening screen is still showing */
   recognition.onend = () => {
+    clearTimeout(doneTimer);
     if (!$('listening-state').classList.contains('hidden')) {
       startListening();
     }
