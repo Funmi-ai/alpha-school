@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why's That?</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ── Setup screen (first run only) ── -->
+  <div id="setup-screen" class="screen hidden">
+    <div class="setup-card">
+      <div class="setup-emoji">🔭</div>
+      <h1>One quick setup,<br>then just ask away.</h1>
+      <p class="setup-intro">Why's That? uses Claude AI to answer questions. You'll need your own API key — takes about 3 minutes to get one, and costs pennies per session.</p>
+
+      <div class="setup-steps">
+        <div class="setup-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Create an Anthropic account</div>
+            <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" class="step-link">Open console.anthropic.com ↗</a>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Get your API key</div>
+            <div class="step-hint">API Keys → Create Key → Copy</div>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Paste it below and you're done</div>
+          </div>
+        </div>
+      </div>
+
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" />
+      <button id="save-key-btn" class="btn-primary">Start asking →</button>
+      <p class="setup-privacy">🔒 Saved on this device only — never sent to us or anyone else.</p>
+    </div>
+  </div>
+
+  <!-- ── Main app ── -->
+  <div id="main-screen" class="screen hidden">
+
+    <!-- Idle -->
+    <div id="idle-state" class="state-view">
+      <div class="stars" aria-hidden="true"></div>
+      <h1 class="main-title">Why's That?</h1>
+      <p class="subtitle">What are you wondering about?</p>
+      <button id="mic-btn" class="mic-button" aria-label="Ask a question">
+        <span class="mic-icon" aria-hidden="true">🎙️</span>
+      </button>
+      <p class="hint">Press and ask your why</p>
+      <button id="type-toggle-btn" class="btn-ghost type-toggle">Type instead</button>
+      <div id="type-input-area" class="type-input-area hidden">
+        <input type="text" id="type-input" placeholder="Ask your why here..." />
+        <button id="type-submit-btn" class="btn-primary">Ask</button>
+      </div>
+    </div>
+
+    <!-- Listening -->
+    <div id="listening-state" class="state-view hidden">
+      <div class="stars" aria-hidden="true"></div>
+      <h1 class="main-title">Why's That?</h1>
+      <button id="stop-btn" class="mic-button listening" aria-label="Stop recording">
+        <span class="mic-icon" aria-hidden="true">🎙️</span>
+      </button>
+      <p class="listening-text">I'm listening…</p>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-state" class="state-view hidden">
+      <div class="loading-dots" aria-label="Finding your answer">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <p class="loading-text">Finding your answer…</p>
+    </div>
+
+    <!-- Answer -->
+    <div id="answer-state" class="state-view hidden">
+      <div class="answer-card">
+        <canvas id="particle-canvas" class="particle-canvas" aria-hidden="true"></canvas>
+        <img id="answer-img" class="answer-image hidden" alt="" />
+        <p class="question-label" id="answer-question"></p>
+        <div class="answer-text" id="answer-text" aria-live="polite"></div>
+        <div id="activity-box" class="activity-box hidden">
+          <span class="activity-label">🧪 Try this</span>
+          <p id="activity-text" class="activity-text"></p>
+        </div>
+        <div class="answer-actions">
+          <button id="replay-btn" class="btn-ghost replay-btn" aria-label="Hear the answer again">🔊 Hear it again</button>
+          <button id="ask-again-btn" class="btn-primary">Ask another why</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="error-state" class="state-view hidden">
+      <div class="error-card">
+        <span class="error-emoji" aria-hidden="true">😕</span>
+        <p id="error-message">Something went wrong. Try again.</p>
+        <button id="retry-btn" class="btn-primary">Try again</button>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <button id="settings-btn" class="settings-btn" aria-label="Settings" title="Reset API key">⚙️</button>
+    <a href="parent-view.html" class="parent-link" title="Parent view">📊</a>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

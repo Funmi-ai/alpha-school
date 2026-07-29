@@ -254,6 +254,22 @@ body {
 .close-btn:hover { background: #e0e0e0; }
 .close-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }
 
+.speak-btn {
+  position: absolute;
+  top: 1rem; right: 3.8rem;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #fff3e0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--c-text);
+  transition: background 0.12s;
+}
+.speak-btn:hover { background: #ffe0b2; }
+.speak-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+
 /* detail sections */
 .detail-hero { text-align: center; padding-bottom: 1.25rem; border-bottom: 2px solid #f0f0f0; }
 .detail-hero .d-emoji { font-size: 4rem; line-height: 1; display: block; }

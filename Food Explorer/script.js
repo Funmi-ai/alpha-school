@@ -1137,6 +1137,32 @@ function filterFoods() {
 }
 
 /* ============================================================
+   NATIVE TTS  (macOS 'say' via local server on :8081)
+   ============================================================ */
+
+const TTS_SERVER = 'http://localhost:8081';
+let currentFoodSpeech = '';
+
+function speakFood(text) {
+  currentFoodSpeech = text;
+  fetch(TTS_SERVER + '/speak', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ text })
+  }).catch(() => {});
+}
+
+function stopFoodSpeech() {
+  currentFoodSpeech = '';
+  fetch(TTS_SERVER + '/cancel', { method: 'POST' }).catch(() => {});
+}
+
+function buildFoodScript(food) {
+  const benefits = food.benefits.join(' ');
+  return `${food.name}. ${benefits} Did you know — ${food.fact} ${food.discussionQuestion}`;
+}
+
+/* ============================================================
    RENDER CARDS
    ============================================================ */
 
@@ -1273,12 +1299,16 @@ function openDetail(id) {
 
   $('close-detail').focus();
   overlay.addEventListener('keydown', trapFocus);
+
+  /* speak food info */
+  speakFood(buildFoodScript(food));
 }
 
 function closeDetail() {
   const overlay = $('detail-overlay');
   overlay.classList.add('hidden');
   overlay.removeEventListener('keydown', trapFocus);
+  stopFoodSpeech();
 }
 
 function trapFocus(e) {
@@ -1604,6 +1634,11 @@ document.addEventListener('DOMContentLoaded', () => {
   /* detail close */
   $('close-detail').addEventListener('click', closeDetail);
   $('choose-another').addEventListener('click', closeDetail);
+
+  /* speak replay */
+  $('speak-btn').addEventListener('click', () => {
+    if (currentFoodSpeech) speakFood(currentFoodSpeech);
+  });
 
   /* back button — return to the food that was open */
   $('detail-back').addEventListener('click', () => {

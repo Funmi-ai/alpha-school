@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>TTS Test</title>
+<style>
+  body { font-family: system-ui; padding: 40px; background: #111; color: #fff; }
+  button { font-size: 1.2rem; padding: 14px 28px; margin: 8px 6px; cursor: pointer; border: none; border-radius: 10px; background: #7C3AED; color: #fff; display: block; }
+  button:hover { background: #9D65F7; }
+  #log { margin-top: 24px; font-family: monospace; font-size: 0.9rem; line-height: 1.9; background: #1e1e1e; padding: 16px; border-radius: 8px; white-space: pre-wrap; min-height: 80px; }
+</style>
+</head>
+<body>
+<h2>Audio Diagnostic</h2>
+<button onclick="testBeep()">1 · Beep (Web Audio — no TTS)</button>
+<button onclick="testVoices()">2 · List voices</button>
+<button onclick="testTTS()">3 · Speak with best voice</button>
+<button onclick="testEachVoice()">4 · Try every voice one by one</button>
+<div id="log">Click a button…</div>
+<script>
+const log = document.getElementById('log');
+function out(msg) { log.textContent += '\n' + msg; console.log(msg); }
+function clear(title) { log.textContent = title; }
+
+/* ── 1: Web Audio beep ── */
+function testBeep() {
+  clear('--- WEB AUDIO BEEP ---');
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    ctx.resume().then(() => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = 520;
+      gain.gain.value     = 0.4;
+      osc.start();
+      setTimeout(() => { osc.stop(); out('Beep should have played for 0.6s'); }, 600);
+      out('AudioContext state: ' + ctx.state);
+      out('Playing 520 Hz tone…');
+    }).catch(e => out('resume() failed: ' + e));
+  } catch(e) { out('Error: ' + e); }
+}
+
+/* ── 2: List voices ── */
+function testVoices() {
+  clear('--- VOICES ---');
+  const voices = window.speechSynthesis.getVoices();
+  out('Total voices: ' + voices.length);
+  if (!voices.length) {
+    out('No voices yet — waiting for voiceschanged event…');
+    window.speechSynthesis.onvoiceschanged = () => {
+      const v2 = window.speechSynthesis.getVoices();
+      out('After voiceschanged — total: ' + v2.length);
+      v2.forEach((v, i) => out(i + ': [' + v.lang + '] ' + v.name + (v.localService ? ' (local)' : ' (remote)')));
+    };
+  } else {
+    voices.forEach((v, i) => out(i + ': [' + v.lang + '] ' + v.name + (v.localService ? ' (local)' : ' (remote)')));
+  }
+}
+
+/* ── 3: Speak with best-guess voice ── */
+function testTTS() {
+  clear('--- TTS SPEAK TEST ---');
+  const synth  = window.speechSynthesis;
+  const voices = synth.getVoices();
+  out('Voices available: ' + voices.length);
+
+  const voice = voices.find(v => v.lang === 'en-GB' && v.localService)
+             || voices.find(v => v.lang.startsWith('en') && v.localService)
+             || voices.find(v => v.lang.startsWith('en'))
+             || voices[0];
+
+  out('Chosen voice: ' + (voice ? voice.name + ' / ' + voice.lang : 'none (browser default)'));
+
+  synth.cancel();
+  setTimeout(() => {
+    const u   = new SpeechSynthesisUtterance('Hello, can you hear me?');
+    u.rate    = 0.9;
+    u.volume  = 1;
+    if (voice) u.voice = voice;
+    u.onstart = () => out('✅ onstart — audio is playing');
+    u.onend   = () => out('✅ onend   — finished');
+    u.onerror = e  => out('❌ onerror: ' + e.error);
+    out('synth.speak() called…');
+    synth.speak(u);
+    setTimeout(() => {
+      out('500ms later — speaking: ' + synth.speaking + '  paused: ' + synth.paused);
+    }, 500);
+  }, 300);
+}
+
+/* ── 4: Try every voice ── */
+let voiceQueue = [], voiceIndex = 0;
+function testEachVoice() {
+  clear('--- TESTING EVERY VOICE ---');
+  voiceQueue = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+  out('Testing ' + voiceQueue.length + ' English voices…');
+  voiceIndex = 0;
+  tryNextVoice();
+}
+function tryNextVoice() {
+  if (voiceIndex >= voiceQueue.length) { out('\nAll voices tried.'); return; }
+  const synth = window.speechSynthesis;
+  const voice = voiceQueue[voiceIndex++];
+  out('\nTrying: ' + voice.name);
+  synth.cancel();
+  setTimeout(() => {
+    const u   = new SpeechSynthesisUtterance('Test');
+    u.voice   = voice;
+    u.rate    = 1.5;
+    u.volume  = 1;
+    u.onstart = () => out('  ✅ ' + voice.name + ' WORKS');
+    u.onend   = () => { out('  done'); tryNextVoice(); };
+    u.onerror = e  => { out('  ❌ error: ' + e.error); tryNextVoice(); };
+    synth.speak(u);
+  }, 300);
+}
+</script>
+</body>
+</html>

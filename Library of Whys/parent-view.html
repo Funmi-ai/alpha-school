@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent View — Why's That?</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: #f4f4f7;
+      color: #1a1a2e;
+      min-height: 100vh;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .back-link {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: #fff; }
+    .header-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      flex: 1;
+    }
+    .header-sub { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+
+    /* ── Layout ── */
+    .page-body {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ── Section labels ── */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6b7280;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #9ca3af;
+    }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+    .empty-state p { font-size: 0.95rem; line-height: 1.6; }
+
+    /* ── Date group ── */
+    .date-group { margin-bottom: 1.5rem; }
+    .date-group:last-child { margin-bottom: 0; }
+    .date-heading {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #6366f1;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .q-entry {
+      padding: 0.9rem 0;
+      border-bottom: 1px solid #f3f4f6;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+    .q-entry:last-child { border-bottom: none; padding-bottom: 0; }
+    .q-text {
+      font-weight: 700;
+      font-size: 0.97rem;
+      color: #1a1a2e;
+    }
+    .q-time { font-size: 0.72rem; color: #9ca3af; }
+    .q-answer {
+      font-size: 0.85rem;
+      color: #4b5563;
+      margin-top: 0.15rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── Generate section ── */
+    .generate-desc {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    .btn-generate {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.14s, transform 0.1s;
+    }
+    .btn-generate:hover:not(:disabled) { background: #4f46e5; }
+    .btn-generate:active:not(:disabled) { transform: scale(0.98); }
+    .btn-generate:disabled { opacity: 0.55; cursor: default; }
+    .btn-generate.loading::after {
+      content: ' ⟳';
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Lesson plan output ── */
+    .lesson-plan {
+      display: none;
+    }
+    .lesson-plan.visible { display: block; }
+    .lesson-plan-body {
+      white-space: pre-wrap;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: #374151;
+      border-left: 4px solid #6366f1;
+      padding-left: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .action-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .btn-action {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      border: 2px solid #e5e7eb;
+      background: #fff;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      color: #374151;
+      transition: all 0.12s;
+    }
+    .btn-action:hover { border-color: #6366f1; color: #6366f1; }
+    .btn-email {
+      background: #059669;
+      border-color: #059669;
+      color: #fff;
+    }
+    .btn-email:hover { background: #047857; border-color: #047857; color: #fff; }
+
+    /* ── Settings ── */
+    .settings-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .settings-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .settings-input {
+      padding: 0.6rem 0.85rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #1a1a2e;
+      background: #f9fafb;
+      transition: border-color 0.12s;
+    }
+    .settings-input:focus { outline: none; border-color: #6366f1; background: #fff; }
+    .settings-hint { font-size: 0.75rem; color: #9ca3af; }
+
+    /* ── Alert box ── */
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .alert.visible { display: block; }
+    .alert-warn { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+    .alert-info { background: #ede9fe; color: #5b21b6; border-left: 4px solid #6366f1; }
+
+    @media (max-width: 480px) {
+      .page-body { padding: 1.25rem 1rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="page-header">
+  <a href="why-library.html" class="back-link">← Back</a>
+  <div>
+    <div class="header-title">📊 Parent View</div>
+    <div class="header-sub">Why's That?</div>
+  </div>
+</header>
+
+<div class="page-body">
+
+  <!-- Questions log -->
+  <section>
+    <div class="section-label">Questions asked</div>
+    <div class="card" id="questions-card">
+      <div class="empty-state" id="empty-state">
+        <span class="empty-icon">🔭</span>
+        <p>No questions yet.<br>Start Alpha School and ask the first why.</p>
+      </div>
+      <div id="questions-list"></div>
+    </div>
+  </section>
+
+  <!-- Lesson plan generator -->
+  <section>
+    <div class="section-label">Lesson plan suggestions</div>
+    <div class="card">
+      <p class="generate-desc">Claude will look at every question asked and suggest lesson plans that follow your child's natural curiosity. Uses the same API key as Why's That?.</p>
+      <div id="no-key-alert" class="alert alert-warn">No API key found. Open Why's That? and save your key first.</div>
+      <div id="no-questions-alert" class="alert alert-info">No questions logged yet — ask a few questions in the Why's That? first.</div>
+      <button id="generate-btn" class="btn-generate" disabled>Generate lesson plan</button>
+
+      <div id="lesson-plan" class="lesson-plan" style="margin-top:1.25rem;">
+        <div id="lesson-plan-body" class="lesson-plan-body"></div>
+        <div class="action-row">
+          <button class="btn-action" id="copy-btn">📋 Copy</button>
+          <button class="btn-action btn-email" id="email-btn">✉️ Email summary</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section>
+    <div class="section-label">Settings</div>
+    <div class="card">
+      <div class="settings-row">
+        <label class="settings-label" for="parent-email">Your email address (for summaries)</label>
+        <input type="email" id="parent-email" class="settings-input" placeholder="your@email.com" />
+        <span class="settings-hint">Saved locally on this device only.</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+'use strict';
+
+const TTS_SERVER  = 'http://localhost:8081';
+const CLAUDE_API  = 'https://api.anthropic.com/v1/messages';
+const LESSON_MODEL = 'claude-sonnet-5';
+
+/* ── State ── */
+let allQuestions   = [];
+let lessonPlanText = '';
+
+/* ── Helpers ── */
+function getApiKey()    { return localStorage.getItem('why_api_key') || ''; }
+function getEmail()     { return localStorage.getItem('parent_email') || ''; }
+function saveEmail(v)   { localStorage.setItem('parent_email', v.trim()); }
+function getLocalLog()  { try { return JSON.parse(localStorage.getItem('why_questions_log') || '[]'); } catch { return []; } }
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+function fmtTime(iso) {
+  return new Date(iso).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+}
+
+/* ── Load questions ── */
+async function loadQuestions() {
+  try {
+    const res = await fetch(TTS_SERVER + '/questions');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.length) return data;
+    }
+  } catch {}
+  return getLocalLog();
+}
+
+/* ── Render questions ── */
+function renderQuestions(questions) {
+  const list = document.getElementById('questions-list');
+  const empty = document.getElementById('empty-state');
+
+  if (!questions.length) {
+    empty.style.display = 'block';
+    list.innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  /* group by date */
+  const groups = {};
+  questions.slice().reverse().forEach(q => {
+    const day = fmtDate(q.timestamp);
+    if (!groups[day]) groups[day] = [];
+    groups[day].push(q);
+  });
+
+  list.innerHTML = Object.entries(groups).map(([day, qs]) => `
+    <div class="date-group">
+      <div class="date-heading">${day}</div>
+      ${qs.map(q => `
+        <div class="q-entry">
+          <div class="q-text">${escHtml(q.question)}</div>
+          <div class="q-time">${fmtTime(q.timestamp)}</div>
+          ${q.answer ? `<div class="q-answer">${escHtml(q.answer)}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Update UI state ── */
+function updateUI() {
+  const hasKey       = !!getApiKey();
+  const hasQuestions = allQuestions.length > 0;
+  const noKeyAlert   = document.getElementById('no-key-alert');
+  const noQAlert     = document.getElementById('no-questions-alert');
+  const btn          = document.getElementById('generate-btn');
+
+  noKeyAlert.classList.toggle('visible', !hasKey);
+  noQAlert.classList.toggle('visible', hasKey && !hasQuestions);
+  btn.disabled = !hasKey || !hasQuestions;
+}
+
+/* ── Generate lesson plan ── */
+async function generateLessonPlan() {
+  const btn = document.getElementById('generate-btn');
+  const lp  = document.getElementById('lesson-plan');
+  const body = document.getElementById('lesson-plan-body');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = 'Generating...';
+  lp.classList.remove('visible');
+
+  const questionList = allQuestions
+    .slice(-50)  // cap at 50 most recent
+    .map((q, i) => `${i + 1}. "${q.question}"`)
+    .join('\n');
+
+  const systemPrompt = `You are an educational consultant helping parents create engaging lesson plans based on their child's natural curiosity. The child is aged 4-10 and uses an app called Why's That? to ask questions about the world.
+
+Your task: read the questions below and suggest 3-5 specific, actionable lesson plans that build directly on what the child is already curious about.
+
+For each lesson plan use this format:
+
+**[Title]**
+*Inspired by:* [the specific questions that connect to this]
+*Age range:* [e.g. 5–7]
+*Time needed:* [e.g. 30 minutes]
+
+What they'll learn:
+• [objective 1]
+• [objective 2]
+
+Try these:
+• [Specific activity with steps — household items only where possible]
+• [Specific activity with steps]
+• [Optional third activity]
+
+---
+
+After the 3-5 plans, add a short paragraph (2-3 sentences) noting any patterns or themes in the child's curiosity that parents might want to nurture further. Keep the tone warm and direct — written for a parent, not a teacher.`;
+
+  try {
+    const res = await fetch(CLAUDE_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type':                              'application/json',
+        'x-api-key':                                 getApiKey(),
+        'anthropic-version':                         '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model:      LESSON_MODEL,
+        max_tokens: 2000,
+        system:     systemPrompt,
+        messages:   [{ role: 'user', content: `Here are the questions asked:\n\n${questionList}` }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    lessonPlanText = data.content?.[0]?.text || '';
+    body.textContent = lessonPlanText;
+    lp.classList.add('visible');
+
+  } catch (e) {
+    body.textContent = 'Something went wrong: ' + e.message;
+    lp.classList.add('visible');
+  }
+
+  btn.classList.remove('loading');
+  btn.textContent = 'Regenerate lesson plan';
+  btn.disabled = false;
+}
+
+/* ── Copy ── */
+document.getElementById('copy-btn').addEventListener('click', async () => {
+  if (!lessonPlanText) return;
+  try {
+    await navigator.clipboard.writeText(lessonPlanText);
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy', 2000);
+  } catch {}
+});
+
+/* ── Email ── */
+document.getElementById('email-btn').addEventListener('click', () => {
+  if (!lessonPlanText) return;
+  const email   = getEmail();
+  const subject = encodeURIComponent("Lesson Plan — Why's That?");
+  const dates   = allQuestions.length
+    ? `Questions from: ${fmtDate(allQuestions[0].timestamp)} – ${fmtDate(allQuestions[allQuestions.length - 1].timestamp)}\n\n`
+    : '';
+  const body    = encodeURIComponent(dates + lessonPlanText);
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+});
+
+/* ── Parent email setting ── */
+const emailInput = document.getElementById('parent-email');
+emailInput.value = getEmail();
+emailInput.addEventListener('change', () => saveEmail(emailInput.value));
+
+/* ── Generate button ── */
+document.getElementById('generate-btn').addEventListener('click', generateLessonPlan);
+
+/* ── Init ── */
+async function init() {
+  allQuestions = await loadQuestions();
+  renderQuestions(allQuestions);
+  updateUI();
+}
+
+init();
+</script>
+</body>
+</html>
