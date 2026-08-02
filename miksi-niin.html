@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Kysy miksi — rehelliset, selkeät vastaukset uteliaille lapsille, luetaan ääneen.">
+  <title>Miksi niin?</title>
+  <style>
+    :root {
+      --bg:      #080613;
+      --surface: #110B2A;
+      --p:       #7C3AED;
+      --pl:      #A78BFA;
+      --amber:   #F59E0B;
+      --al:      #FCD34D;
+      --text:    #F1EEFF;
+      --muted:   #8B80B8;
+      --r:       18px;
+      --f:       -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+
+    body {
+      font-family: var(--f);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      background-image:
+        radial-gradient(1.5px 1.5px at  7% 12%, rgba(255,255,255,.55) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 19% 68%, rgba(255,255,255,.35) 0%, transparent 100%),
+        radial-gradient(2px   2px   at 31%  7%, rgba(255,255,255,.4)  0%, transparent 100%),
+        radial-gradient(1px   1px   at 43% 54%, rgba(255,255,255,.3)  0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 56% 29%, rgba(255,255,255,.45) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 66% 79%, rgba(255,255,255,.35) 0%, transparent 100%),
+        radial-gradient(2px   2px   at 73% 19%, rgba(255,255,255,.25) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 81% 59%, rgba(255,255,255,.4)  0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 89% 41%, rgba(255,255,255,.55) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 94% 87%, rgba(255,255,255,.35) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 24% 91%, rgba(255,255,255,.3)  0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 49% 74%, rgba(255,255,255,.25) 0%, transparent 100%),
+        radial-gradient(1px   1px   at 11% 44%, rgba(255,255,255,.2)  0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 37% 34%, rgba(255,255,255,.3)  0%, transparent 100%),
+        radial-gradient(1px   1px   at 63% 11%, rgba(255,255,255,.4)  0%, transparent 100%),
+        radial-gradient(1px   1px   at 77% 84%, rgba(255,255,255,.25) 0%, transparent 100%);
+    }
+
+    .screen {
+      position: relative; z-index: 1;
+      min-height: 100dvh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 28px 20px;
+    }
+    .screen.hidden { display: none; }
+
+    /* ── SETUP ── */
+    .setup-card {
+      background: var(--surface);
+      border: 1px solid rgba(167,139,250,.2);
+      border-radius: var(--r);
+      padding: 44px 36px;
+      max-width: 460px; width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 20px; text-align: center;
+    }
+
+    .setup-emoji { font-size: 2.8rem; }
+
+    .setup-card h1 {
+      font-size: 1.85rem; font-weight: 800;
+      color: var(--al); line-height: 1.2;
+    }
+
+    .setup-intro {
+      font-size: 0.88rem; color: var(--muted); line-height: 1.75;
+    }
+
+    .steps {
+      width: 100%;
+      display: flex; flex-direction: column; gap: 8px;
+      text-align: left;
+    }
+
+    .step {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(167,139,250,.12);
+      border-radius: 12px; padding: 12px 14px;
+    }
+
+    .step-n {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--p); color: #fff;
+      font-weight: 800; font-size: 0.75rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+
+    .step-body { display: flex; flex-direction: column; gap: 3px; }
+    .step-title { font-size: 0.88rem; font-weight: 700; }
+    .step-hint  { font-size: 0.75rem; color: var(--muted); font-family: monospace; }
+    .step-link  { font-size: 0.78rem; color: var(--pl); text-decoration: none; font-weight: 600; }
+    .step-link:hover { text-decoration: underline; }
+
+    .key-input {
+      width: 100%;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px; padding: 14px 16px;
+      color: var(--text); font-size: 1rem; font-family: monospace;
+      outline: none; transition: border-color .2s;
+    }
+    .key-input:focus { border-color: var(--pl); }
+    .key-input::placeholder { color: var(--muted); }
+
+    .btn-primary {
+      width: 100%; background: var(--p); color: #fff;
+      border: none; border-radius: 50px;
+      padding: 14px; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; font-family: var(--f);
+      transition: background .15s, transform .1s;
+    }
+    .btn-primary:hover { background: var(--pl); transform: translateY(-1px); }
+
+    .privacy { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── APP VIEWS ── */
+    .view {
+      min-height: 100dvh; width: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 36px 24px; text-align: center; gap: 18px;
+    }
+    .view.hidden { display: none; }
+
+    .title {
+      font-size: 2.1rem; font-weight: 800;
+      color: var(--al); letter-spacing: -0.01em;
+    }
+
+    .sub { font-size: 1rem; color: var(--muted); }
+
+    .mic-btn {
+      width: 104px; height: 104px; border-radius: 50%;
+      background: var(--p); border: none;
+      font-size: 2.5rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .15s, background .15s;
+    }
+    .mic-btn:hover { transform: scale(1.06); background: var(--pl); }
+    .mic-btn.listening {
+      background: #EF4444;
+      animation: mic-pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes mic-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,.45); }
+      50%      { box-shadow: 0 0 0 18px rgba(239,68,68,0); }
+    }
+
+    .hint { font-size: 0.82rem; color: var(--muted); }
+
+    .btn-ghost {
+      background: none;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 50px; color: var(--muted);
+      padding: 9px 22px; font-size: 0.85rem;
+      cursor: pointer; font-family: var(--f);
+      transition: border-color .15s, color .15s;
+    }
+    .btn-ghost:hover { border-color: var(--pl); color: var(--text); }
+
+    .type-area {
+      display: flex; gap: 8px;
+      width: 100%; max-width: 400px;
+    }
+    .type-area.hidden { display: none; }
+
+    .type-input {
+      flex: 1;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px; padding: 11px 14px;
+      color: var(--text); font-size: 0.95rem; font-family: var(--f);
+      outline: none; transition: border-color .2s;
+    }
+    .type-input:focus { border-color: var(--pl); }
+    .type-input::placeholder { color: var(--muted); }
+
+    .type-go {
+      background: var(--p); color: #fff; border: none;
+      border-radius: 12px; padding: 11px 18px;
+      font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; font-family: var(--f);
+      transition: background .15s; white-space: nowrap;
+    }
+    .type-go:hover { background: var(--pl); }
+
+    @keyframes text-pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+    .pulse-text { animation: text-pulse 1.6s ease-in-out infinite; }
+
+    .dots { display: flex; gap: 9px; }
+    .dot {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--pl);
+      animation: bounce .9s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: .18s; }
+    .dot:nth-child(3) { animation-delay: .36s; }
+    @keyframes bounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-15px); } }
+
+    .answer-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid rgba(167,139,250,.2);
+      border-radius: var(--r);
+      padding: 32px 28px;
+      max-width: 540px; width: 100%;
+      display: flex; flex-direction: column; gap: 16px;
+      overflow: hidden;
+      animation: card-in .4s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes card-in { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: none; } }
+
+    #canvas {
+      position: absolute; inset: 0;
+      pointer-events: none; border-radius: var(--r);
+    }
+
+    .ans-img {
+      width: 80px; height: 80px;
+      border-radius: 12px; object-fit: cover;
+      align-self: center; position: relative; z-index: 1;
+    }
+    .ans-img.hidden { display: none; }
+
+    .q-label {
+      font-size: 0.75rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .07em;
+      font-weight: 600; position: relative; z-index: 1;
+    }
+
+    .ans-text {
+      font-size: 1.05rem; line-height: 1.8;
+      color: var(--text); position: relative; z-index: 1;
+    }
+
+    .word {
+      display: inline-block; opacity: 0;
+      transform: translateY(6px);
+      animation: word-in .35s ease forwards;
+    }
+    @keyframes word-in { to { opacity:1; transform: none; } }
+
+    .activity-box {
+      background: rgba(245,158,11,.08);
+      border: 1px solid rgba(245,158,11,.25);
+      border-radius: 12px; padding: 13px 15px;
+      display: flex; flex-direction: column; gap: 6px;
+      position: relative; z-index: 1;
+    }
+    .activity-box.hidden { display: none; }
+    .act-label { font-size: 0.78rem; font-weight: 700; color: var(--amber); }
+    .act-text  { font-size: 0.88rem; line-height: 1.65; color: var(--text); }
+
+    .actions {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      position: relative; z-index: 1;
+    }
+
+    .btn-action-ghost {
+      flex: 1; min-width: 100px;
+      background: none;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 50px; color: var(--muted);
+      padding: 10px 16px; font-size: 0.88rem;
+      cursor: pointer; font-family: var(--f);
+      transition: border-color .15s, color .15s;
+    }
+    .btn-action-ghost:hover { border-color: var(--pl); color: var(--text); }
+
+    .btn-action-primary {
+      flex: 2; min-width: 140px;
+      background: var(--p); color: #fff; border: none;
+      border-radius: 50px; padding: 10px 20px;
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; font-family: var(--f);
+      transition: background .15s;
+    }
+    .btn-action-primary:hover { background: var(--pl); }
+
+    .error-card {
+      background: var(--surface);
+      border: 1px solid rgba(239,68,68,.3);
+      border-radius: var(--r); padding: 36px;
+      max-width: 360px; width: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 14px; text-align: center;
+    }
+    .error-card > span { font-size: 2.5rem; }
+    .error-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.65; }
+
+    .for-parents-link {
+      margin-top: 8px;
+      font-size: 0.8rem; color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(139,128,184,.35);
+      padding-bottom: 1px;
+      transition: color .15s, border-color .15s;
+    }
+    .for-parents-link:hover { color: var(--pl); border-color: var(--pl); }
+
+    .reset-btn {
+      position: fixed; bottom: 20px; right: 20px;
+      background: none; border: none;
+      font-size: 1.2rem; cursor: pointer;
+      opacity: 0.2; transition: opacity .15s; z-index: 10;
+    }
+    .reset-btn:hover { opacity: 0.55; }
+
+    @media (max-width: 480px) {
+      .setup-card { padding: 32px 20px; }
+      .setup-card h1 { font-size: 1.55rem; }
+      .answer-card { padding: 24px 18px; }
+      .title { font-size: 1.7rem; }
+      .mic-btn { width: 90px; height: 90px; font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ASENNUS -->
+  <div id="setup" class="screen">
+    <div class="setup-card">
+      <div class="setup-emoji">🔭</div>
+      <h1>Miksi niin?</h1>
+      <p class="setup-intro">Paikka, jossa uteliaat lapset saavat rehellisiä ja selkeitä vastauksia — luetaan ääneen, jotta pienetkin lukijat voivat tutkia itsenäisesti. Toimii Claude AI:lla. Tarvitset ilmaisen API-avaimen aloittaaksesi.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Luo Anthropic-tili</div>
+            <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" class="step-link">console.anthropic.com ↗</a>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Hanki API-avaimesi</div>
+            <div class="step-hint">API Keys → Create Key → Copy</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Liitä se alle — siinä kaikki</div>
+          </div>
+        </div>
+      </div>
+
+      <input id="key-input" class="key-input" type="password" placeholder="sk-ant-…" autocomplete="off" />
+      <button id="key-btn" class="btn-primary">Aloita kysyminen →</button>
+      <p class="privacy">🔒 Tallennettu vain tälle laitteelle — ei koskaan lähetetä meille tai kenellekään muulle.</p>
+    </div>
+  </div>
+
+  <!-- SOVELLUS -->
+  <div id="app" class="screen hidden">
+
+    <!-- odotus -->
+    <div id="idle" class="view">
+      <h1 class="title">Miksi niin?</h1>
+      <p class="sub">Mistä olet utelias?</p>
+      <button id="mic-btn" class="mic-btn">🎙️</button>
+      <p class="hint">Napauta ja kysy miksi</p>
+      <button id="type-btn" class="btn-ghost">Kirjoita sen sijaan</button>
+      <div id="type-area" class="type-area hidden">
+        <input id="type-in" class="type-input" type="text" placeholder="Kirjoita kysymyksesi tähän…" />
+        <button id="type-go" class="type-go">Kysy</button>
+      </div>
+      <a href="vanhemmille.html" class="for-parents-link">Vanhemmille →</a>
+    </div>
+
+    <!-- kuuntelu -->
+    <div id="listening" class="view hidden">
+      <h1 class="title">Miksi niin?</h1>
+      <button id="stop-btn" class="mic-btn listening">🎙️</button>
+      <p class="sub pulse-text">Kuuntelen…</p>
+    </div>
+
+    <!-- lataus -->
+    <div id="loading" class="view hidden">
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <p class="sub">Haen vastaustasi…</p>
+    </div>
+
+    <!-- vastaus -->
+    <div id="answer" class="view hidden">
+      <div class="answer-card">
+        <canvas id="canvas"></canvas>
+        <img id="ans-img" class="ans-img hidden" alt="" />
+        <p class="q-label" id="q-text"></p>
+        <div class="ans-text" id="ans-body" aria-live="polite"></div>
+        <div id="activity-box" class="activity-box hidden">
+          <span class="act-label">🧪 Kokeile tätä</span>
+          <p id="act-text" class="act-text"></p>
+        </div>
+        <div class="actions">
+          <button id="replay" class="btn-action-ghost">🔊 Kuuntele uudelleen</button>
+          <button id="again" class="btn-action-primary">Kysy toinen miksi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- virhe -->
+    <div id="error" class="view hidden">
+      <div class="error-card">
+        <span>😕</span>
+        <p id="err-msg">Jotain meni pieleen. Yritä uudelleen.</p>
+        <button id="retry" class="btn-primary" style="width:auto;padding:12px 32px;">Yritä uudelleen</button>
+      </div>
+    </div>
+
+    <button id="reset-btn" class="reset-btn" title="Nollaa API-avain">⚙️</button>
+  </div>
+
+  <script>
+  'use strict';
+
+  const SYSTEM_PROMPT = `Olet Miksi niin? — paikka, jossa 4–10-vuotiaat lapset saavat rehellisiä ja selkeitä vastauksia maailmasta.
+
+Sinun TÄYTYY vastata pelkällä raw valid JSON:lla — ei markdownia, ei koodiesteitä, ei ylimääräistä tekstiä. Käytä täsmälleen tätä muotoa:
+{"answer": "Vastauksesi tässä.", "imageKeyword": "wikipedia-artikkelin otsikko englanniksi", "activity": "Aktiviteettisi tässä."}
+
+Säännöt 'answer'-kentälle:
+1. Vastaa vain kysymyksiin luonnosta, eläimistä, ihmiskehosta, avaruudesta, ruoasta, säästä, maantieteestä, historiasta tai siitä, miten maailman asiat toimivat.
+2. Jos kysymys on näiden aiheiden ulkopuolella, aseta answer: "Osaan kertoa vain siitä, miten maailma toimii. Kokeile kysyä, miksi taivas on sininen tai miten kalat hengittävät vedessä — ne ovat hyviä kysymyksiä." ja aseta imageKeyword: "library" ja activity: "".
+3. Enintään 3–5 lausetta.
+4. Käytä yksinkertaista ja elävää kieltä. Jos käytät vaikean sanan, selitä se heti samassa virkkeessä. Käytä vertailuja asioihin, jotka lapsi jo tuntee — kuten magneetteihin, siihen miltä vesi tuntuu tai miltä ruoka maistuu.
+5. ÄLÄ aloita "Hyvä kysymys!" tai muulla kehumisella. Aloita suoraan vastauksella.
+6. ÄLÄ ole holhoava. Puhut uteliaalle, kyvykkäälle henkilölle, joka ei vain ole vielä kohdannut tätä tietoa.
+7. Jos tiede ei täysin tunne vastausta, sano se yksinkertaisesti ja rehellisesti.
+8. Lopeta yhdellä lyhyellä lauseella, joka avaa uuden uteliaisuuden oven.
+
+Säännöt 'imageKeyword'-kentälle:
+- Yksi englanninkielinen substantiivi tai lyhyt lause (enintään 2–3 sanaa)
+- Vastauksen pääasiallinen konkreettinen aihe — jolla on selkeä visuaalinen Wikipedia-artikkeli
+- Esimerkkejä: "photosynthesis", "blue whale", "solar system", "rainbow", "volcano", "honey bee"
+
+Säännöt 'activity'-kentälle:
+- Yksi käytännön aktiviteetti, jonka lapsi voi tehdä heti kotoa löytyvillä tarvikkeilla
+- 1–2 lausetta. Aloita toimintaverbillä. Ole tarkka vaiheista.
+- Aktiviteetin täytyy suoraan havainnollistaa vastauksessa olevaa tiedettä.
+- Sen täytyy olla täysin turvallinen lapselle.
+- Jos aiheelle ei ole sopivaa aktiviteettia, aseta activity: "".`;
+
+  const MODEL   = 'claude-haiku-4-5-20251001';
+  const API_URL = 'https://api.anthropic.com/v1/messages';
+  const WIKI    = 'https://en.wikipedia.org/api/rest_v1/page/summary/';
+
+  let question = '';
+  let answer   = '';
+  let recog    = null;
+  const synth  = window.speechSynthesis;
+
+  const $ = id => document.getElementById(id);
+
+  /* separate storage keys so Finnish and English never clash */
+  const getKey   = ()  => localStorage.getItem('why_api_key') || '';
+  const saveKey  = k   => localStorage.setItem('why_api_key', k.trim());
+  const clearKey = ()  => localStorage.removeItem('why_api_key');
+
+  const ck        = q => 'miksi_q_' + q.toLowerCase().trim().replace(/\s+/g, ' ');
+  const getCached = q => { try { const r = localStorage.getItem(ck(q)); return r ? JSON.parse(r) : null; } catch { return null; } };
+  const setCached = (q, d) => { try { localStorage.setItem(ck(q), JSON.stringify(d)); } catch {} };
+
+  function showView(id) {
+    ['idle','listening','loading','answer','error'].forEach(v => $(v).classList.toggle('hidden', v !== id));
+  }
+
+  /* ── TTS — Finnish voice ── */
+  function getVoices() {
+    return new Promise(resolve => {
+      const v = synth.getVoices();
+      if (v.length) { resolve(v); return; }
+      const h = () => resolve(synth.getVoices());
+      synth.addEventListener('voiceschanged', h, { once: true });
+      setTimeout(() => { synth.removeEventListener('voiceschanged', h); resolve(synth.getVoices()); }, 600);
+    });
+  }
+
+  async function speak(text, onEnd) {
+    if (!synth) { if (onEnd) onEnd(); return; }
+    synth.cancel();
+    const voices = await getVoices();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'fi-FI';
+    utt.rate = 0.88;
+    const v = voices.find(v => v.lang.startsWith('fi') && !v.name.includes('Compact'))
+           || voices.find(v => v.lang.startsWith('fi'))
+           || voices.find(v => v.lang.startsWith('en-GB'))
+           || voices.find(v => v.lang.startsWith('en'));
+    if (v) utt.voice = v;
+    utt.onend  = () => { if (onEnd) onEnd(); };
+    utt.onerror = () => { if (onEnd) onEnd(); };
+    synth.speak(utt);
+  }
+
+  /* ── ASENNUS ── */
+  function initApp() {
+    if (!getKey()) {
+      $('setup').classList.remove('hidden');
+      $('app').classList.add('hidden');
+    } else {
+      $('setup').classList.add('hidden');
+      $('app').classList.remove('hidden');
+      showView('idle');
+    }
+  }
+
+  $('key-btn').addEventListener('click', () => {
+    const k = $('key-input').value.trim();
+    if (!k.startsWith('sk-ant-')) {
+      alert('Avain ei näytä oikealta — sen pitäisi alkaa sk-ant-');
+      return;
+    }
+    saveKey(k);
+    initApp();
+  });
+
+  $('key-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('key-btn').click(); });
+
+  $('reset-btn').addEventListener('click', () => {
+    if (confirm('Nollataanko API-avain? Sinun täytyy syöttää se uudelleen.')) {
+      clearKey();
+      synth.cancel();
+      initApp();
+    }
+  });
+
+  /* ── PUHEENTUNNISTUS ── */
+  function startListening() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      showError('Puheentunnistus ei toimi tässä selaimessa. Käytä "Kirjoita sen sijaan" -vaihtoehtoa tai avaa Chrome.');
+      return;
+    }
+    showView('listening');
+    recog = new SR();
+    recog.lang           = 'fi-FI';
+    recog.interimResults = false;
+    recog.continuous     = true;
+
+    let doneTimer = null;
+    let pending   = '';
+
+    recog.onresult = e => {
+      const last = e.results[e.results.length - 1];
+      if (!last.isFinal) return;
+      const text = last[0].transcript.trim();
+      if (!text) return;
+      pending = text;
+      clearTimeout(doneTimer);
+      doneTimer = setTimeout(() => {
+        question = pending;
+        try { recog.stop(); } catch {}
+        fetchAnswer();
+      }, 1500);
+    };
+
+    recog.onerror = e => {
+      clearTimeout(doneTimer);
+      if (e.error === 'no-speech') { /* jatkuu — onend käynnistää uudelleen */ }
+      else if (e.error === 'aborted') { showView('idle'); }
+      else { showError('En kuullut selvästi. Yritä uudelleen tai kirjoita kysymys.'); }
+    };
+
+    recog.onend = () => {
+      clearTimeout(doneTimer);
+      if (!$('listening').classList.contains('hidden')) startListening();
+    };
+
+    recog.start();
+  }
+
+  $('mic-btn').addEventListener('click', startListening);
+
+  $('stop-btn').addEventListener('click', () => {
+    if (recog) { recog.stop(); recog = null; }
+    showView('idle');
+  });
+
+  $('type-btn').addEventListener('click', () => {
+    $('type-area').classList.toggle('hidden');
+    if (!$('type-area').classList.contains('hidden')) $('type-in').focus();
+  });
+
+  function submitTyped() {
+    const text = $('type-in').value.trim();
+    if (!text) return;
+    question = text;
+    $('type-in').value = '';
+    $('type-area').classList.add('hidden');
+    fetchAnswer();
+  }
+
+  $('type-go').addEventListener('click', submitTyped);
+  $('type-in').addEventListener('keydown', e => { if (e.key === 'Enter') submitTyped(); });
+
+  /* ── WIKIPEDIA-KUVA ── */
+  async function fetchWikiImage(keyword) {
+    const tryTerm = async term => {
+      try {
+        const res = await fetch(WIKI + encodeURIComponent(term), {
+          headers: { 'Api-User-Agent': 'MiksiNiin/1.0 (educational child app)' }
+        });
+        if (!res.ok) return null;
+        const d = await res.json();
+        return d?.thumbnail?.source || null;
+      } catch { return null; }
+    };
+    return (await tryTerm(keyword)) || (await tryTerm(keyword.split(' ')[0])) || null;
+  }
+
+  /* ── API ── */
+  async function fetchAnswer() {
+    const cached = getCached(question);
+    if (cached) { showAnswer(cached.answer, cached.imageUrl, cached.imageKeyword, cached.activity || ''); return; }
+
+    showView('loading');
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type':                              'application/json',
+          'x-api-key':                                 getKey(),
+          'anthropic-version':                         '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model:      MODEL,
+          max_tokens: 400,
+          system:     SYSTEM_PROMPT,
+          messages:   [{ role: 'user', content: question }]
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        if (res.status === 401) throw new Error('API-avainta ei tunnistettu. Tarkista se asetuksista (⚙️).');
+        throw new Error(errData?.error?.message || `HTTP ${res.status}`);
+      }
+
+      const data   = await res.json();
+      const raw    = data.content?.[0]?.text || '';
+      const parsed = parseResponse(raw);
+      const imgUrl = parsed.imageKeyword ? await fetchWikiImage(parsed.imageKeyword) : null;
+
+      const entry = {
+        answer:       parsed.answer,
+        imageKeyword: parsed.imageKeyword,
+        activity:     parsed.activity || '',
+        imageUrl:     imgUrl
+      };
+      setCached(question, entry);
+
+      try {
+        const log = JSON.parse(localStorage.getItem('miksi_questions_log') || '[]');
+        log.push({ timestamp: new Date().toISOString(), question, answer: parsed.answer, activity: parsed.activity || '', imageKeyword: parsed.imageKeyword || '' });
+        localStorage.setItem('miksi_questions_log', JSON.stringify(log));
+      } catch {}
+
+      showAnswer(parsed.answer, imgUrl, parsed.imageKeyword, parsed.activity || '');
+
+    } catch (err) {
+      console.error('[Miksi niin?]', err);
+      showError(err.message || 'Vastausta ei saatu. Tarkista yhteys ja yritä uudelleen.');
+    }
+  }
+
+  function parseResponse(raw) {
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+    try { const o = JSON.parse(cleaned); if (o.answer) return o; } catch {}
+    return { answer: raw, imageKeyword: null, activity: '' };
+  }
+
+  /* ── PARTIKKELIT ── */
+  let particleRAF = null;
+
+  function stopParticles() {
+    if (particleRAF) { cancelAnimationFrame(particleRAF); particleRAF = null; }
+    const c = $('canvas');
+    if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
+  }
+
+  function getCategory(kw) {
+    const k = (kw || '').toLowerCase();
+    if (/space|star|planet|moon|solar|galaxy|universe|comet|meteor|orbit|nebula/.test(k)) return 'space';
+    if (/rain|cloud|storm|lightning|thunder|snow|ice|wind|weather|tornado|hurricane|rainbow/.test(k)) return 'weather';
+    if (/ocean|sea|wave|fish|whale|shark|dolphin|coral|underwater|tide|reef/.test(k)) return 'ocean';
+    if (/fire|volcano|lava|magma|flame|combustion|explosion/.test(k)) return 'fire';
+    if (/tree|leaf|plant|flower|forest|jungle|nature|grass|pollen|photosynthesis|seed|animal|bird|bee|butterfly|insect|dinosaur|lion|tiger|elephant|reptile|bacteria|cell/.test(k)) return 'nature';
+    return 'sparkle';
+  }
+
+  function buildParticles(cat, w, h) {
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const ps  = [];
+    if (cat === 'space') {
+      for (let i = 0; i < 50; i++) ps.push({
+        x: rnd(0,w), y: rnd(0,h), vx: rnd(-.06,.06), vy: rnd(-.04,.04), r: rnd(.8,2.2), ph: rnd(0,Math.PI*2),
+        tick(w,h){ this.x=(this.x+this.vx+w)%w; this.y=(this.y+this.vy+h)%h; this.ph+=.035; },
+        draw(c){ c.beginPath(); c.arc(this.x,this.y,this.r,0,Math.PI*2); c.fillStyle=`rgba(255,255,255,${.3+.45*Math.sin(this.ph)})`; c.fill(); }
+      });
+    } else if (cat === 'weather') {
+      for (let i = 0; i < 38; i++) ps.push({
+        x: rnd(0,w), y: rnd(0,h), vx: rnd(.4,.9), vy: rnd(4,9), len: rnd(8,18), a: rnd(.15,.4),
+        tick(w,h){ this.x+=this.vx; this.y+=this.vy; if(this.y>h){this.y=-this.len; this.x=rnd(0,w);} },
+        draw(c){ c.beginPath(); c.moveTo(this.x,this.y); c.lineTo(this.x-this.vx*1.5,this.y-this.len); c.strokeStyle=`rgba(160,210,255,${this.a})`; c.lineWidth=1.2; c.stroke(); }
+      });
+    } else if (cat === 'ocean') {
+      for (let i = 0; i < 32; i++) ps.push({
+        x: rnd(0,w), y: rnd(0,h), vy: rnd(.4,1.4), r: rnd(2,7), a: rnd(.12,.38),
+        tick(w,h){ this.y-=this.vy; this.a-=.0015; if(this.y<-10||this.a<=0){this.y=h+rnd(0,20); this.x=rnd(0,w); this.a=rnd(.12,.38);} },
+        draw(c){ c.beginPath(); c.arc(this.x,this.y,this.r,0,Math.PI*2); c.strokeStyle=`rgba(100,200,255,${this.a})`; c.lineWidth=1.5; c.stroke(); }
+      });
+    } else if (cat === 'fire') {
+      for (let i = 0; i < 45; i++) ps.push({
+        x: rnd(0,w), y: rnd(h*.5,h), vx: rnd(-.4,.4), vy: rnd(1.5,3.5), r: rnd(2,5), life: rnd(0,1), decay: rnd(.008,.02), hue: rnd(10,45),
+        tick(w,h){ this.x+=this.vx+Math.sin(this.life*3)*.4; this.y-=this.vy; this.life-=this.decay; this.r*=.997;
+          if(this.life<=0||this.y<0){this.x=rnd(0,w); this.y=rnd(h*.55,h); this.life=rnd(.5,1); this.r=rnd(2,5);} },
+        draw(c){ c.beginPath(); c.arc(this.x,this.y,this.r,0,Math.PI*2); c.fillStyle=`hsla(${this.hue},90%,58%,${this.life*.65})`; c.fill(); }
+      });
+    } else if (cat === 'nature') {
+      for (let i = 0; i < 28; i++) ps.push({
+        x: rnd(0,w), y: rnd(0,h), vx: rnd(-.25,.25), vy: rnd(.25,.7), ang: rnd(0,Math.PI*2), spin: rnd(-.02,.02), sw: rnd(5,10), sh: rnd(2.5,5), a: rnd(.2,.45), hue: rnd(90,145),
+        tick(w,h){ this.x+=this.vx+Math.sin(this.ang)*.25; this.y+=this.vy; this.ang+=this.spin; if(this.y>h+10){this.y=-10; this.x=rnd(0,w);} },
+        draw(c){ c.save(); c.translate(this.x,this.y); c.rotate(this.ang); c.beginPath(); c.ellipse(0,0,this.sw,this.sh,0,0,Math.PI*2); c.fillStyle=`hsla(${this.hue},65%,42%,${this.a})`; c.fill(); c.restore(); }
+      });
+    } else {
+      for (let i = 0; i < 38; i++) ps.push({
+        x: rnd(0,w), y: rnd(0,h), vx: rnd(-.18,.18), vy: rnd(.2,.55), r: rnd(1,2.4), ph: rnd(0,Math.PI*2), hue: rnd(265,310),
+        tick(w,h){ this.x+=this.vx; this.y-=this.vy; this.ph+=.055; if(this.y<-5){this.y=h+5; this.x=rnd(0,w);} },
+        draw(c){ c.beginPath(); c.arc(this.x,this.y,this.r,0,Math.PI*2); c.fillStyle=`hsla(${this.hue},80%,72%,${.25+.45*Math.abs(Math.sin(this.ph))})`; c.fill(); }
+      });
+    }
+    return ps;
+  }
+
+  function startParticles(keyword) {
+    stopParticles();
+    const canvas = $('canvas');
+    if (!canvas) return;
+    const card = canvas.parentElement;
+    canvas.width  = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+    const ctx = canvas.getContext('2d');
+    const ps  = buildParticles(getCategory(keyword), canvas.width, canvas.height);
+    (function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ps.forEach(p => { p.tick(canvas.width, canvas.height); p.draw(ctx); });
+      particleRAF = requestAnimationFrame(loop);
+    })();
+  }
+
+  /* ── NÄYTÄ VASTAUS ── */
+  function showAnswer(ansText, imageUrl, imageKeyword, activity) {
+    answer = ansText;
+    showView('answer');
+    $('q-text').textContent = question;
+
+    startParticles(imageKeyword);
+
+    const img = $('ans-img');
+    img.classList.add('hidden');
+    if (imageUrl) {
+      img.src    = imageUrl;
+      img.alt    = question;
+      img.onload  = () => img.classList.remove('hidden');
+      img.onerror = () => img.classList.add('hidden');
+    }
+
+    const el = $('ans-body');
+    el.innerHTML = '';
+    ansText.split(' ').forEach((word, i) => {
+      if (i > 0) el.appendChild(document.createTextNode(' '));
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.textContent = word;
+      span.style.animationDelay = `${i * 65}ms`;
+      el.appendChild(span);
+    });
+
+    const box = $('activity-box');
+    if (activity) {
+      $('act-text').textContent = activity;
+      box.classList.remove('hidden');
+    } else {
+      box.classList.add('hidden');
+    }
+
+    const shouldRetry = /voitko (toistaa|sanoa uudelleen)|sano uudelleen|en kuullut|yritä uudelleen|kerro uudelleen/i.test(ansText);
+    setTimeout(() => {
+      speak(ansText, () => {
+        if (activity) {
+          setTimeout(() => speak('Tässä on jotain kokeiltavaa. ' + activity, () => {
+            if (shouldRetry) setTimeout(startListening, 600);
+          }), 400);
+        } else if (shouldRetry) {
+          setTimeout(startListening, 600);
+        }
+      });
+    }, 600);
+  }
+
+  $('replay').addEventListener('click', () => {
+    if (!answer) return;
+    synth.cancel();
+    setTimeout(() => speak(answer), 250);
+  });
+
+  $('again').addEventListener('click', () => {
+    synth.cancel();
+    stopParticles();
+    question = '';
+    answer   = '';
+    showView('idle');
+  });
+
+  /* ── VIRHE ── */
+  function showError(msg) {
+    $('err-msg').textContent = msg;
+    showView('error');
+  }
+
+  $('retry').addEventListener('click', () => {
+    synth.cancel();
+    question = '';
+    showView('idle');
+  });
+
+  /* ── KÄYNNISTYS ── */
+  document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
