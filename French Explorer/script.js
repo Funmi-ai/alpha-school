@@ -444,7 +444,7 @@ async function evaluateCardPronunciation(item, transcript) {
   }
 
   const apiKey = localStorage.getItem('why_api_key');
-  let result = { stars: 4, feedback: 'Magnifique! 🌟' };
+  let result = { stars: 3, feedback: 'Great try!' };
 
   if (apiKey) {
     try {
@@ -616,7 +616,7 @@ async function evaluatePronunciation(transcript) {
   const apiKey = localStorage.getItem('why_api_key');
 
   if (!apiKey) {
-    showPracticeResult(transcript, { stars: 4, feedback: 'Magnifique! Keep going! 🌟', tip: 'Practise a little every day — you\'ll be amazing.' });
+    showPracticeResult(transcript, { stars: 3, feedback: 'Great try — keep practising!', tip: 'Ask a parent to set up pronunciation feedback.' });
     return;
   }
 
@@ -1242,6 +1242,59 @@ function planetFloat(cls, char, fr, en, action) {
     </button>`;
 }
 
+function promptApiKey(onSave) {
+  if (document.getElementById('apikey-overlay')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'apikey-overlay';
+  overlay.className = 'apikey-overlay';
+  overlay.innerHTML = `
+    <div class="apikey-card" role="dialog" aria-label="Set up pronunciation feedback" aria-modal="true">
+      <div class="apikey-icon">🎙️</div>
+      <div class="apikey-title">Set up Parler</div>
+      <p class="apikey-body">
+        Parler uses AI to give your child personalised star ratings on their French pronunciation.<br><br>
+        You'll need a free API key from
+        <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>.
+        Create an account, go to API Keys, and paste it below.
+        Your key is saved only on this device.
+      </p>
+      <div class="apikey-input-row">
+        <input class="apikey-input" id="apikey-input" type="password"
+          placeholder="sk-ant-…" autocomplete="off" spellcheck="false" />
+        <button class="apikey-show" id="apikey-show">Show</button>
+      </div>
+      <button class="apikey-save" id="apikey-save">Save &amp; start Parler →</button>
+      <button class="apikey-cancel" id="apikey-cancel">Cancel</button>
+    </div>`;
+
+  const close = () => overlay.remove();
+
+  overlay.querySelector('#apikey-show').addEventListener('click', () => {
+    const inp = overlay.querySelector('#apikey-input');
+    const btn = overlay.querySelector('#apikey-show');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? 'Show' : 'Hide';
+  });
+
+  overlay.querySelector('#apikey-save').addEventListener('click', () => {
+    const key = overlay.querySelector('#apikey-input').value.trim();
+    if (!key) { overlay.querySelector('#apikey-input').focus(); return; }
+    localStorage.setItem('why_api_key', key);
+    close();
+    onSave();
+  });
+
+  overlay.querySelector('#apikey-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') overlay.querySelector('#apikey-save').click();
+  });
+
+  overlay.querySelector('#apikey-cancel').addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.querySelector('#apikey-input').focus());
+}
+
 function zoomIntoPlanet(btn, navigate) {
   const card = btn.closest('.planet-card');
   const grid = btn.closest('.planet-grid');
@@ -1799,7 +1852,11 @@ function handleClick(e) {
       setTimeout(() => btn.classList.remove('phonic-active'), 500);
       break;
     case 'open-practice':
-      zoomIntoPlanet(btn, renderPractice);
+      if (!localStorage.getItem('why_api_key')) {
+        promptApiKey(() => zoomIntoPlanet(btn, renderPractice));
+      } else {
+        zoomIntoPlanet(btn, renderPractice);
+      }
       break;
     case 'practice-listen':
       speak(state.practiceWords[state.practiceIdx].id);
