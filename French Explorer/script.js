@@ -141,6 +141,57 @@ const COLOURS = [
 ];
 
 /* ═══════════════════════════════════════════════════════════════
+   PHONICS DATA
+═══════════════════════════════════════════════════════════════ */
+
+const PHONICS_GROUPS = [
+  { id: 'vowels',    label: 'Voyelles',     colour: '#b91c1c' },
+  { id: 'combos',   label: 'Mélanges',     colour: '#1d4ed8' },
+  { id: 'nasal',    label: 'Sons Nasaux',  colour: '#6d28d9' },
+  { id: 'special',  label: 'Sons Spéciaux',colour: '#15803d' },
+  { id: 'syllables',label: 'Petits Mots',  colour: '#c2570e' },
+];
+
+const PHONICS = [
+  // Simple vowels
+  { group: 'vowels',    grapheme: 'a',    tts: 'a',    hint: 'ah',   ex: 'chat'     },
+  { group: 'vowels',    grapheme: 'e',    tts: 'e',    hint: 'uh',   ex: 'le'       },
+  { group: 'vowels',    grapheme: 'é',    tts: 'é',    hint: 'ay',   ex: 'été'      },
+  { group: 'vowels',    grapheme: 'è',    tts: 'è',    hint: 'eh',   ex: 'mère'     },
+  { group: 'vowels',    grapheme: 'i',    tts: 'i',    hint: 'ee',   ex: 'ami'      },
+  { group: 'vowels',    grapheme: 'o',    tts: 'o',    hint: 'oh',   ex: 'mot'      },
+  { group: 'vowels',    grapheme: 'u',    tts: 'u',    hint: 'ew',   ex: 'lune'     },
+  // Vowel combinations
+  { group: 'combos',    grapheme: 'ou',   tts: 'ou',   hint: 'oo',   ex: 'loup'     },
+  { group: 'combos',    grapheme: 'au',   tts: 'au',   hint: 'oh',   ex: 'bateau'   },
+  { group: 'combos',    grapheme: 'eau',  tts: 'eau',  hint: 'oh',   ex: 'eau'      },
+  { group: 'combos',    grapheme: 'eu',   tts: 'eu',   hint: 'uh',   ex: 'feu'      },
+  { group: 'combos',    grapheme: 'ai',   tts: 'ai',   hint: 'ay',   ex: 'maison'   },
+  { group: 'combos',    grapheme: 'oi',   tts: 'oi',   hint: 'wa',   ex: 'voiture'  },
+  // Nasal vowels
+  { group: 'nasal',     grapheme: 'an',   tts: 'an',   hint: 'ahn',  ex: 'enfant'   },
+  { group: 'nasal',     grapheme: 'en',   tts: 'en',   hint: 'ahn',  ex: 'enfant'   },
+  { group: 'nasal',     grapheme: 'in',   tts: 'in',   hint: 'an',   ex: 'lapin'    },
+  { group: 'nasal',     grapheme: 'on',   tts: 'on',   hint: 'ohn',  ex: 'lion'     },
+  { group: 'nasal',     grapheme: 'un',   tts: 'un',   hint: 'uhn',  ex: 'un'       },
+  // Special consonants (carrier syllable so TTS produces the right onset sound)
+  { group: 'special',   grapheme: 'ch',   tts: 'cha',  hint: 'sh',   ex: 'chat'     },
+  { group: 'special',   grapheme: 'j',    tts: 'ja',   hint: 'zh',   ex: 'jardin'   },
+  { group: 'special',   grapheme: 'gn',   tts: 'gna',  hint: 'ny',   ex: 'montagne' },
+  { group: 'special',   grapheme: 'qu',   tts: 'qua',  hint: 'k',    ex: 'quatre'   },
+  { group: 'special',   grapheme: 'r',    tts: 'ra',   hint: 'r',    ex: 'rouge'    },
+  { group: 'special',   grapheme: 'ç',    tts: 'ça',   hint: 's',    ex: 'garçon'   },
+  // Common short words children will decode in the vocabulary
+  { group: 'syllables', grapheme: 'le',   tts: 'le',   hint: 'luh',  ex: 'le chat'  },
+  { group: 'syllables', grapheme: 'la',   tts: 'la',   hint: 'lah',  ex: 'la vache' },
+  { group: 'syllables', grapheme: 'les',  tts: 'les',  hint: 'lay',  ex: 'les animaux' },
+  { group: 'syllables', grapheme: 'de',   tts: 'de',   hint: 'duh',  ex: 'camion de pompiers' },
+  { group: 'syllables', grapheme: 'du',   tts: 'du',   hint: 'dü',   ex: 'du lait'  },
+  { group: 'syllables', grapheme: 'une',  tts: 'une',  hint: 'ün',   ex: 'une vache' },
+  { group: 'syllables', grapheme: 'est',  tts: 'est',  hint: 'ay',   ex: "c'est"    },
+];
+
+/* ═══════════════════════════════════════════════════════════════
    CONFIG
 ═══════════════════════════════════════════════════════════════ */
 
@@ -1156,6 +1207,44 @@ function homeCatButtons() {
     </button>`;
 }
 
+function renderPhonics() {
+  cancelFrench();
+  cancelCardRecording();
+  state.screen = 'phonics';
+
+  const groupsHTML = PHONICS_GROUPS.map(g => {
+    const tiles = PHONICS.filter(p => p.group === g.id);
+    const tilesHTML = tiles.map(p => `
+      <button class="phonic-tile" data-action="play-phonic"
+        data-tts="${safeText(p.tts)}"
+        style="--tc:${g.colour}"
+        aria-label="${safeText(p.grapheme)}, sounds like ${safeText(p.hint)}, as in ${safeText(p.ex)}">
+        <span class="phonic-grapheme">${safeText(p.grapheme)}</span>
+        <span class="phonic-hint">${safeText(p.hint)}</span>
+        <span class="phonic-ex">${safeText(p.ex)}</span>
+      </button>`).join('');
+    return `
+      <div class="phonic-group">
+        <h3 class="phonic-group-label" style="color:${g.colour}">${g.label}</h3>
+        <div class="phonic-grid">${tilesHTML}</div>
+      </div>`;
+  }).join('');
+
+  $('app').innerHTML = `
+    <div class="phonics-screen">
+      <header class="phonics-header">
+        <button class="phonics-back" data-action="go-home" aria-label="Back to home">← Back</button>
+        <div class="phonics-title-block">
+          <h2 class="phonics-title">Les Sons</h2>
+          <p class="phonics-sub">Tap a sound to hear it</p>
+        </div>
+      </header>
+      <div class="phonics-body" aria-label="Sound mat">
+        ${groupsHTML}
+      </div>
+    </div>`;
+}
+
 function renderHome() {
   stopRocketCanvas();
   state.screen = 'home';
@@ -1182,6 +1271,11 @@ function renderHome() {
         <nav class="home-cards${state.level === 1 ? ' portrait' : ''}" aria-label="Choose a topic">
           ${homeCatButtons()}
         </nav>
+        <button class="phonics-home-btn" data-action="open-phonics" aria-label="Les Sons — Sound mat">
+          <span class="phonics-home-icon" aria-hidden="true">🔤</span>
+          <span class="phonics-home-text">Les Sons<span class="phonics-home-sub">Sound mat</span></span>
+          <span class="phonics-home-arrow" aria-hidden="true">→</span>
+        </button>
       </div>
 
       <div class="h-horizon" aria-hidden="true">
@@ -1721,6 +1815,15 @@ function handleClick(e) {
       break;
     case 'retry-quiz':
       startQuiz();
+      break;
+    case 'open-phonics':
+      renderPhonics();
+      break;
+    case 'play-phonic':
+      cancelFrench();
+      speakFrench(btn.dataset.tts);
+      btn.classList.add('phonic-active');
+      setTimeout(() => btn.classList.remove('phonic-active'), 500);
       break;
     case 'open-practice':
       renderPractice();

@@ -1857,3 +1857,204 @@ body {
   text-align: center;
   line-height: 1.3;
 }
+
+/* ═══════════════════════════════════════════
+   PHONICS HOME BUTTON
+═══════════════════════════════════════════ */
+
+.phonics-home-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+  margin: 10px auto 0;
+  padding: 13px 18px;
+  background: rgba(255,255,255,0.13);
+  border: 1.5px solid rgba(255,255,255,0.28);
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, transform 0.1s;
+  backdrop-filter: blur(4px);
+}
+.phonics-home-btn:hover  { background: rgba(255,255,255,0.22); transform: translateY(-1px); }
+.phonics-home-btn:active { transform: scale(0.98); }
+
+.phonics-home-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.phonics-home-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.phonics-home-sub {
+  font-size: 0.78rem;
+  font-weight: 400;
+  opacity: 0.75;
+}
+.phonics-home-arrow {
+  font-size: 1.1rem;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════
+   PHONICS SCREEN
+═══════════════════════════════════════════ */
+
+.phonics-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-bg);
+}
+
+.phonics-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px 12px;
+  background: var(--c-header);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.phonics-back {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.phonics-back:hover { background: rgba(255,255,255,0.35); }
+
+.phonics-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.phonics-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0;
+}
+.phonics-sub {
+  font-size: 0.78rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.phonics-body {
+  flex: 1;
+  padding: 18px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Group section ── */
+
+.phonic-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.phonic-group-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  padding-bottom: 4px;
+  border-bottom: 2px solid currentColor;
+  opacity: 0.85;
+}
+
+.phonic-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Individual tile ── */
+
+.phonic-tile {
+  background: var(--tc);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 10px 8px;
+  min-width: 64px;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+  transition: transform 0.1s, box-shadow 0.1s, filter 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.phonic-tile:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+.phonic-tile:active { transform: scale(0.93); }
+.phonic-tile:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+
+.phonic-tile.phonic-active {
+  animation: phonicPop 0.45s ease-out forwards;
+}
+@keyframes phonicPop {
+  0%   { filter: brightness(1); transform: scale(1); }
+  25%  { filter: brightness(1.4); transform: scale(1.12); }
+  100% { filter: brightness(1); transform: scale(1); }
+}
+
+.phonic-grapheme {
+  font-size: 1.65rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.phonic-hint {
+  font-size: 0.68rem;
+  font-style: italic;
+  opacity: 0.9;
+  line-height: 1;
+}
+.phonic-ex {
+  font-size: 0.58rem;
+  opacity: 0.72;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 64px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phonic-tile { transition: none; }
+  .phonic-tile.phonic-active { animation: none; }
+}
