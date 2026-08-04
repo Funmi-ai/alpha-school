@@ -41,33 +41,33 @@ const PHASE1 = [
 
 const PHASE2 = [
   // Set 1
-  { id: 's',  grapheme: 's',  emoji: '🐍', keyword: 'snake',    speak: 'snake'    },
-  { id: 'a',  grapheme: 'a',  emoji: '🐜', keyword: 'ant',      speak: 'ant'      },
-  { id: 't',  grapheme: 't',  emoji: '🐯', keyword: 'tiger',    speak: 'tiger'    },
-  { id: 'p',  grapheme: 'p',  emoji: '🐧', keyword: 'penguin',  speak: 'penguin'  },
+  { id: 's',  grapheme: 's',  tts: 'sa',   hint: 'ss',   emoji: '🐍', keyword: 'snake'    },
+  { id: 'a',  grapheme: 'a',  tts: 'ah',   hint: 'ah',   emoji: '🐜', keyword: 'ant'      },
+  { id: 't',  grapheme: 't',  tts: 'ta',   hint: 't',    emoji: '🐯', keyword: 'tiger'    },
+  { id: 'p',  grapheme: 'p',  tts: 'pa',   hint: 'p',    emoji: '🐧', keyword: 'penguin'  },
   // Set 2
-  { id: 'i',  grapheme: 'i',  emoji: '🦔', keyword: 'itch',     speak: 'itch'     },
-  { id: 'n',  grapheme: 'n',  emoji: '🥜', keyword: 'nut',      speak: 'nut'      },
-  { id: 'm',  grapheme: 'm',  emoji: '🐒', keyword: 'monkey',   speak: 'monkey'   },
-  { id: 'd',  grapheme: 'd',  emoji: '🐕', keyword: 'dog',      speak: 'dog'      },
+  { id: 'i',  grapheme: 'i',  tts: 'ih',   hint: 'ih',   emoji: '🦔', keyword: 'itch'     },
+  { id: 'n',  grapheme: 'n',  tts: 'na',   hint: 'nnn',  emoji: '🥜', keyword: 'nut'      },
+  { id: 'm',  grapheme: 'm',  tts: 'ma',   hint: 'mmm',  emoji: '🐒', keyword: 'monkey'   },
+  { id: 'd',  grapheme: 'd',  tts: 'da',   hint: 'd',    emoji: '🐕', keyword: 'dog'      },
   // Set 3
-  { id: 'g',  grapheme: 'g',  emoji: '🐐', keyword: 'goat',     speak: 'goat'     },
-  { id: 'o',  grapheme: 'o',  emoji: '🐙', keyword: 'octopus',  speak: 'octopus'  },
-  { id: 'c',  grapheme: 'c',  emoji: '🐱', keyword: 'cat',      speak: 'cat'      },
-  { id: 'k',  grapheme: 'k',  emoji: '🪁', keyword: 'kite',     speak: 'kite'     },
+  { id: 'g',  grapheme: 'g',  tts: 'ga',   hint: 'g',    emoji: '🐐', keyword: 'goat'     },
+  { id: 'o',  grapheme: 'o',  tts: 'oh',   hint: 'oh',   emoji: '🐙', keyword: 'octopus'  },
+  { id: 'c',  grapheme: 'c',  tts: 'ca',   hint: 'k',    emoji: '🐱', keyword: 'cat'      },
+  { id: 'k',  grapheme: 'k',  tts: 'ka',   hint: 'k',    emoji: '🪁', keyword: 'kite'     },
   // Set 4
-  { id: 'ck', grapheme: 'ck', emoji: '🦆', keyword: 'duck',     speak: 'duck'     },
-  { id: 'e',  grapheme: 'e',  emoji: '🥚', keyword: 'egg',      speak: 'egg'      },
-  { id: 'u',  grapheme: 'u',  emoji: '☂️', keyword: 'umbrella', speak: 'umbrella' },
-  { id: 'r',  grapheme: 'r',  emoji: '🐇', keyword: 'rabbit',   speak: 'rabbit'   },
+  { id: 'ck', grapheme: 'ck', tts: 'ka',   hint: 'k',    emoji: '🦆', keyword: 'duck'     },
+  { id: 'e',  grapheme: 'e',  tts: 'eh',   hint: 'eh',   emoji: '🥚', keyword: 'egg'      },
+  { id: 'u',  grapheme: 'u',  tts: 'uh',   hint: 'uh',   emoji: '☂️', keyword: 'umbrella' },
+  { id: 'r',  grapheme: 'r',  tts: 'ra',   hint: 'r',    emoji: '🐇', keyword: 'rabbit'   },
   // Set 5
-  { id: 'h',  grapheme: 'h',  emoji: '🎩', keyword: 'hat',      speak: 'hat'      },
-  { id: 'b',  grapheme: 'b',  emoji: '⚽', keyword: 'ball',     speak: 'ball'     },
-  { id: 'f',  grapheme: 'f',  emoji: '🐠', keyword: 'fish',     speak: 'fish'     },
-  { id: 'ff', grapheme: 'ff', emoji: '💨', keyword: 'puff',     speak: 'puff'     },
-  { id: 'l',  grapheme: 'l',  emoji: '🦁', keyword: 'lion',     speak: 'lion'     },
-  { id: 'll', grapheme: 'll', emoji: '🔔', keyword: 'bell',     speak: 'bell'     },
-  { id: 'ss', grapheme: 'ss', emoji: '😤', keyword: 'hiss',     speak: 'hiss'     },
+  { id: 'h',  grapheme: 'h',  tts: 'ha',   hint: 'h',    emoji: '🎩', keyword: 'hat'      },
+  { id: 'b',  grapheme: 'b',  tts: 'ba',   hint: 'b',    emoji: '⚽', keyword: 'ball'     },
+  { id: 'f',  grapheme: 'f',  tts: 'fa',   hint: 'fff',  emoji: '🐠', keyword: 'fish'     },
+  { id: 'ff', grapheme: 'ff', tts: 'fa',   hint: 'fff',  emoji: '💨', keyword: 'puff'     },
+  { id: 'l',  grapheme: 'l',  tts: 'la',   hint: 'lll',  emoji: '🦁', keyword: 'lion'     },
+  { id: 'll', grapheme: 'll', tts: 'la',   hint: 'lll',  emoji: '🔔', keyword: 'bell'     },
+  { id: 'ss', grapheme: 'ss', tts: 'sa',   hint: 'ss',   emoji: '😤', keyword: 'hiss'     },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -76,36 +76,36 @@ const PHASE2 = [
 
 const PHASE3 = [
   // Sets 6-7
-  { id: 'j',    grapheme: 'j',    emoji: '🫙',  keyword: 'jar',    speak: 'jar'    },
-  { id: 'v',    grapheme: 'v',    emoji: '🚐',  keyword: 'van',    speak: 'van'    },
-  { id: 'w',    grapheme: 'w',    emoji: '🪱',  keyword: 'worm',   speak: 'worm'   },
-  { id: 'x',    grapheme: 'x',    emoji: '🩻',  keyword: 'x-ray',  speak: 'x-ray'  },
-  { id: 'y',    grapheme: 'y',    emoji: '💛',  keyword: 'yellow', speak: 'yellow' },
-  { id: 'z',    grapheme: 'z',    emoji: '🦓',  keyword: 'zebra',  speak: 'zebra'  },
-  { id: 'zz',   grapheme: 'zz',   emoji: '🐝',  keyword: 'buzz',   speak: 'buzz'   },
-  { id: 'qu',   grapheme: 'qu',   emoji: '👑',  keyword: 'queen',  speak: 'queen'  },
+  { id: 'j',    grapheme: 'j',    tts: 'ja',    hint: 'j',    emoji: '🫙',  keyword: 'jar'    },
+  { id: 'v',    grapheme: 'v',    tts: 'va',    hint: 'vvv',  emoji: '🚐',  keyword: 'van'    },
+  { id: 'w',    grapheme: 'w',    tts: 'wa',    hint: 'w',    emoji: '🪱',  keyword: 'worm'   },
+  { id: 'x',    grapheme: 'x',    tts: 'ex',    hint: 'ks',   emoji: '🩻',  keyword: 'x-ray'  },
+  { id: 'y',    grapheme: 'y',    tts: 'ya',    hint: 'y',    emoji: '💛',  keyword: 'yellow' },
+  { id: 'z',    grapheme: 'z',    tts: 'za',    hint: 'zzz',  emoji: '🦓',  keyword: 'zebra'  },
+  { id: 'zz',   grapheme: 'zz',   tts: 'za',    hint: 'zzz',  emoji: '🐝',  keyword: 'buzz'   },
+  { id: 'qu',   grapheme: 'qu',   tts: 'qua',   hint: 'kw',   emoji: '👑',  keyword: 'queen'  },
   // Consonant digraphs
-  { id: 'ch',   grapheme: 'ch',   emoji: '🐥',  keyword: 'chick',  speak: 'chick'  },
-  { id: 'sh',   grapheme: 'sh',   emoji: '🐚',  keyword: 'shell',  speak: 'shell'  },
-  { id: 'th1',  grapheme: 'th',   emoji: '👍',  keyword: 'thumb',  speak: 'thumb', note: 'as in thumb'  },
-  { id: 'th2',  grapheme: 'th',   emoji: '🌬️', keyword: 'this',   speak: 'this',  note: 'as in this'   },
-  { id: 'ng',   grapheme: 'ng',   emoji: '💍',  keyword: 'ring',   speak: 'ring'   },
+  { id: 'ch',   grapheme: 'ch',   tts: 'cha',   hint: 'ch',   emoji: '🐥',  keyword: 'chick'  },
+  { id: 'sh',   grapheme: 'sh',   tts: 'sha',   hint: 'sh',   emoji: '🐚',  keyword: 'shell'  },
+  { id: 'th1',  grapheme: 'th',   tts: 'tha',   hint: 'th',   emoji: '👍',  keyword: 'thumb',  note: 'as in thumb' },
+  { id: 'th2',  grapheme: 'th',   tts: 'the',   hint: 'th',   emoji: '🌬️', keyword: 'this',   note: 'as in this'  },
+  { id: 'ng',   grapheme: 'ng',   tts: 'ang',   hint: 'ng',   emoji: '💍',  keyword: 'ring'   },
   // Vowel digraphs & trigraphs
-  { id: 'ai',   grapheme: 'ai',   emoji: '🌧️', keyword: 'rain',   speak: 'rain'   },
-  { id: 'ee',   grapheme: 'ee',   emoji: '🐝',  keyword: 'bee',    speak: 'bee'    },
-  { id: 'igh',  grapheme: 'igh',  emoji: '💡',  keyword: 'light',  speak: 'light'  },
-  { id: 'oa',   grapheme: 'oa',   emoji: '⛵',  keyword: 'boat',   speak: 'boat'   },
-  { id: 'oo1',  grapheme: 'oo',   emoji: '🌙',  keyword: 'moon',   speak: 'moon',  note: 'long oo'  },
-  { id: 'oo2',  grapheme: 'oo',   emoji: '📖',  keyword: 'book',   speak: 'book',  note: 'short oo' },
-  { id: 'ar',   grapheme: 'ar',   emoji: '⭐',  keyword: 'star',   speak: 'star'   },
-  { id: 'or',   grapheme: 'or',   emoji: '🌽',  keyword: 'corn',   speak: 'corn'   },
-  { id: 'ur',   grapheme: 'ur',   emoji: '🐢',  keyword: 'turtle', speak: 'turtle' },
-  { id: 'ow',   grapheme: 'ow',   emoji: '🦉',  keyword: 'owl',    speak: 'owl'    },
-  { id: 'oi',   grapheme: 'oi',   emoji: '💰',  keyword: 'coin',   speak: 'coin'   },
-  { id: 'ear',  grapheme: 'ear',  emoji: '👂',  keyword: 'ear',    speak: 'ear'    },
-  { id: 'air',  grapheme: 'air',  emoji: '🪶',  keyword: 'fair',   speak: 'fair'   },
-  { id: 'ure',  grapheme: 'ure',  emoji: '🌿',  keyword: 'pure',   speak: 'pure'   },
-  { id: 'er',   grapheme: 'er',   emoji: '🍂',  keyword: 'letter', speak: 'letter' },
+  { id: 'ai',   grapheme: 'ai',   tts: 'ai',    hint: 'ay',   emoji: '🌧️', keyword: 'rain'   },
+  { id: 'ee',   grapheme: 'ee',   tts: 'ee',    hint: 'ee',   emoji: '🐝',  keyword: 'bee'    },
+  { id: 'igh',  grapheme: 'igh',  tts: 'eye',   hint: 'ie',   emoji: '💡',  keyword: 'light'  },
+  { id: 'oa',   grapheme: 'oa',   tts: 'oa',    hint: 'oh',   emoji: '⛵',  keyword: 'boat'   },
+  { id: 'oo1',  grapheme: 'oo',   tts: 'oo',    hint: 'oo',   emoji: '🌙',  keyword: 'moon',   note: 'long oo'  },
+  { id: 'oo2',  grapheme: 'oo',   tts: 'oo',    hint: 'oo',   emoji: '📖',  keyword: 'book',   note: 'short oo' },
+  { id: 'ar',   grapheme: 'ar',   tts: 'ar',    hint: 'ar',   emoji: '⭐',  keyword: 'star'   },
+  { id: 'or',   grapheme: 'or',   tts: 'or',    hint: 'or',   emoji: '🌽',  keyword: 'corn'   },
+  { id: 'ur',   grapheme: 'ur',   tts: 'ur',    hint: 'er',   emoji: '🐢',  keyword: 'turtle' },
+  { id: 'ow',   grapheme: 'ow',   tts: 'ow',    hint: 'ow',   emoji: '🦉',  keyword: 'owl'    },
+  { id: 'oi',   grapheme: 'oi',   tts: 'oi',    hint: 'oy',   emoji: '💰',  keyword: 'coin'   },
+  { id: 'ear',  grapheme: 'ear',  tts: 'ear',   hint: 'eer',  emoji: '👂',  keyword: 'ear'    },
+  { id: 'air',  grapheme: 'air',  tts: 'air',   hint: 'air',  emoji: '🪶',  keyword: 'fair'   },
+  { id: 'ure',  grapheme: 'ure',  tts: 'ure',   hint: 'oor',  emoji: '🌿',  keyword: 'pure'   },
+  { id: 'er',   grapheme: 'er',   tts: 'er',    hint: 'er',   emoji: '🍂',  keyword: 'letter' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -136,29 +136,29 @@ const PHASE4_GROUPS = [
 
 const PHASE5 = [
   // New graphemes
-  { id: 'ay',  grapheme: 'ay',  emoji: '🌤️', keyword: 'day',    speak: 'day'    },
-  { id: 'ou',  grapheme: 'ou',  emoji: '☁️', keyword: 'cloud',  speak: 'cloud'  },
-  { id: 'ie',  grapheme: 'ie',  emoji: '🥧', keyword: 'pie',    speak: 'pie'    },
-  { id: 'ea',  grapheme: 'ea',  emoji: '🍃', keyword: 'leaf',   speak: 'leaf'   },
-  { id: 'oy',  grapheme: 'oy',  emoji: '🧸', keyword: 'toy',    speak: 'toy'    },
-  { id: 'ir',  grapheme: 'ir',  emoji: '🐦', keyword: 'bird',   speak: 'bird'   },
-  { id: 'ue',  grapheme: 'ue',  emoji: '🔵', keyword: 'blue',   speak: 'blue'   },
-  { id: 'aw',  grapheme: 'aw',  emoji: '🦁', keyword: 'paw',    speak: 'paw'    },
-  { id: 'wh',  grapheme: 'wh',  emoji: '🐋', keyword: 'whale',  speak: 'whale'  },
-  { id: 'ph',  grapheme: 'ph',  emoji: '📱', keyword: 'phone',  speak: 'phone'  },
-  { id: 'ew',  grapheme: 'ew',  emoji: '✨', keyword: 'new',    speak: 'new'    },
-  { id: 'oe',  grapheme: 'oe',  emoji: '🦶', keyword: 'toe',    speak: 'toe'    },
-  { id: 'au',  grapheme: 'au',  emoji: '🍂', keyword: 'autumn', speak: 'autumn' },
+  { id: 'ay',  grapheme: 'ay',  tts: 'ay',   hint: 'ay',   emoji: '🌤️', keyword: 'day'    },
+  { id: 'ou',  grapheme: 'ou',  tts: 'ow',   hint: 'ow',   emoji: '☁️', keyword: 'cloud'  },
+  { id: 'ie',  grapheme: 'ie',  tts: 'eye',  hint: 'ie',   emoji: '🥧', keyword: 'pie'    },
+  { id: 'ea',  grapheme: 'ea',  tts: 'ee',   hint: 'ee',   emoji: '🍃', keyword: 'leaf'   },
+  { id: 'oy',  grapheme: 'oy',  tts: 'oy',   hint: 'oy',   emoji: '🧸', keyword: 'toy'    },
+  { id: 'ir',  grapheme: 'ir',  tts: 'er',   hint: 'er',   emoji: '🐦', keyword: 'bird'   },
+  { id: 'ue',  grapheme: 'ue',  tts: 'oo',   hint: 'oo',   emoji: '🔵', keyword: 'blue'   },
+  { id: 'aw',  grapheme: 'aw',  tts: 'aw',   hint: 'aw',   emoji: '🦁', keyword: 'paw'    },
+  { id: 'wh',  grapheme: 'wh',  tts: 'wa',   hint: 'w',    emoji: '🐋', keyword: 'whale'  },
+  { id: 'ph',  grapheme: 'ph',  tts: 'fa',   hint: 'fff',  emoji: '📱', keyword: 'phone'  },
+  { id: 'ew',  grapheme: 'ew',  tts: 'ew',   hint: 'yoo',  emoji: '✨', keyword: 'new'    },
+  { id: 'oe',  grapheme: 'oe',  tts: 'oh',   hint: 'oh',   emoji: '🦶', keyword: 'toe'    },
+  { id: 'au',  grapheme: 'au',  tts: 'aw',   hint: 'aw',   emoji: '🍂', keyword: 'autumn' },
   // Split digraphs (magic e)
-  { id: 'a_e', grapheme: 'a·e', emoji: '🎂', keyword: 'cake',   speak: 'cake',  note: 'magic e' },
-  { id: 'e_e', grapheme: 'e·e', emoji: '🌲', keyword: 'these',  speak: 'these', note: 'magic e' },
-  { id: 'i_e', grapheme: 'i·e', emoji: '🪁', keyword: 'kite',   speak: 'kite',  note: 'magic e' },
-  { id: 'o_e', grapheme: 'o·e', emoji: '🏠', keyword: 'home',   speak: 'home',  note: 'magic e' },
-  { id: 'u_e', grapheme: 'u·e', emoji: '🎲', keyword: 'cube',   speak: 'cube',  note: 'magic e' },
-  // Alternative spellings already known
-  { id: 'ea2', grapheme: 'ea',  emoji: '🍞', keyword: 'bread',  speak: 'bread', note: 'also /ɛ/' },
-  { id: 'ie2', grapheme: 'ie',  emoji: '👸', keyword: 'ladies', speak: 'ladies',note: 'also /ɪ/' },
-  { id: 'er2', grapheme: 'er',  emoji: '🏃', keyword: 'teacher',speak: 'teacher',note: 'unstressed'},
+  { id: 'a_e', grapheme: 'a·e', tts: 'ay',   hint: 'ay',   emoji: '🎂', keyword: 'cake',   note: 'magic e' },
+  { id: 'e_e', grapheme: 'e·e', tts: 'ee',   hint: 'ee',   emoji: '🌲', keyword: 'these',  note: 'magic e' },
+  { id: 'i_e', grapheme: 'i·e', tts: 'eye',  hint: 'ie',   emoji: '🪁', keyword: 'kite',   note: 'magic e' },
+  { id: 'o_e', grapheme: 'o·e', tts: 'oh',   hint: 'oh',   emoji: '🏠', keyword: 'home',   note: 'magic e' },
+  { id: 'u_e', grapheme: 'u·e', tts: 'yoo',  hint: 'yoo',  emoji: '🎲', keyword: 'cube',   note: 'magic e' },
+  // Alternative spellings
+  { id: 'ea2', grapheme: 'ea',  tts: 'eh',   hint: 'eh',   emoji: '🍞', keyword: 'bread',   note: 'also /ɛ/' },
+  { id: 'ie2', grapheme: 'ie',  tts: 'ee',   hint: 'ee',   emoji: '👸', keyword: 'ladies',  note: 'also /ɪ/' },
+  { id: 'er2', grapheme: 'er',  tts: 'er',   hint: 'er',   emoji: '🏃', keyword: 'teacher', note: 'unstressed' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -379,11 +379,13 @@ function renderSoundGrid(sounds, meta) {
     <div class="sound-grid" role="list">
       ${sounds.map(s => `
         <button class="sound-tile" role="listitem"
-          data-action="say-sound" data-speak="${safeText(s.speak)}"
-          aria-label="${safeText(s.grapheme)} as in ${safeText(s.keyword)}${s.note ? ', ' + safeText(s.note) : ''}">
+          data-action="say-sound" data-speak="${safeText(s.tts)}"
+          aria-label="${safeText(s.grapheme)} sounds like ${safeText(s.hint)}, as in ${safeText(s.keyword)}${s.note ? ', ' + safeText(s.note) : ''}">
           <span class="st-grapheme" aria-hidden="true">${safeText(s.grapheme)}</span>
-          <span class="st-emoji" aria-hidden="true">${s.emoji}</span>
-          <span class="st-keyword" aria-hidden="true">${safeText(s.keyword)}</span>
+          <span class="st-hint" aria-hidden="true">${safeText(s.hint)}</span>
+          <span class="st-kw-row" aria-hidden="true">
+            <span class="st-emoji">${s.emoji}</span><span class="st-keyword">${safeText(s.keyword)}</span>
+          </span>
           ${s.note ? `<span class="st-note" aria-hidden="true">${safeText(s.note)}</span>` : ''}
         </button>
       `).join('')}

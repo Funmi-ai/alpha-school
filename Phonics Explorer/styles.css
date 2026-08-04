@@ -357,8 +357,23 @@ body {
   letter-spacing: -0.5px;
 }
 
-.st-emoji   { font-size: 1.35rem; line-height: 1; }
-.st-keyword { font-size: 0.7rem; color: #64748b; font-weight: 600; line-height: 1.2; }
+.st-hint {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--ph-color);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.st-kw-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: center;
+}
+
+.st-emoji   { font-size: 1rem; line-height: 1; }
+.st-keyword { font-size: 0.62rem; color: #64748b; font-weight: 600; line-height: 1.2; }
 .st-note    { font-size: 0.6rem; color: var(--ph-color); font-weight: 700; line-height: 1; background: var(--ph-light); padding: 1px 5px; border-radius: 4px; }
 
 /* ═══════════════════════════════════════════
