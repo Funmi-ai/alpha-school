@@ -204,6 +204,12 @@ function speak(text, rate = 0.78) {
   window.speechSynthesis.speak(utt);
 }
 
+/* Phoneme tiles need a much slower rate so the TTS engine produces
+   the sustained consonant sound rather than letter-name repetition. */
+function speakPhoneme(text) {
+  speak(text, 0.4);
+}
+
 /* speak a word-decoder word syllable by syllable via slow TTS */
 function speakDecoder() {
   const input = $('decoder-input');
@@ -430,7 +436,7 @@ function handleClick(e) {
       renderHome();
       break;
     case 'say-sound':
-      speak(el.dataset.speak);
+      speakPhoneme(el.dataset.speak);
       pulseTile(el);
       burstStars(el);
       break;
