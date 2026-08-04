@@ -40,34 +40,34 @@ const PHASE1 = [
 ═══════════════════════════════════════════════════════════════ */
 
 const PHASE2 = [
-  // Set 1
-  { id: 's',  grapheme: 's',  tts: 'sa',   hint: 'ss',   emoji: '🐍', keyword: 'snake'    },
+  // Set 1  — fricatives/nasals: extended form; stops: raw consonant (no schwa)
+  { id: 's',  grapheme: 's',  tts: 'sss',  hint: 'sss',  emoji: '🐍', keyword: 'snake'    },
   { id: 'a',  grapheme: 'a',  tts: 'ah',   hint: 'ah',   emoji: '🐜', keyword: 'ant'      },
-  { id: 't',  grapheme: 't',  tts: 'ta',   hint: 't',    emoji: '🐯', keyword: 'tiger'    },
-  { id: 'p',  grapheme: 'p',  tts: 'pa',   hint: 'p',    emoji: '🐧', keyword: 'penguin'  },
+  { id: 't',  grapheme: 't',  tts: 't',    hint: 't',    emoji: '🐯', keyword: 'tiger'    },
+  { id: 'p',  grapheme: 'p',  tts: 'p',    hint: 'p',    emoji: '🐧', keyword: 'penguin'  },
   // Set 2
   { id: 'i',  grapheme: 'i',  tts: 'ih',   hint: 'ih',   emoji: '🦔', keyword: 'itch'     },
-  { id: 'n',  grapheme: 'n',  tts: 'na',   hint: 'nnn',  emoji: '🥜', keyword: 'nut'      },
-  { id: 'm',  grapheme: 'm',  tts: 'ma',   hint: 'mmm',  emoji: '🐒', keyword: 'monkey'   },
-  { id: 'd',  grapheme: 'd',  tts: 'da',   hint: 'd',    emoji: '🐕', keyword: 'dog'      },
+  { id: 'n',  grapheme: 'n',  tts: 'nnn',  hint: 'nn',   emoji: '🥜', keyword: 'nut'      },
+  { id: 'm',  grapheme: 'm',  tts: 'mmm',  hint: 'mm',   emoji: '🐒', keyword: 'monkey'   },
+  { id: 'd',  grapheme: 'd',  tts: 'd',    hint: 'd',    emoji: '🐕', keyword: 'dog'      },
   // Set 3
-  { id: 'g',  grapheme: 'g',  tts: 'ga',   hint: 'g',    emoji: '🐐', keyword: 'goat'     },
+  { id: 'g',  grapheme: 'g',  tts: 'g',    hint: 'g',    emoji: '🐐', keyword: 'goat'     },
   { id: 'o',  grapheme: 'o',  tts: 'oh',   hint: 'oh',   emoji: '🐙', keyword: 'octopus'  },
-  { id: 'c',  grapheme: 'c',  tts: 'ca',   hint: 'k',    emoji: '🐱', keyword: 'cat'      },
-  { id: 'k',  grapheme: 'k',  tts: 'ka',   hint: 'k',    emoji: '🪁', keyword: 'kite'     },
+  { id: 'c',  grapheme: 'c',  tts: 'k',    hint: 'k',    emoji: '🐱', keyword: 'cat'      },
+  { id: 'k',  grapheme: 'k',  tts: 'k',    hint: 'k',    emoji: '🪁', keyword: 'kite'     },
   // Set 4
-  { id: 'ck', grapheme: 'ck', tts: 'ka',   hint: 'k',    emoji: '🦆', keyword: 'duck'     },
+  { id: 'ck', grapheme: 'ck', tts: 'k',    hint: 'k',    emoji: '🦆', keyword: 'duck'     },
   { id: 'e',  grapheme: 'e',  tts: 'eh',   hint: 'eh',   emoji: '🥚', keyword: 'egg'      },
   { id: 'u',  grapheme: 'u',  tts: 'uh',   hint: 'uh',   emoji: '☂️', keyword: 'umbrella' },
-  { id: 'r',  grapheme: 'r',  tts: 'ra',   hint: 'r',    emoji: '🐇', keyword: 'rabbit'   },
+  { id: 'r',  grapheme: 'r',  tts: 'rrr',  hint: 'rr',   emoji: '🐇', keyword: 'rabbit'   },
   // Set 5
-  { id: 'h',  grapheme: 'h',  tts: 'ha',   hint: 'h',    emoji: '🎩', keyword: 'hat'      },
-  { id: 'b',  grapheme: 'b',  tts: 'ba',   hint: 'b',    emoji: '⚽', keyword: 'ball'     },
-  { id: 'f',  grapheme: 'f',  tts: 'fa',   hint: 'fff',  emoji: '🐠', keyword: 'fish'     },
-  { id: 'ff', grapheme: 'ff', tts: 'fa',   hint: 'fff',  emoji: '💨', keyword: 'puff'     },
-  { id: 'l',  grapheme: 'l',  tts: 'la',   hint: 'lll',  emoji: '🦁', keyword: 'lion'     },
-  { id: 'll', grapheme: 'll', tts: 'la',   hint: 'lll',  emoji: '🔔', keyword: 'bell'     },
-  { id: 'ss', grapheme: 'ss', tts: 'sa',   hint: 'ss',   emoji: '😤', keyword: 'hiss'     },
+  { id: 'h',  grapheme: 'h',  tts: 'h',    hint: 'h',    emoji: '🎩', keyword: 'hat'      },
+  { id: 'b',  grapheme: 'b',  tts: 'b',    hint: 'b',    emoji: '⚽', keyword: 'ball'     },
+  { id: 'f',  grapheme: 'f',  tts: 'fff',  hint: 'ff',   emoji: '🐠', keyword: 'fish'     },
+  { id: 'ff', grapheme: 'ff', tts: 'fff',  hint: 'ff',   emoji: '💨', keyword: 'puff'     },
+  { id: 'l',  grapheme: 'l',  tts: 'lll',  hint: 'll',   emoji: '🦁', keyword: 'lion'     },
+  { id: 'll', grapheme: 'll', tts: 'lll',  hint: 'll',   emoji: '🔔', keyword: 'bell'     },
+  { id: 'ss', grapheme: 'ss', tts: 'sss',  hint: 'sss',  emoji: '😤', keyword: 'hiss'     },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -76,20 +76,20 @@ const PHASE2 = [
 
 const PHASE3 = [
   // Sets 6-7
-  { id: 'j',    grapheme: 'j',    tts: 'ja',    hint: 'j',    emoji: '🫙',  keyword: 'jar'    },
-  { id: 'v',    grapheme: 'v',    tts: 'va',    hint: 'vvv',  emoji: '🚐',  keyword: 'van'    },
-  { id: 'w',    grapheme: 'w',    tts: 'wa',    hint: 'w',    emoji: '🪱',  keyword: 'worm'   },
-  { id: 'x',    grapheme: 'x',    tts: 'ex',    hint: 'ks',   emoji: '🩻',  keyword: 'x-ray'  },
-  { id: 'y',    grapheme: 'y',    tts: 'ya',    hint: 'y',    emoji: '💛',  keyword: 'yellow' },
-  { id: 'z',    grapheme: 'z',    tts: 'za',    hint: 'zzz',  emoji: '🦓',  keyword: 'zebra'  },
-  { id: 'zz',   grapheme: 'zz',   tts: 'za',    hint: 'zzz',  emoji: '🐝',  keyword: 'buzz'   },
-  { id: 'qu',   grapheme: 'qu',   tts: 'qua',   hint: 'kw',   emoji: '👑',  keyword: 'queen'  },
+  { id: 'j',    grapheme: 'j',    tts: 'j',     hint: 'j',    emoji: '🫙',  keyword: 'jar'    },
+  { id: 'v',    grapheme: 'v',    tts: 'vvv',   hint: 'vv',   emoji: '🚐',  keyword: 'van'    },
+  { id: 'w',    grapheme: 'w',    tts: 'w',     hint: 'w',    emoji: '🪱',  keyword: 'worm'   },
+  { id: 'x',    grapheme: 'x',    tts: 'ks',    hint: 'ks',   emoji: '🩻',  keyword: 'x-ray'  },
+  { id: 'y',    grapheme: 'y',    tts: 'y',     hint: 'y',    emoji: '💛',  keyword: 'yellow' },
+  { id: 'z',    grapheme: 'z',    tts: 'zzz',   hint: 'zz',   emoji: '🦓',  keyword: 'zebra'  },
+  { id: 'zz',   grapheme: 'zz',   tts: 'zzz',   hint: 'zz',   emoji: '🐝',  keyword: 'buzz'   },
+  { id: 'qu',   grapheme: 'qu',   tts: 'kw',    hint: 'kw',   emoji: '👑',  keyword: 'queen'  },
   // Consonant digraphs
-  { id: 'ch',   grapheme: 'ch',   tts: 'cha',   hint: 'ch',   emoji: '🐥',  keyword: 'chick'  },
-  { id: 'sh',   grapheme: 'sh',   tts: 'sha',   hint: 'sh',   emoji: '🐚',  keyword: 'shell'  },
-  { id: 'th1',  grapheme: 'th',   tts: 'tha',   hint: 'th',   emoji: '👍',  keyword: 'thumb',  note: 'as in thumb' },
-  { id: 'th2',  grapheme: 'th',   tts: 'the',   hint: 'th',   emoji: '🌬️', keyword: 'this',   note: 'as in this'  },
-  { id: 'ng',   grapheme: 'ng',   tts: 'ang',   hint: 'ng',   emoji: '💍',  keyword: 'ring'   },
+  { id: 'ch',   grapheme: 'ch',   tts: 'ch',    hint: 'ch',   emoji: '🐥',  keyword: 'chick'  },
+  { id: 'sh',   grapheme: 'sh',   tts: 'shh',   hint: 'sh',   emoji: '🐚',  keyword: 'shell'  },
+  { id: 'th1',  grapheme: 'th',   tts: 'thh',   hint: 'th',   emoji: '👍',  keyword: 'thumb',  note: 'as in thumb' },
+  { id: 'th2',  grapheme: 'th',   tts: 'th',    hint: 'th',   emoji: '🌬️', keyword: 'this',   note: 'as in this'  },
+  { id: 'ng',   grapheme: 'ng',   tts: 'ng',    hint: 'ng',   emoji: '💍',  keyword: 'ring'   },
   // Vowel digraphs & trigraphs
   { id: 'ai',   grapheme: 'ai',   tts: 'ai',    hint: 'ay',   emoji: '🌧️', keyword: 'rain'   },
   { id: 'ee',   grapheme: 'ee',   tts: 'ee',    hint: 'ee',   emoji: '🐝',  keyword: 'bee'    },
@@ -144,8 +144,8 @@ const PHASE5 = [
   { id: 'ir',  grapheme: 'ir',  tts: 'er',   hint: 'er',   emoji: '🐦', keyword: 'bird'   },
   { id: 'ue',  grapheme: 'ue',  tts: 'oo',   hint: 'oo',   emoji: '🔵', keyword: 'blue'   },
   { id: 'aw',  grapheme: 'aw',  tts: 'aw',   hint: 'aw',   emoji: '🦁', keyword: 'paw'    },
-  { id: 'wh',  grapheme: 'wh',  tts: 'wa',   hint: 'w',    emoji: '🐋', keyword: 'whale'  },
-  { id: 'ph',  grapheme: 'ph',  tts: 'fa',   hint: 'fff',  emoji: '📱', keyword: 'phone'  },
+  { id: 'wh',  grapheme: 'wh',  tts: 'w',    hint: 'w',    emoji: '🐋', keyword: 'whale'  },
+  { id: 'ph',  grapheme: 'ph',  tts: 'fff',  hint: 'ff',   emoji: '📱', keyword: 'phone'  },
   { id: 'ew',  grapheme: 'ew',  tts: 'ew',   hint: 'yoo',  emoji: '✨', keyword: 'new'    },
   { id: 'oe',  grapheme: 'oe',  tts: 'oh',   hint: 'oh',   emoji: '🦶', keyword: 'toe'    },
   { id: 'au',  grapheme: 'au',  tts: 'aw',   hint: 'aw',   emoji: '🍂', keyword: 'autumn' },
