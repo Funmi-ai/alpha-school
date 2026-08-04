@@ -57,22 +57,24 @@ body {
 */
 
 .home-scene {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  position: relative;
   overflow: hidden;
-  /* Deep cobalt → bright sky blue → warm golden horizon */
-  background: linear-gradient(to bottom,
-    #0c1f6e 0%,
-    #1253b5 18%,
-    #1e78e8 40%,
-    #5aaef5 57%,
-    #fbbf24 63%,
-    #f97316 66%,
-    #16a34a 66%,
-    #15803d 100%
-  );
+  background: #0a0f1e;
+}
+
+/* ── Home header bar ── */
+.home-header {
+  flex-shrink: 0;
+  height: 64px;
+  background: linear-gradient(to bottom, #0c1f6e 0%, #1253b5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
 /* ── Atmospheric: Sun ── */
@@ -181,11 +183,9 @@ body {
 }
 
 .home-flag {
-  font-size: 3.4rem;
-  display: block;
-  margin-bottom: 10px;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.45));
-  animation: flagBob 3s ease-in-out infinite;
+  font-size: 1.7rem;
+  display: inline;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
 }
 
 @keyframes flagBob {
@@ -194,17 +194,13 @@ body {
 }
 
 .home-title {
-  font-size: clamp(1.9rem, 7.5vw, 3.4rem);
+  font-size: 1.05rem;
   font-weight: 900;
   color: #fff;
-  line-height: 1.05;
-  letter-spacing: -0.5px;
-  text-shadow:
-    0 1px 0   rgba(0,0,0,0.25),
-    0 3px 8px rgba(0,0,0,0.45),
-    0 8px 32px rgba(0,0,0,0.25),
-    0 0 60px rgba(251,191,36,0.25); /* warm sun glow */
-  margin-bottom: 8px;
+  line-height: 1.1;
+  letter-spacing: -0.2px;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+  margin: 0;
 }
 
 .home-tagline {
@@ -215,32 +211,30 @@ body {
 
 /* ── Category buttons ── */
 .home-cards {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  max-width: 500px;
-  padding: 0 20px;
-  position: relative;
-  z-index: 10;
+  overflow: hidden;
 }
 
 .home-cat-btn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255,255,255,0.14);
+  gap: 18px;
+  padding: 0 24px;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  border-radius: 0;
   font-family: inherit;
   text-align: left;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  min-height: 84px;
-  transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s;
+  transition: filter 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
+.home-cat-btn:last-child { border-bottom: none; }
 
 /* Shimmer sweep on hover */
 .home-cat-btn::after {
@@ -257,9 +251,21 @@ body {
 }
 
 .home-cat-btn:hover::after  { transform: translateX(120%); }
-.home-cat-btn:hover         { transform: translateY(-5px) scale(1.01); }
-.home-cat-btn:active        { transform: scale(0.97); }
-.home-cat-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+.home-cat-btn:hover         { filter: brightness(1.1); }
+.home-cat-btn:active        { filter: brightness(0.88); }
+.home-cat-btn:focus-visible { outline: 3px solid rgba(255,255,255,0.7); outline-offset: -3px; }
+
+/* Parler (pronunciation practice) */
+.home-cat-btn.parler {
+  background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 55%, #4338ca 100%);
+  box-shadow: 0 8px 32px rgba(67,56,202,0.55), 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* Les Sons (sound mat) */
+.home-cat-btn.sons {
+  background: linear-gradient(135deg, #7c2d12 0%, #c2430a 55%, #ff6b35 100%);
+  box-shadow: 0 8px 32px rgba(194,67,10,0.55), 0 2px 6px rgba(0,0,0,0.25);
+}
 
 /* Research: saturated cobalt blue is the top colour for boys 3-7 */
 .home-cat-btn.vehicles {
@@ -276,9 +282,9 @@ body {
 }
 
 .home-cat-icon {
-  font-size: 3.2rem;
+  font-size: 3rem;
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.4));
   animation: iconBounce 2.4s ease-in-out infinite;
 }
 
@@ -299,48 +305,43 @@ body {
 .home-cat-desc    { font-size: 0.79rem; color: rgba(255,255,255,0.42); margin-top: 3px; }
 .home-cat-arrow   { font-size: 1.6rem; color: rgba(255,255,255,0.55); flex-shrink: 0; }
 
-/* ── Level 1 portrait 3-column layout ── */
+/* ── Portrait class is no longer used — kept as a no-op reset ── */
 .home-cards.portrait {
-  flex-direction: row;
-  gap: 8px;
-  padding: 0 10px;
-  max-width: 580px;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  max-width: none;
   width: 100%;
   align-items: stretch;
 }
 
 .home-cards.portrait .home-cat-btn {
   flex: 1;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 22px 8px 20px;
-  gap: 12px;
-  min-height: 200px;
-}
-
-/* Vehicles is the prime slot — slightly taller to signal "start here" */
-.home-cards.portrait .home-cat-btn.vehicles {
-  min-height: 224px;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 0 24px;
+  gap: 18px;
+  min-height: unset;
 }
 
 .home-cards.portrait .home-cat-icon {
-  font-size: 5rem;
+  font-size: 3rem;
 }
 
 .home-cards.portrait .home-cat-info {
-  flex: unset;
+  flex: 1;
 }
 
 .home-cards.portrait .home-cat-name {
-  font-size: 1rem;
-  white-space: nowrap;
+  font-size: 1.25rem;
+  white-space: normal;
 }
 
 .home-cards.portrait .home-cat-name-fr {
-  font-size: 0.78rem;
-  margin-top: 3px;
+  font-size: 0.87rem;
+  margin-top: 2px;
 }
 
 /* START HERE badge — pulsing to attract first tap */
@@ -1859,51 +1860,279 @@ body {
 }
 
 /* ═══════════════════════════════════════════
+   SPACE HOME SCREEN
+═══════════════════════════════════════════ */
+
+.space-home {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #000814;
+  position: relative;
+}
+
+.space-stars {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.space-nebula {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 72% 18%, rgba(99,102,241,0.11) 0%, transparent 50%),
+    radial-gradient(ellipse at 18% 82%, rgba(16,185,129,0.07) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.04) 0%, transparent 70%);
+}
+
+.space-header {
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0,8,20,0.65);
+  backdrop-filter: blur(12px);
+}
+
+.space-flag { font-size: 1.6rem; }
+
+.space-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 24px rgba(165,180,252,0.55);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.space-home .parent-settings-btn {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+}
+
+/* ── Planet grid ── */
+.planet-grid {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  padding: 16px 14px;
+  overflow: hidden;
+}
+
+/* ── Planet card — no box, just planets floating in space ── */
+.planet-card {
+  width: 100%;
+  min-height: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  position: relative;
+  padding: 8px 6px 16px;
+  transition: transform 0.18s cubic-bezier(.34,1.56,.64,1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.planet-card:hover  { transform: scale(1.06); }
+.planet-card:active { transform: scale(0.94); }
+.planet-card:focus-visible { outline: 2px solid rgba(255,255,255,0.55); outline-offset: 6px; border-radius: 50%; }
+
+/* ── Planet orb — fills the card, whole orb floats ── */
+.planet-orb {
+  position: relative;
+  /* Constrained by both column width and row height so it never overflows */
+  width: min(80%, calc((100vh - 64px - 42px) / 2 - 56px));
+  max-width: min(80%, calc((100vh - 64px - 42px) / 2 - 56px));
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: orbFloat 4s ease-in-out infinite, orbGlow 4s ease-in-out infinite;
+}
+
+.planet-orb svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* Wider orb for ringed planets (saturn/neptune SVGs are 160×120 viewBox) */
+.planet-orb-wide {
+  width: min(92%, calc((100vh - 64px - 42px) / 2 - 56px));
+  max-width: min(92%, calc((100vh - 64px - 42px) / 2 - 56px));
+  aspect-ratio: 4 / 3;
+}
+
+.planet-emoji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(1.8rem, 6.5vw, 4.5rem);
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+  z-index: 2;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Per-planet glow colour */
+.planet-card.p-earth   .planet-orb { --g: rgba(34,197,94,0.35); }
+.planet-card.p-metal   .planet-orb { --g: rgba(148,163,184,0.35); }
+.planet-card.p-saturn  .planet-orb { --g: rgba(168,85,247,0.4); }
+.planet-card.p-jupiter .planet-orb { --g: rgba(245,158,11,0.35); }
+.planet-card.p-ice     .planet-orb { --g: rgba(244,63,94,0.35); }
+.planet-card.p-neptune .planet-orb { --g: rgba(167,139,250,0.38); }
+.planet-card.p-forest  .planet-orb { --g: rgba(20,184,166,0.35); }
+
+@keyframes orbGlow {
+  0%,100% { filter: drop-shadow(0 0 8px var(--g, rgba(255,255,255,0.2))); }
+  50%      { filter: drop-shadow(0 0 24px var(--g, rgba(255,255,255,0.35))); }
+}
+
+@keyframes orbFloat {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-14px); }
+}
+
+@keyframes planetZoom {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(2.5); }
+  100% { transform: scale(42); }
+}
+
+/* Planet zoom-enter: whole orb (or float emoji) expands to swallow the viewport */
+.planet-card.zoom-in .planet-orb,
+.planet-card.zoom-in .planet-float {
+  animation: planetZoom 0.62s cubic-bezier(0.4, 0, 0.85, 0.6) forwards !important;
+}
+
+/* Fade everything else out while the chosen planet zooms */
+.planet-grid.zooming .planet-card:not(.zoom-in) {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.planet-grid.zooming .planet-card { pointer-events: none; }
+
+/* Stagger float timing so each planet bobs independently */
+.planet-card:nth-child(1) .planet-orb,
+.planet-card:nth-child(1) .planet-float { animation-delay: 0s; }
+.planet-card:nth-child(2) .planet-orb,
+.planet-card:nth-child(2) .planet-float { animation-delay: 0.7s; }
+.planet-card:nth-child(3) .planet-orb,
+.planet-card:nth-child(3) .planet-float { animation-delay: 1.4s; }
+.planet-card:nth-child(4) .planet-orb,
+.planet-card:nth-child(4) .planet-float { animation-delay: 0.35s; }
+.planet-card:nth-child(5) .planet-orb,
+.planet-card:nth-child(5) .planet-float { animation-delay: 1.05s; }
+
+/* ── Floating characters (astronaut / space station) ── */
+.planet-float {
+  /* Match planet orb's height constraint so they're visually equivalent */
+  font-size: min(clamp(3rem, 12vw, 7rem), calc((100vh - 64px - 42px) / 2 - 80px));
+  line-height: 1;
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,0.6));
+  flex-shrink: 0;
+  animation: orbFloat 4s ease-in-out infinite;
+}
+
+.planet-card.p-astro   .planet-float { animation-duration: 3.2s; }
+.planet-card.p-station .planet-float { animation-duration: 5s; }
+
+/* ── Planet labels ── */
+.planet-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.planet-fr {
+  font-size: clamp(0.75rem, 1.8vw, 1rem);
+  font-weight: 900;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6);
+  line-height: 1.1;
+}
+
+.planet-en {
+  font-size: clamp(0.6rem, 1.4vw, 0.8rem);
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════
    PHONICS HOME BUTTON
 ═══════════════════════════════════════════ */
 
 .phonics-home-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
   max-width: 520px;
-  margin: 10px auto 0;
-  padding: 13px 18px;
-  background: rgba(255,255,255,0.13);
-  border: 1.5px solid rgba(255,255,255,0.28);
+  margin: 14px auto 0;
+  padding: 16px 22px;
+  background: linear-gradient(135deg, #ff6b35 0%, #e65100 100%);
+  border: none;
   border-radius: var(--radius-md);
   color: #fff;
   font-family: inherit;
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s, transform 0.1s;
-  backdrop-filter: blur(4px);
+  box-shadow: 0 6px 20px rgba(255,107,53,0.45);
+  transition: transform 0.12s, box-shadow 0.12s;
+  -webkit-tap-highlight-color: transparent;
 }
-.phonics-home-btn:hover  { background: rgba(255,255,255,0.22); transform: translateY(-1px); }
-.phonics-home-btn:active { transform: scale(0.98); }
+.phonics-home-btn:hover  { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,107,53,0.6); }
+.phonics-home-btn:active { transform: scale(0.97); box-shadow: 0 3px 12px rgba(255,107,53,0.4); }
+.phonics-home-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 .phonics-home-icon {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   flex-shrink: 0;
 }
 .phonics-home-text {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   flex: 1;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 800;
   line-height: 1.2;
 }
 .phonics-home-sub {
-  font-size: 0.78rem;
-  font-weight: 400;
-  opacity: 0.75;
+  font-size: 0.82rem;
+  font-weight: 500;
+  opacity: 0.85;
 }
 .phonics-home-arrow {
-  font-size: 1.1rem;
-  opacity: 0.6;
+  font-size: 1.3rem;
+  opacity: 0.85;
 }
 
 /* ═══════════════════════════════════════════
@@ -1932,17 +2161,19 @@ body {
 .phonics-back {
   background: rgba(255,255,255,0.2);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #fff;
   font-family: inherit;
-  font-size: 0.88rem;
-  font-weight: 700;
-  padding: 8px 14px;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 11px 18px;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .phonics-back:hover { background: rgba(255,255,255,0.35); }
+.phonics-back:active { background: rgba(255,255,255,0.45); }
 
 .phonics-title-block {
   display: flex;
@@ -1977,18 +2208,22 @@ body {
 .phonic-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
 }
 
 .phonic-group-label {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   margin: 0;
-  padding-bottom: 4px;
+  padding-bottom: 8px;
   border-bottom: 2px solid currentColor;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .phonic-grid {
@@ -2004,14 +2239,14 @@ body {
   color: #fff;
   border: none;
   border-radius: 12px;
-  padding: 10px 10px 8px;
-  min-width: 64px;
-  min-height: 72px;
+  padding: 12px 10px 10px;
+  min-width: 72px;
+  min-height: 84px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   cursor: pointer;
   font-family: inherit;
   box-shadow: 0 3px 10px rgba(0,0,0,0.18);
@@ -2032,23 +2267,23 @@ body {
 }
 
 .phonic-grapheme {
-  font-size: 1.65rem;
+  font-size: 1.85rem;
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.01em;
 }
 .phonic-hint {
-  font-size: 0.68rem;
-  font-style: italic;
-  opacity: 0.9;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.95;
   line-height: 1;
 }
 .phonic-ex {
-  font-size: 0.58rem;
-  opacity: 0.72;
+  font-size: 0.65rem;
+  opacity: 0.8;
   line-height: 1.2;
   text-align: center;
-  max-width: 64px;
+  max-width: 70px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

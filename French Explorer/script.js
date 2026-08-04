@@ -459,7 +459,7 @@ async function evaluateCardPronunciation(item, transcript) {
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 80,
-          system: 'You evaluate a young child\'s (age 5-7) French pronunciation. Return ONLY valid JSON: {"stars":3,"feedback":"short encouraging sentence max 8 words"}. Be very generous with stars. Always warm and positive.',
+          system: 'You evaluate a young child\'s (age 5-7) French pronunciation. Return ONLY valid JSON: {"stars":N,"feedback":"short encouraging sentence max 8 words"}. Star rubric — 5: perfect; 4: very close; 3: recognisable; 2: attempted; 1: nothing like it. Always warm and encouraging.',
           messages: [{ role: 'user', content: `Target: "${item.fr}" (${item.en}). Heard: "${transcript || '(nothing clear)'}". Evaluate.` }],
         }),
       });
@@ -632,7 +632,7 @@ async function evaluatePronunciation(transcript) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 120,
-        system: 'You evaluate a young child\'s (age 5-7) French pronunciation attempt. Return ONLY valid JSON, no prose: {"stars":3,"feedback":"short encouraging sentence max 12 words","tip":"one short phonetic hint max 12 words"}. Be generous with stars. Always be warm and positive.',
+        system: 'You evaluate a young child\'s (age 5-7) French pronunciation attempt. Return ONLY valid JSON: {"stars":N,"feedback":"short encouraging sentence max 12 words","tip":"one short phonetic hint max 12 words"}. Star rubric — 5: matches perfectly; 4: very close, minor accent; 3: recognisable but off; 2: attempted, quite different; 1: nothing like target. Be honest but always warm and encouraging.',
         messages: [{
           role: 'user',
           content: `Target French: "${word.fr}" (means "${word.en}"). Speech recognition heard: "${transcript || '(nothing clear)'}". Evaluate.`,
@@ -720,6 +720,31 @@ function stopRocketCanvas() {
     cancelAnimationFrame(_rocketRaf);
     _rocketRaf = null;
   }
+}
+
+function drawStars(canvasId) {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const p = c.parentElement;
+  c.width  = p.offsetWidth  || 800;
+  c.height = p.offsetHeight || 600;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+  for (let i = 0; i < 220; i++) {
+    const x = Math.random() * c.width;
+    const y = Math.random() * c.height;
+    const r = Math.random() * 1.2 + 0.15;
+    const a = Math.random() * 0.65 + 0.25;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${a})`; ctx.fill();
+  }
+  [['rgba(165,180,252,0.85)', 16], ['rgba(167,243,208,0.75)', 12], ['rgba(253,230,138,0.85)', 12]].forEach(([col, n]) => {
+    for (let i = 0; i < n; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * c.width, Math.random() * c.height, Math.random() * 0.7 + 0.2, 0, Math.PI * 2);
+      ctx.fillStyle = col; ctx.fill();
+    }
+  });
 }
 
 function initRocketCanvas() {
@@ -1121,90 +1146,20 @@ function openParentSettings() {
 
 function homeCatButtons() {
   if (state.level === 1) {
-    return `
-      <button class="home-cat-btn portrait animals"
-        data-action="open-cat" data-cat="animals"
-        aria-label="Les Animaux — animals">
-        <span class="home-cat-icon" aria-hidden="true">🦁</span>
-        <div class="home-cat-info">
-          <div class="home-cat-name">Les Animaux</div>
-          <div class="home-cat-name-fr">Animals</div>
-        </div>
-      </button>
-      <button class="home-cat-btn portrait vehicles"
-        data-action="open-cat" data-cat="vehicles"
-        aria-label="Le Garage — les véhicules">
-        <span class="start-badge" aria-hidden="true">START HERE</span>
-        <span class="home-cat-icon" aria-hidden="true">🏎️</span>
-        <div class="home-cat-info">
-          <div class="home-cat-name">Le Garage</div>
-          <div class="home-cat-name-fr">Vehicles</div>
-        </div>
-      </button>
-      <button class="home-cat-btn portrait colours"
-        data-action="open-cat" data-cat="colours"
-        aria-label="Les Couleurs — colours">
-        <span class="home-cat-icon" aria-hidden="true">🎨</span>
-        <div class="home-cat-info">
-          <div class="home-cat-name">Les Couleurs</div>
-          <div class="home-cat-name-fr">Colours</div>
-        </div>
-      </button>
-      <button class="home-cat-btn portrait practice-shortcut"
-        data-action="open-practice"
-        aria-label="Pronunciation practice — say French words aloud">
-        <span class="home-cat-icon" aria-hidden="true">🎙️</span>
-        <div class="home-cat-info">
-          <div class="home-cat-name">Parler</div>
-          <div class="home-cat-name-fr">Say it in French!</div>
-        </div>
-      </button>`;
+    return [
+      planetCard('p-earth',  'earth',  '🦁', 'Les Animaux', 'Animals',          'open-cat', 'data-cat="animals"'),
+      planetCard('p-metal',  'metal',  '🏎️', 'Le Garage',   'Vehicles',         'open-cat', 'data-cat="vehicles"'),
+      planetCard('p-saturn', 'saturn', '🎨', 'Les Couleurs','Colours',           'open-cat', 'data-cat="colours"'),
+      planetFloat('p-astro',               '🧑‍🚀', 'Parler',     'Say it in French!', 'open-practice'),
+    ].join('');
   }
-  return `
-    <button class="home-cat-btn numbers"
-      data-action="open-cat" data-cat="numbers"
-      aria-label="Les Chiffres — numbers 1 to 10">
-      <span class="home-cat-icon" aria-hidden="true">🔢</span>
-      <div class="home-cat-info">
-        <div class="home-cat-name">Les Chiffres</div>
-        <div class="home-cat-name-fr">Les Nombres</div>
-        <div class="home-cat-desc">Count from one to ten</div>
-      </div>
-      <span class="home-cat-arrow" aria-hidden="true">→</span>
-    </button>
-    <button class="home-cat-btn body"
-      data-action="open-cat" data-cat="body"
-      aria-label="Le Corps — body parts">
-      <span class="home-cat-icon" aria-hidden="true">💪</span>
-      <div class="home-cat-info">
-        <div class="home-cat-name">Le Corps</div>
-        <div class="home-cat-name-fr">Le Corps Humain</div>
-        <div class="home-cat-desc">Head · eyes · nose · arm · leg</div>
-      </div>
-      <span class="home-cat-arrow" aria-hidden="true">→</span>
-    </button>
-    <button class="home-cat-btn family"
-      data-action="open-cat" data-cat="family"
-      aria-label="La Famille — family members">
-      <span class="home-cat-icon" aria-hidden="true">👨‍👩‍👧</span>
-      <div class="home-cat-info">
-        <div class="home-cat-name">La Famille</div>
-        <div class="home-cat-name-fr">La Famille</div>
-        <div class="home-cat-desc">Mum · dad · baby · sister · brother</div>
-      </div>
-      <span class="home-cat-arrow" aria-hidden="true">→</span>
-    </button>
-    <button class="home-cat-btn food"
-      data-action="open-cat" data-cat="food"
-      aria-label="La Nourriture — food and drink">
-      <span class="home-cat-icon" aria-hidden="true">🍎</span>
-      <div class="home-cat-info">
-        <div class="home-cat-name">La Nourriture</div>
-        <div class="home-cat-name-fr">À La Table</div>
-        <div class="home-cat-desc">Bread · milk · fruit · cheese · cake</div>
-      </div>
-      <span class="home-cat-arrow" aria-hidden="true">→</span>
-    </button>`;
+  return [
+    planetCard('p-jupiter', 'jupiter', '🔢', 'Les Chiffres', 'Numbers',   'open-cat', 'data-cat="numbers"'),
+    planetCard('p-ice',     'ice',     '💪', 'Le Corps',     'Body parts', 'open-cat', 'data-cat="body"'),
+    planetCard('p-neptune', 'neptune', '👨‍👩‍👧', 'La Famille',  'Family',    'open-cat', 'data-cat="family"'),
+    planetCard('p-forest',  'forest',  '🍎', 'La Nourriture','Food',       'open-cat', 'data-cat="food"'),
+    planetFloat('p-astro',              '🧑‍🚀', 'Parler',      'Say it in French!', 'open-practice'),
+  ].join('');
 }
 
 function renderPhonics() {
@@ -1245,60 +1200,76 @@ function renderPhonics() {
     </div>`;
 }
 
+const PLANET_SVG = {
+  earth: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ea" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(59,130,246,0.38)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="eb" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#bfdbfe"/><stop offset="22%" stop-color="#60a5fa"/><stop offset="55%" stop-color="#2563eb"/><stop offset="100%" stop-color="#1e3a8a"/></radialGradient><radialGradient id="es" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.62)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="eh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="ec"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#ea)"/><circle cx="60" cy="60" r="43" fill="url(#eb)"/><g clip-path="url(#ec)"><ellipse cx="66" cy="50" rx="15" ry="22" fill="rgba(21,128,61,0.75)" transform="rotate(-18,66,50)"/><ellipse cx="43" cy="66" rx="11" ry="14" fill="rgba(22,163,74,0.65)" transform="rotate(12,43,66)"/><ellipse cx="76" cy="72" rx="8" ry="10" fill="rgba(21,128,61,0.55)" transform="rotate(8,76,72)"/><ellipse cx="60" cy="21" rx="16" ry="7" fill="rgba(255,255,255,0.72)"/><ellipse cx="60" cy="99" rx="10" ry="5" fill="rgba(255,255,255,0.5)"/><ellipse cx="48" cy="44" rx="14" ry="4" fill="rgba(255,255,255,0.28)" transform="rotate(-8,48,44)"/><ellipse cx="70" cy="61" rx="11" ry="3" fill="rgba(255,255,255,0.22)" transform="rotate(5,70,61)"/></g><circle cx="60" cy="60" r="43" fill="url(#es)"/><circle cx="60" cy="60" r="43" fill="url(#eh)"/></svg>`,
+
+  metal: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ma" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(148,163,184,0.25)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="mb" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#f1f5f9"/><stop offset="20%" stop-color="#94a3b8"/><stop offset="55%" stop-color="#475569"/><stop offset="100%" stop-color="#0f172a"/></radialGradient><radialGradient id="ms" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.70)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="mh" cx="28%" cy="22%" r="42%"><stop offset="0%" stop-color="rgba(255,255,255,0.65)"/><stop offset="60%" stop-color="rgba(255,255,255,0.15)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="mc"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#ma)"/><circle cx="60" cy="60" r="43" fill="url(#mb)"/><g clip-path="url(#mc)"><circle cx="48" cy="44" r="9" fill="rgba(0,0,0,0.28)"/><circle cx="48" cy="44" r="6.5" fill="rgba(71,85,105,0.5)"/><circle cx="48" cy="44" r="4" fill="rgba(100,116,139,0.4)"/><circle cx="74" cy="55" r="7" fill="rgba(0,0,0,0.24)"/><circle cx="74" cy="55" r="5" fill="rgba(71,85,105,0.45)"/><circle cx="74" cy="55" r="3" fill="rgba(100,116,139,0.35)"/><circle cx="55" cy="74" r="5.5" fill="rgba(0,0,0,0.22)"/><circle cx="55" cy="74" r="3.5" fill="rgba(71,85,105,0.4)"/><circle cx="38" cy="65" r="4" fill="rgba(0,0,0,0.20)"/><circle cx="38" cy="65" r="2.5" fill="rgba(71,85,105,0.38)"/><circle cx="70" cy="72" r="3.5" fill="rgba(0,0,0,0.18)"/><circle cx="70" cy="72" r="2" fill="rgba(71,85,105,0.34)"/><ellipse cx="55" cy="55" rx="28" ry="8" fill="rgba(148,163,184,0.10)" transform="rotate(-20,55,55)"/></g><circle cx="60" cy="60" r="43" fill="url(#ms)"/><circle cx="60" cy="60" r="43" fill="url(#mh)"/></svg>`,
+
+  saturn: `<svg viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sa" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#ede9fe"/><stop offset="22%" stop-color="#c084fc"/><stop offset="55%" stop-color="#9333ea"/><stop offset="100%" stop-color="#4c1d95"/></radialGradient><radialGradient id="ss" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.6)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="sh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.45)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="sc"><circle cx="80" cy="60" r="38"/></clipPath><clipPath id="srb"><rect x="0" y="0" width="160" height="60"/></clipPath><clipPath id="srf"><rect x="0" y="60" width="160" height="60"/></clipPath></defs><g clip-path="url(#srb)"><ellipse cx="80" cy="60" rx="76" ry="13" fill="none" stroke="rgba(216,180,254,0.22)" stroke-width="4"/><ellipse cx="80" cy="60" rx="69" ry="11" fill="none" stroke="rgba(216,180,254,0.42)" stroke-width="5"/><ellipse cx="80" cy="60" rx="62" ry="10" fill="none" stroke="rgba(233,213,255,0.60)" stroke-width="6"/><ellipse cx="80" cy="60" rx="55" ry="8" fill="none" stroke="rgba(233,213,255,0.45)" stroke-width="4"/><ellipse cx="80" cy="60" rx="49" ry="7" fill="none" stroke="rgba(196,181,253,0.28)" stroke-width="3"/></g><circle cx="80" cy="60" r="38" fill="url(#sa)"/><g clip-path="url(#sc)"><ellipse cx="80" cy="50" rx="38" ry="7" fill="rgba(167,139,250,0.22)"/><ellipse cx="80" cy="63" rx="38" ry="5" fill="rgba(109,40,217,0.20)"/><ellipse cx="80" cy="35" rx="38" ry="4" fill="rgba(233,213,255,0.14)"/></g><circle cx="80" cy="60" r="38" fill="url(#ss)"/><circle cx="80" cy="60" r="38" fill="url(#sh)"/><g clip-path="url(#srf)"><ellipse cx="80" cy="60" rx="49" ry="7" fill="none" stroke="rgba(196,181,253,0.32)" stroke-width="3"/><ellipse cx="80" cy="60" rx="55" ry="8" fill="none" stroke="rgba(233,213,255,0.52)" stroke-width="4"/><ellipse cx="80" cy="60" rx="62" ry="10" fill="none" stroke="rgba(233,213,255,0.70)" stroke-width="6"/><ellipse cx="80" cy="60" rx="69" ry="11" fill="none" stroke="rgba(216,180,254,0.52)" stroke-width="5"/><ellipse cx="80" cy="60" rx="76" ry="13" fill="none" stroke="rgba(216,180,254,0.28)" stroke-width="4"/></g></svg>`,
+
+  jupiter: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ja" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(217,119,6,0.3)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="jb" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#fef3c7"/><stop offset="22%" stop-color="#fbbf24"/><stop offset="55%" stop-color="#d97706"/><stop offset="100%" stop-color="#78350f"/></radialGradient><radialGradient id="js" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.58)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="jh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.38)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="jc"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#ja)"/><circle cx="60" cy="60" r="43" fill="url(#jb)"/><g clip-path="url(#jc)"><rect x="17" y="38" width="86" height="7" fill="rgba(120,53,15,0.45)"/><rect x="17" y="50" width="86" height="5" fill="rgba(180,83,9,0.32)"/><rect x="17" y="60" width="86" height="8" fill="rgba(120,53,15,0.42)"/><rect x="17" y="72" width="86" height="5" fill="rgba(180,83,9,0.36)"/><rect x="17" y="82" width="86" height="4" fill="rgba(120,53,15,0.28)"/><rect x="17" y="32" width="86" height="4" fill="rgba(120,53,15,0.22)"/><ellipse cx="74" cy="57" rx="9" ry="5.5" fill="rgba(185,28,28,0.5)" transform="rotate(5,74,57)"/><ellipse cx="74" cy="57" rx="6" ry="3.5" fill="rgba(220,38,38,0.3)" transform="rotate(5,74,57)"/></g><circle cx="60" cy="60" r="43" fill="url(#js)"/><circle cx="60" cy="60" r="43" fill="url(#jh)"/></svg>`,
+
+  ice: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ia" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(251,113,133,0.3)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="ib" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#ffe4e6"/><stop offset="22%" stop-color="#fb7185"/><stop offset="55%" stop-color="#e11d48"/><stop offset="100%" stop-color="#881337"/></radialGradient><radialGradient id="is" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.6)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="ih" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="ic"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#ia)"/><circle cx="60" cy="60" r="43" fill="url(#ib)"/><g clip-path="url(#ic)"><line x1="40" y1="30" x2="55" y2="55" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/><line x1="65" y1="25" x2="72" y2="60" stroke="rgba(255,255,255,0.14)" stroke-width="1.2"/><line x1="30" y1="55" x2="58" y2="70" stroke="rgba(255,255,255,0.16)" stroke-width="1.4"/><line x1="70" y1="50" x2="85" y2="80" stroke="rgba(255,255,255,0.13)" stroke-width="1"/><line x1="48" y1="70" x2="60" y2="90" stroke="rgba(255,255,255,0.15)" stroke-width="1.2"/><ellipse cx="60" cy="22" rx="14" ry="6" fill="rgba(255,255,255,0.68)"/><ellipse cx="60" cy="98" rx="9" ry="4" fill="rgba(255,255,255,0.5)"/></g><circle cx="60" cy="60" r="43" fill="url(#is)"/><circle cx="60" cy="60" r="43" fill="url(#ih)"/></svg>`,
+
+  neptune: `<svg viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="na" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#ede9fe"/><stop offset="22%" stop-color="#a78bfa"/><stop offset="55%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#2e1065"/></radialGradient><radialGradient id="ns" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.62)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="nh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.42)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="nc"><circle cx="80" cy="60" r="38"/></clipPath><clipPath id="nrb"><rect x="0" y="0" width="160" height="60"/></clipPath><clipPath id="nrf"><rect x="0" y="60" width="160" height="60"/></clipPath></defs><g clip-path="url(#nrb)"><ellipse cx="80" cy="60" rx="70" ry="10" fill="none" stroke="rgba(221,214,254,0.18)" stroke-width="3"/><ellipse cx="80" cy="60" rx="62" ry="8" fill="none" stroke="rgba(221,214,254,0.30)" stroke-width="4"/><ellipse cx="80" cy="60" rx="54" ry="7" fill="none" stroke="rgba(196,181,253,0.20)" stroke-width="2.5"/></g><circle cx="80" cy="60" r="38" fill="url(#na)"/><g clip-path="url(#nc)"><ellipse cx="72" cy="52" rx="10" ry="6" fill="rgba(255,255,255,0.16)" transform="rotate(-12,72,52)"/><ellipse cx="90" cy="66" rx="8" ry="5" fill="rgba(255,255,255,0.12)" transform="rotate(8,90,66)"/></g><circle cx="80" cy="60" r="38" fill="url(#ns)"/><circle cx="80" cy="60" r="38" fill="url(#nh)"/><g clip-path="url(#nrf)"><ellipse cx="80" cy="60" rx="54" ry="7" fill="none" stroke="rgba(196,181,253,0.24)" stroke-width="2.5"/><ellipse cx="80" cy="60" rx="62" ry="8" fill="none" stroke="rgba(221,214,254,0.36)" stroke-width="4"/><ellipse cx="80" cy="60" rx="70" ry="10" fill="none" stroke="rgba(221,214,254,0.22)" stroke-width="3"/></g></svg>`,
+
+  forest: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fa" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(16,185,129,0.32)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="fb" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#99f6e4"/><stop offset="22%" stop-color="#2dd4bf"/><stop offset="55%" stop-color="#0d9488"/><stop offset="100%" stop-color="#042f2e"/></radialGradient><radialGradient id="fs" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.6)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="fh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.44)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="fc"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#fa)"/><circle cx="60" cy="60" r="43" fill="url(#fb)"/><g clip-path="url(#fc)"><ellipse cx="55" cy="55" rx="18" ry="22" fill="rgba(5,150,105,0.55)" transform="rotate(-15,55,55)"/><ellipse cx="74" cy="65" rx="14" ry="16" fill="rgba(6,78,59,0.60)" transform="rotate(10,74,65)"/><ellipse cx="42" cy="70" rx="12" ry="14" fill="rgba(5,150,105,0.48)" transform="rotate(5,42,70)"/><ellipse cx="65" cy="38" rx="9" ry="11" fill="rgba(4,120,87,0.45)" transform="rotate(-5,65,38)"/><ellipse cx="60" cy="45" rx="43" ry="10" fill="rgba(153,246,228,0.12)"/></g><circle cx="60" cy="60" r="43" fill="url(#fs)"/><circle cx="60" cy="60" r="43" fill="url(#fh)"/></svg>`,
+};
+
+function planetCard(cls, svgKey, emoji, fr, en, action, extra = '') {
+  const isRinged = svgKey === 'saturn' || svgKey === 'neptune';
+  return `
+    <button class="planet-card ${cls}" data-action="${action}" ${extra} aria-label="${fr}">
+      <div class="planet-orb${isRinged ? ' planet-orb-wide' : ''}">
+        ${PLANET_SVG[svgKey]}
+        <span class="planet-emoji" aria-hidden="true">${emoji}</span>
+      </div>
+      <div class="planet-label">
+        <span class="planet-fr">${fr}</span>
+        <span class="planet-en">${en}</span>
+      </div>
+    </button>`;
+}
+
+function planetFloat(cls, char, fr, en, action) {
+  return `
+    <button class="planet-card ${cls}" data-action="${action}" aria-label="${fr}">
+      <span class="planet-float" aria-hidden="true">${char}</span>
+      <div class="planet-label">
+        <span class="planet-fr">${fr}</span>
+        <span class="planet-en">${en}</span>
+      </div>
+    </button>`;
+}
+
+function zoomIntoPlanet(btn, navigate) {
+  const card = btn.closest('.planet-card');
+  const grid = btn.closest('.planet-grid');
+  if (!card || !grid) { navigate(); return; }
+  grid.classList.add('zooming');
+  card.classList.add('zoom-in');
+  setTimeout(navigate, 600);
+}
+
 function renderHome() {
   stopRocketCanvas();
   state.screen = 'home';
   $('app').innerHTML = `
-    <div class="home-scene">
-
-      <button class="parent-settings-btn" data-action="open-parent-settings" aria-label="Parent settings">⚙️</button>
-
-      <div class="h-sun scene-tap" data-action="tap-sun" aria-hidden="true"></div>
-      <div class="h-cloud c1 scene-tap" data-action="tap-cloud" aria-hidden="true">☁️</div>
-      <div class="h-cloud c3 scene-tap" data-action="tap-cloud" aria-hidden="true">☁️</div>
-      <div class="h-plane scene-tap" data-action="tap-plane" aria-hidden="true">✈️</div>
-      <button class="h-rocket" data-action="tap-rocket" aria-label="Tap the rocket!">
-        <canvas id="h-canvas"></canvas>
-      </button>
-
-      <div class="home-content">
-        <div class="home-heading">
-          <span class="home-flag scene-tap" data-action="tap-flag" aria-hidden="true">🇫🇷</span>
-          <h1 class="home-title">Mon Aventure Française</h1>
-          <p class="home-tagline">Tap a topic — let's explore!</p>
-        </div>
-
-        <nav class="home-cards${state.level === 1 ? ' portrait' : ''}" aria-label="Choose a topic">
-          ${homeCatButtons()}
-        </nav>
-        <button class="phonics-home-btn" data-action="open-phonics" aria-label="Les Sons — Sound mat">
-          <span class="phonics-home-icon" aria-hidden="true">🔤</span>
-          <span class="phonics-home-text">Les Sons<span class="phonics-home-sub">Sound mat</span></span>
-          <span class="phonics-home-arrow" aria-hidden="true">→</span>
-        </button>
-      </div>
-
-      <div class="h-horizon" aria-hidden="true">
-        <span class="h-tree">🌳</span><span class="h-tree-s">🌲</span>
-        <span class="h-tree">🌳</span><span class="h-tree-s">🌿</span>
-        <span class="h-tower scene-tap" data-action="tap-tower">🗼</span>
-        <span class="h-tree-s">🌿</span><span class="h-tree">🌳</span>
-        <span class="h-tree-s">🌲</span><span class="h-tree">🌳</span>
-      </div>
-
-      <div class="road-strip" aria-hidden="true">
-        <div class="road-dashes">
-          ${Array(30).fill('<div class="road-dash"></div>').join('')}
-        </div>
-        <span class="road-vehicle rv-car"   aria-hidden="true">🚙</span>
-        <span class="road-vehicle rv-truck" aria-hidden="true">🚛</span>
-        <span class="road-vehicle rv-bike"  aria-hidden="true">🏍️</span>
-      </div>
-
-      <div class="h-grass" aria-hidden="true"></div>
+    <div class="space-home">
+      <canvas class="space-stars" id="h-stars"></canvas>
+      <div class="space-nebula"></div>
+      <header class="space-header">
+        <span class="space-flag" aria-hidden="true">🇫🇷</span>
+        <h1 class="space-title">Mon Aventure Française</h1>
+        <button class="parent-settings-btn" data-action="open-parent-settings" aria-label="Parent settings">⚙️</button>
+      </header>
+      <nav class="planet-grid" aria-label="Choose a topic">
+        ${homeCatButtons()}
+        ${planetFloat('p-station', '🛸', 'Les Sons', 'Sound mat', 'open-phonics')}
+      </nav>
     </div>
   `;
-  initRocketCanvas();
+  drawStars('h-stars');
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1759,9 +1730,11 @@ function handleClick(e) {
       renderHome();
       break;
     case 'open-cat':
-      state.vehicleFilter = 'all';
-      state.animalFilter  = 'all';
-      renderCategory(btn.dataset.cat);
+      zoomIntoPlanet(btn, () => {
+        state.vehicleFilter = 'all';
+        state.animalFilter  = 'all';
+        renderCategory(btn.dataset.cat);
+      });
       break;
     case 'go-home':
       cancelFrench();
@@ -1817,7 +1790,7 @@ function handleClick(e) {
       startQuiz();
       break;
     case 'open-phonics':
-      renderPhonics();
+      zoomIntoPlanet(btn, renderPhonics);
       break;
     case 'play-phonic':
       cancelFrench();
@@ -1826,7 +1799,7 @@ function handleClick(e) {
       setTimeout(() => btn.classList.remove('phonic-active'), 500);
       break;
     case 'open-practice':
-      renderPractice();
+      zoomIntoPlanet(btn, renderPractice);
       break;
     case 'practice-listen':
       speak(state.practiceWords[state.practiceIdx].id);
