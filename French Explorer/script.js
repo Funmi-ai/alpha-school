@@ -175,6 +175,12 @@ let state = {
   modalItem:     null,
   modalCat:      null,
   lastFocused:   null,
+  // pronunciation practice
+  practiceWords: [],
+  practiceIdx:   0,
+  _practiceRec:  null,
+  // inline card recording
+  _cardRec:      null,
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -233,6 +239,408 @@ function speak(id) {
   const audio = new Audio(`audio/${id}.m4a`);
   _currentAudio = audio;
   audio.play().catch(() => {});
+}
+
+/* ── French TTS via browser Web Speech API ── */
+
+// Preload voices as early as possible (Chrome needs this)
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', () => {}, { once: true });
+}
+
+function speakFrench(text) {
+  if (!('speechSynthesis' in window)) return;
+  if (_currentAudio) { _currentAudio.pause(); _currentAudio.currentTime = 0; }
+  window.speechSynthesis.cancel();
+  const doSpeak = () => {
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'fr-FR';
+    utt.rate = 0.85;
+    const voices = window.speechSynthesis.getVoices();
+    const frVoice = voices.find(v => v.lang.startsWith('fr'));
+    if (frVoice) utt.voice = frVoice;
+    window.speechSynthesis.speak(utt);
+  };
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length) { doSpeak(); }
+  else { window.speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true }); }
+}
+
+function cancelFrench() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+/* ── French feedback phrases (spoken after pronunciation evaluation) ── */
+
+function frenchFeedbackPhrase(stars) {
+  if (stars >= 5) return 'Tu as dit ça parfaitement !';
+  if (stars >= 4) return 'Très bien dit !';
+  if (stars >= 3) return 'Bien essayé !';
+  if (stars >= 2) return 'Continue d\'essayer !';
+  return 'Réessaie encore !';
+}
+
+/* ── Pronunciation practice helpers ── */
+
+function getPracticeWords() {
+  const vehicles = VEHICLES.map(v => ({ id: v.id, fr: v.fr, en: v.en, emoji: v.emoji }));
+  const animals  = ANIMALS.map(a  => ({ id: a.id, fr: a.fr, en: a.en, emoji: a.emoji }));
+  const colours  = COLOURS.map(c  => ({ id: c.id, fr: c.fr, en: c.en, emoji: '🎨' }));
+  return shuffle([...vehicles, ...animals, ...colours]);
+}
+
+function starHTML(n) {
+  return Array.from({ length: 5 }, (_, i) =>
+    `<span class="star${i < n ? ' lit' : ''}" aria-hidden="true">${i < n ? '⭐' : '☆'}</span>`
+  ).join('');
+}
+
+function practiceIdleHTML() {
+  return `
+    <div class="practice-idle">
+      <p class="practice-instruction">Listen first, then try saying it in French!</p>
+      <div class="practice-btn-row">
+        <button class="pr-btn listen" data-action="practice-listen">👂 Listen</button>
+        <button class="pr-btn mic"    data-action="practice-record">🎙️ Your turn</button>
+      </div>
+    </div>`;
+}
+
+/* ── Inline card mic (Option A) ── */
+
+function resetCardMicBtn() {
+  const btn = $('card-mic');
+  if (!btn) return;
+  btn.innerHTML = '<span aria-hidden="true">🎙️</span><span class="speaker-label">say it</span>';
+  btn.disabled = false;
+}
+
+function cancelCardRecording() {
+  if (!state._cardRec) return;
+  const rec = state._cardRec;
+  state._cardRec = null;
+  try { rec.stop(); } catch {}
+  resetCardMicBtn();
+  const resultEl = $('card-mic-result');
+  if (resultEl) { resultEl.classList.add('hidden'); resultEl.innerHTML = ''; }
+}
+
+function startCardRecording() {
+  const items = getFilteredItems();
+  if (!items.length) return;
+  const item = items[state.cardIndex];
+
+  cancelCardRecording();
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return;
+
+  const micBtn = $('card-mic');
+  if (micBtn) {
+    micBtn.innerHTML = '<span aria-hidden="true" class="mic-pulse-inline">🎙️</span><span class="speaker-label">listening…</span>';
+    micBtn.disabled = true;
+  }
+
+  const rec = new SR();
+  rec.lang = 'fr-FR';
+  rec.continuous = true;
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  state._cardRec = rec;
+
+  let doneTimer = null;
+  let pending = '';
+
+  rec.onresult = e => {
+    const last = e.results[e.results.length - 1];
+    if (!last.isFinal) return;
+    const text = last[0].transcript.trim();
+    if (!text) return;
+    pending = text;
+    clearTimeout(doneTimer);
+    doneTimer = setTimeout(() => {
+      try { rec.stop(); } catch {}
+      evaluateCardPronunciation(item, pending);
+    }, 1500);
+  };
+
+  rec.onerror = e => {
+    clearTimeout(doneTimer);
+    if (e.error === 'no-speech') return;
+    state._cardRec = null;
+    resetCardMicBtn();
+  };
+
+  rec.onend = () => {
+    clearTimeout(doneTimer);
+    if (state._cardRec !== rec) return;
+    const btn = $('card-mic');
+    if (btn && btn.disabled) {
+      try { rec.start(); } catch { state._cardRec = null; resetCardMicBtn(); }
+    } else {
+      state._cardRec = null;
+    }
+  };
+
+  rec.start();
+}
+
+async function evaluateCardPronunciation(item, transcript) {
+  const micBtn = $('card-mic');
+  if (micBtn) {
+    micBtn.innerHTML = '<span class="speaker-label" style="font-size:0.75rem;padding:0 6px">checking…</span>';
+  }
+
+  const apiKey = localStorage.getItem('why_api_key');
+  let result = { stars: 3, feedback: 'Great try!' };
+
+  if (apiKey) {
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 80,
+          system: 'You evaluate a young child\'s (age 5-7) French pronunciation. Return ONLY valid JSON: {"stars":3,"feedback":"short encouraging sentence max 8 words"}. Be very generous with stars. Always warm and positive.',
+          messages: [{ role: 'user', content: `Target: "${item.fr}" (${item.en}). Heard: "${transcript || '(nothing clear)'}". Evaluate.` }],
+        }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        try {
+          const match = data.content[0].text.match(/\{[\s\S]*\}/);
+          if (match) result = JSON.parse(match[0]);
+        } catch {}
+      }
+    } catch {}
+  }
+
+  state._cardRec = null;
+  resetCardMicBtn();
+
+  const resultEl = $('card-mic-result');
+  if (!resultEl) return;
+
+  const stars = Math.max(1, Math.min(5, Math.round(result.stars || 3)));
+  resultEl.innerHTML = `
+    <div class="cmr-stars">${starHTML(stars)}</div>
+    <p class="cmr-feedback">${safeText(result.feedback)}</p>`;
+  resultEl.classList.remove('hidden');
+
+  speakFrench(frenchFeedbackPhrase(stars));
+
+  if (stars >= 4) {
+    const display = $('card-display');
+    if (display) burstStars(display);
+  }
+
+  setTimeout(() => {
+    const el = $('card-mic-result');
+    if (el) { el.classList.add('hidden'); el.innerHTML = ''; }
+  }, 3500);
+}
+
+function renderPractice() {
+  stopRocketCanvas();
+  cancelFrench();
+  state.screen        = 'practice';
+  state.practiceWords = getPracticeWords();
+  state.practiceIdx   = 0;
+  renderPracticeCard();
+}
+
+function renderPracticeCard() {
+  const words = state.practiceWords;
+  const idx   = state.practiceIdx;
+
+  if (idx >= words.length) { renderPracticeComplete(); return; }
+
+  const word = words[idx];
+
+  $('app').innerHTML = `
+    <div class="practice-screen">
+      <header class="practice-header">
+        <button class="back-btn" data-action="go-home" aria-label="Back to home">←</button>
+        <h2 class="practice-title">🎙️ Parler</h2>
+        <span class="practice-counter" aria-live="polite">${idx + 1} / ${words.length}</span>
+      </header>
+
+      <div class="practice-body">
+        <div class="practice-word-card" id="practice-word-card">
+          <div class="practice-emoji" aria-hidden="true">${word.emoji}</div>
+          <div class="practice-fr">${safeText(word.fr)}</div>
+          <div class="practice-en">${safeText(word.en)}</div>
+        </div>
+
+        <div id="practice-phase">${practiceIdleHTML()}</div>
+      </div>
+    </div>`;
+
+  setTimeout(() => speak(word.id), 500);
+}
+
+function startPracticeRecording() {
+  const phase = $('practice-phase');
+  if (!phase) return;
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    phase.innerHTML = `
+      <p class="practice-err">Microphone not supported in this browser.<br>Try Chrome or Safari.</p>
+      <button class="pr-btn listen" data-action="practice-listen" style="margin-top:1rem">👂 Listen again</button>`;
+    return;
+  }
+
+  phase.innerHTML = `
+    <div class="practice-recording">
+      <div class="pr-mic-pulse" aria-hidden="true">🎙️</div>
+      <p class="practice-recording-text">Listening…</p>
+      <button class="pr-btn cancel" data-action="practice-cancel">Stop</button>
+    </div>`;
+
+  const rec = new SR();
+  rec.lang = 'fr-FR';
+  rec.continuous = true;
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  state._practiceRec = rec;
+
+  let doneTimer = null;
+  let pending = '';
+
+  rec.onresult = e => {
+    const last = e.results[e.results.length - 1];
+    if (!last.isFinal) return;
+    const text = last[0].transcript.trim();
+    if (!text) return;
+    pending = text;
+    clearTimeout(doneTimer);
+    doneTimer = setTimeout(() => {
+      try { rec.stop(); } catch {}
+      evaluatePronunciation(pending);
+    }, 1500);
+  };
+
+  rec.onerror = e => {
+    clearTimeout(doneTimer);
+    if (e.error === 'no-speech') { /* onend will restart */ return; }
+    state._practiceRec = null;
+    const ph = $('practice-phase');
+    if (ph) ph.innerHTML = practiceIdleHTML();
+  };
+
+  rec.onend = () => {
+    clearTimeout(doneTimer);
+    if (state._practiceRec !== rec) return; // cancelled or done
+    const ph = $('practice-phase');
+    if (ph && ph.querySelector('.practice-recording')) {
+      try { rec.start(); } catch { state._practiceRec = null; }
+    } else {
+      state._practiceRec = null;
+    }
+  };
+
+  rec.start();
+}
+
+async function evaluatePronunciation(transcript) {
+  const phase = $('practice-phase');
+  if (!phase) return;
+
+  const word = state.practiceWords[state.practiceIdx];
+
+  phase.innerHTML = `
+    <div class="practice-evaluating">
+      <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <p>Checking your French…</p>
+    </div>`;
+
+  const apiKey = localStorage.getItem('why_api_key');
+
+  if (!apiKey) {
+    showPracticeResult(transcript, { stars: 3, feedback: 'Great try — keep practising!', tip: "Ask a grown-up to set up Why's That first for personalised feedback." });
+    return;
+  }
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 120,
+        system: 'You evaluate a young child\'s (age 5-7) French pronunciation attempt. Return ONLY valid JSON, no prose: {"stars":3,"feedback":"short encouraging sentence max 12 words","tip":"one short phonetic hint max 12 words"}. Be generous with stars. Always be warm and positive.',
+        messages: [{
+          role: 'user',
+          content: `Target French: "${word.fr}" (means "${word.en}"). Speech recognition heard: "${transcript || '(nothing clear)'}". Evaluate.`,
+        }],
+      }),
+    });
+
+    if (!resp.ok) throw new Error('API error');
+    const data = await resp.json();
+    let result = { stars: 3, feedback: 'Great try!', tip: 'Keep practising!' };
+    try {
+      const raw = data.content[0].text;
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (match) result = JSON.parse(match[0]);
+    } catch { /* keep default */ }
+
+    showPracticeResult(transcript, result);
+  } catch {
+    showPracticeResult(transcript, { stars: 3, feedback: 'Good effort — keep going!', tip: 'Practise makes perfect!' });
+  }
+}
+
+function showPracticeResult(transcript, result) {
+  const phase = $('practice-phase');
+  if (!phase) return;
+
+  const stars = Math.max(1, Math.min(5, Math.round(result.stars || 3)));
+
+  phase.innerHTML = `
+    <div class="practice-result">
+      <div class="pr-stars" aria-label="${stars} out of 5 stars">${starHTML(stars)}</div>
+      <p class="pr-feedback">${safeText(result.feedback)}</p>
+      ${result.tip ? `<p class="pr-tip">💡 ${safeText(result.tip)}</p>` : ''}
+      ${transcript ? `<p class="pr-heard">I heard: "<em>${safeText(transcript)}</em>"</p>` : ''}
+      <div class="practice-btn-row result-btns">
+        <button class="pr-btn try-again" data-action="practice-try-again">🔄 Try again</button>
+        <button class="pr-btn next-word"  data-action="practice-next">Next word →</button>
+      </div>
+    </div>`;
+
+  if (stars >= 4) {
+    const card = $('practice-word-card');
+    if (card) burstStars(card);
+  }
+
+  speakFrench(frenchFeedbackPhrase(stars));
+}
+
+function renderPracticeComplete() {
+  $('app').innerHTML = `
+    <div class="practice-screen">
+      <div class="practice-complete">
+        <div class="practice-trophy" aria-hidden="true">🏆</div>
+        <h2>Tu as tout fait !</h2>
+        <p>You practised all the Level 1 words. Magnifique !</p>
+        <button class="pr-btn next-word" data-action="practice-restart" style="margin-top:1.5rem">Play again 🔄</button>
+        <button class="pr-btn listen"    data-action="go-home" style="margin-top:0.5rem">Home 🏠</button>
+      </div>
+    </div>`;
 }
 
 function makeStarsSVG(n) {
@@ -690,6 +1098,15 @@ function homeCatButtons() {
           <div class="home-cat-name">Les Couleurs</div>
           <div class="home-cat-name-fr">Colours</div>
         </div>
+      </button>
+      <button class="home-cat-btn portrait practice-shortcut"
+        data-action="open-practice"
+        aria-label="Pronunciation practice — say French words aloud">
+        <span class="home-cat-icon" aria-hidden="true">🎙️</span>
+        <div class="home-cat-info">
+          <div class="home-cat-name">Parler</div>
+          <div class="home-cat-name-fr">Say it in French!</div>
+        </div>
       </button>`;
   }
   return `
@@ -915,19 +1332,28 @@ function buildSingleCard(slideDir) {
     <div class="card-inner ${animCls}"
       aria-label="${safeText(item.fr)} — ${safeText(item.en)}">
       ${visual}
-      <button class="card-speaker-btn in-card" id="card-speaker"
-        data-action="replay-card" aria-label="Hear the word again">
-        <span aria-hidden="true">🔊</span>
-        <span class="speaker-label" aria-hidden="true">tap to hear</span>
-      </button>
+      <div class="card-btn-row">
+        <button class="card-speaker-btn in-card" id="card-speaker"
+          data-action="replay-card" aria-label="Hear the word again">
+          <span aria-hidden="true">🔊</span>
+          <span class="speaker-label" aria-hidden="true">hear it</span>
+        </button>
+        <button class="card-mic-btn" id="card-mic"
+          data-action="card-record" aria-label="Say it in French">
+          <span aria-hidden="true">🎙️</span>
+          <span class="speaker-label" aria-hidden="true">say it</span>
+        </button>
+      </div>
       <div class="card-fr-word">${safeText(item.fr)}</div>
       <div class="card-en-word">${safeText(item.en)}</div>
       ${hint}
+      <div id="card-mic-result" class="card-mic-result hidden"></div>
     </div>
   `;
 }
 
 function goCard(dir) {
+  cancelCardRecording();
   const items = getFilteredItems();
   const next  = state.cardIndex + dir;
   if (next < 0 || next >= items.length) return;
@@ -1244,6 +1670,9 @@ function handleClick(e) {
       renderCategory(btn.dataset.cat);
       break;
     case 'go-home':
+      cancelFrench();
+      cancelCardRecording();
+      if (state._practiceRec) { state._practiceRec.stop(); state._practiceRec = null; }
       renderHome();
       break;
     case 'card-prev':
@@ -1254,6 +1683,9 @@ function handleClick(e) {
       break;
     case 'replay-card':
       speakCurrentCard();
+      break;
+    case 'card-record':
+      startCardRecording();
       break;
     case 'filter-v':
       state.vehicleFilter = btn.dataset.filter;
@@ -1266,6 +1698,7 @@ function handleClick(e) {
       renderCategory(state.category);
       break;
     case 'start-quiz':
+      cancelCardRecording();
       startQuiz();
       break;
     case 'exit-quiz':
@@ -1288,6 +1721,32 @@ function handleClick(e) {
       break;
     case 'retry-quiz':
       startQuiz();
+      break;
+    case 'open-practice':
+      renderPractice();
+      break;
+    case 'practice-listen':
+      speak(state.practiceWords[state.practiceIdx].id);
+      break;
+    case 'practice-record':
+      cancelFrench();
+      startPracticeRecording();
+      break;
+    case 'practice-cancel':
+      if (state._practiceRec) { state._practiceRec.stop(); state._practiceRec = null; }
+      { const ph = $('practice-phase'); if (ph) ph.innerHTML = practiceIdleHTML(); }
+      break;
+    case 'practice-try-again':
+      cancelFrench();
+      renderPracticeCard();
+      break;
+    case 'practice-next':
+      cancelFrench();
+      state.practiceIdx++;
+      renderPracticeCard();
+      break;
+    case 'practice-restart':
+      renderPractice();
       break;
   }
 }
