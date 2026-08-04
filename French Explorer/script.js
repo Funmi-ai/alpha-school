@@ -444,7 +444,7 @@ async function evaluateCardPronunciation(item, transcript) {
   }
 
   const apiKey = localStorage.getItem('why_api_key');
-  let result = { stars: 3, feedback: 'Great try!' };
+  let result = { stars: 4, feedback: 'Magnifique! 🌟' };
 
   if (apiKey) {
     try {
@@ -616,7 +616,7 @@ async function evaluatePronunciation(transcript) {
   const apiKey = localStorage.getItem('why_api_key');
 
   if (!apiKey) {
-    showPracticeResult(transcript, { stars: 3, feedback: 'Great try — keep practising!', tip: "Ask a grown-up to set up Why's That first for personalised feedback." });
+    showPracticeResult(transcript, { stars: 4, feedback: 'Magnifique! Keep going! 🌟', tip: 'Practise a little every day — you\'ll be amazing.' });
     return;
   }
 
