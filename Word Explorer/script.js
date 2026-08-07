@@ -2,54 +2,256 @@
 
 /* ═══════════════════════════════════════════════════════════════
    DATA
-   All content lives here. Add new words by editing this array only.
+   Add new words here only — never touch the render functions.
+   Each word needs: id, emoji, word, cat, synonyms, story, prompt
 ═══════════════════════════════════════════════════════════════ */
 
 const WORDS = [
-  // SIZE
-  { id: 'big',       emoji: '🐘', word: 'big',       cat: 'size',    synonyms: ['enormous', 'gigantic', 'huge', 'vast', 'immense', 'massive'] },
-  { id: 'small',     emoji: '🐭', word: 'small',     cat: 'size',    synonyms: ['tiny', 'little', 'miniature', 'petite', 'teeny', 'wee'] },
-  { id: 'tall',      emoji: '🦒', word: 'tall',      cat: 'size',    synonyms: ['towering', 'lofty', 'high', 'soaring', 'sky-high', 'elevated'] },
-  // SPEED
-  { id: 'fast',      emoji: '🐆', word: 'fast',      cat: 'speed',   synonyms: ['speedy', 'rapid', 'swift', 'quick', 'zippy', 'lightning'] },
-  { id: 'slow',      emoji: '🐢', word: 'slow',      cat: 'speed',   synonyms: ['gradual', 'leisurely', 'plodding', 'gentle', 'unhurried', 'steady'] },
-  // FEELINGS
-  { id: 'happy',     emoji: '😄', word: 'happy',     cat: 'feeling', synonyms: ['joyful', 'cheerful', 'delighted', 'gleeful', 'merry', 'elated'] },
-  { id: 'sad',       emoji: '😢', word: 'sad',       cat: 'feeling', synonyms: ['unhappy', 'gloomy', 'sorrowful', 'downcast', 'tearful', 'blue'] },
-  { id: 'angry',     emoji: '😠', word: 'angry',     cat: 'feeling', synonyms: ['furious', 'cross', 'annoyed', 'grumpy', 'irritated', 'livid'] },
-  { id: 'scared',    emoji: '😨', word: 'scared',    cat: 'feeling', synonyms: ['frightened', 'terrified', 'nervous', 'startled', 'timid', 'jittery'] },
-  { id: 'excited',   emoji: '🤩', word: 'excited',   cat: 'feeling', synonyms: ['thrilled', 'eager', 'enthusiastic', 'energised', 'overjoyed', 'buzzing'] },
-  // LOOKS
-  { id: 'beautiful', emoji: '🦋', word: 'beautiful', cat: 'looks',   synonyms: ['gorgeous', 'lovely', 'stunning', 'pretty', 'elegant', 'dazzling'] },
-  { id: 'bright',    emoji: '💡', word: 'bright',    cat: 'looks',   synonyms: ['shining', 'glowing', 'radiant', 'vivid', 'gleaming', 'luminous'] },
-  { id: 'dark',      emoji: '🌙', word: 'dark',      cat: 'looks',   synonyms: ['shadowy', 'murky', 'dim', 'gloomy', 'dusky', 'obscure'] },
-  // TEXTURE
-  { id: 'soft',      emoji: '🐰', word: 'soft',      cat: 'texture', synonyms: ['fluffy', 'silky', 'gentle', 'squishy', 'velvety', 'cushiony'] },
-  { id: 'hard',      emoji: '🪨', word: 'hard',      cat: 'texture', synonyms: ['solid', 'firm', 'tough', 'rigid', 'sturdy', 'stiff'] },
-  // SOUND
-  { id: 'loud',      emoji: '📣', word: 'loud',      cat: 'sound',   synonyms: ['noisy', 'booming', 'thunderous', 'blaring', 'rowdy', 'deafening'] },
-  { id: 'quiet',     emoji: '🤫', word: 'quiet',     cat: 'sound',   synonyms: ['silent', 'hushed', 'still', 'peaceful', 'calm', 'gentle'] },
-  // TEMPERATURE
-  { id: 'hot',       emoji: '🌋', word: 'hot',       cat: 'temp',    synonyms: ['scorching', 'blazing', 'boiling', 'sizzling', 'sweltering', 'fiery'] },
-  { id: 'cold',      emoji: '🧊', word: 'cold',      cat: 'temp',    synonyms: ['freezing', 'icy', 'chilly', 'frosty', 'arctic', 'bitter'] },
+  // ── ADJECTIVES: SIZE ─────────────────────────────────────────
+  {
+    id: 'big', emoji: '🐘', word: 'big', cat: 'size',
+    synonyms: ['enormous', 'gigantic', 'huge', 'vast', 'immense', 'massive'],
+    story:  'The Hoja let out an enormous fart that rattled every window in the house.',
+    prompt: 'Can you write a sentence about the Hojas using one of these words?',
+  },
+  {
+    id: 'small', emoji: '🐭', word: 'small', cat: 'size',
+    synonyms: ['tiny', 'little', 'miniature', 'petite', 'teeny', 'wee'],
+    story:  'The Hoja was so tiny she could hide inside a teacup and nobody would ever know.',
+    prompt: 'How small is a Hoja? Write a sentence showing just how teeny they are.',
+  },
+  {
+    id: 'tall', emoji: '🦒', word: 'tall', cat: 'size',
+    synonyms: ['towering', 'lofty', 'high', 'soaring', 'sky-high', 'elevated'],
+    story:  'From the towering height of the kitchen counter, the Hoja looked down at the dog below.',
+    prompt: 'Write a sentence about a Hoja climbing something very high.',
+  },
+
+  // ── ADJECTIVES: SPEED ────────────────────────────────────────
+  {
+    id: 'fast', emoji: '🐆', word: 'fast', cat: 'speed',
+    synonyms: ['speedy', 'rapid', 'swift', 'quick', 'zippy', 'lightning'],
+    story:  'The Hoja was lightning fast — she stole three biscuits before anyone even blinked.',
+    prompt: 'Write a sentence about a Hoja escaping very quickly.',
+  },
+  {
+    id: 'slow', emoji: '🐢', word: 'slow', cat: 'speed',
+    synonyms: ['gradual', 'leisurely', 'plodding', 'gentle', 'unhurried', 'steady'],
+    story:  'The biggest Hoja waddled at a leisurely pace, completely unbothered, leaving poo footprints all the way.',
+    prompt: 'Write a sentence about a Hoja moving very slowly and not caring at all.',
+  },
+
+  // ── ADJECTIVES: FEELINGS ─────────────────────────────────────
+  {
+    id: 'happy', emoji: '😄', word: 'happy', cat: 'feeling',
+    synonyms: ['joyful', 'cheerful', 'delighted', 'gleeful', 'merry', 'elated'],
+    story:  'The Hoja was absolutely gleeful — she had hidden a smelly sock inside the sofa and nobody could find it.',
+    prompt: 'Write a sentence about a Hoja who is delighted by some mischief she just caused.',
+  },
+  {
+    id: 'sad', emoji: '😢', word: 'sad', cat: 'feeling',
+    synonyms: ['unhappy', 'gloomy', 'sorrowful', 'downcast', 'tearful', 'blue'],
+    story:  'The Hoja felt gloomy — someone had moved the cheese and now he had no idea where to sit on it.',
+    prompt: 'Why might a Hoja feel sorrowful? Write a sentence about it.',
+  },
+  {
+    id: 'angry', emoji: '😠', word: 'angry', cat: 'feeling',
+    synonyms: ['furious', 'cross', 'annoyed', 'grumpy', 'irritated', 'livid'],
+    story:  'The Hoja was absolutely furious — someone had tidied up the mess she had spent all morning making.',
+    prompt: 'Write a sentence about a Hoja who is livid about something.',
+  },
+  {
+    id: 'scared', emoji: '😨', word: 'scared', cat: 'feeling',
+    synonyms: ['frightened', 'terrified', 'nervous', 'startled', 'timid', 'jittery'],
+    story:  'The Hoja was terrified — the cat had found her hiding spot behind the radiator.',
+    prompt: 'Write a sentence about a Hoja who is startled by something.',
+  },
+  {
+    id: 'excited', emoji: '🤩', word: 'excited', cat: 'feeling',
+    synonyms: ['thrilled', 'eager', 'enthusiastic', 'energised', 'overjoyed', 'buzzing'],
+    story:  'The Hojas were absolutely buzzing — they had discovered an unguarded trifle on the kitchen table.',
+    prompt: 'What would make a Hoja overjoyed? Write a sentence about it.',
+  },
+
+  // ── ADJECTIVES: LOOKS ────────────────────────────────────────
+  {
+    id: 'beautiful', emoji: '🦋', word: 'beautiful', cat: 'looks',
+    synonyms: ['gorgeous', 'lovely', 'stunning', 'pretty', 'elegant', 'dazzling'],
+    story:  'The Hoja thought she looked absolutely stunning in her tiny hat — even though it was made of cheese.',
+    prompt: 'Write a sentence describing what a Hoja looks like.',
+  },
+  {
+    id: 'bright', emoji: '💡', word: 'bright', cat: 'looks',
+    synonyms: ['shining', 'glowing', 'radiant', 'vivid', 'gleaming', 'luminous'],
+    story:  'The Hoja\'s eyes were gleaming as she spotted the biscuit tin from across the room.',
+    prompt: 'Write a sentence with gleaming or radiant about a Hoja.',
+  },
+  {
+    id: 'dark', emoji: '🌙', word: 'dark', cat: 'looks',
+    synonyms: ['shadowy', 'murky', 'dim', 'gloomy', 'dusky', 'obscure'],
+    story:  'The Hojas crept through the shadowy corridor, giggling very quietly to each other.',
+    prompt: 'Write a sentence about the Hojas in a dark, murky place.',
+  },
+
+  // ── ADJECTIVES: TEXTURE ──────────────────────────────────────
+  {
+    id: 'soft', emoji: '🐰', word: 'soft', cat: 'texture',
+    synonyms: ['fluffy', 'silky', 'gentle', 'squishy', 'velvety', 'cushiony'],
+    story:  'The Hoja settled into the squishy sofa cushion and let out a deeply satisfied sigh.',
+    prompt: 'Write a sentence about a Hoja finding something soft to sit on.',
+  },
+  {
+    id: 'hard', emoji: '🪨', word: 'hard', cat: 'texture',
+    synonyms: ['solid', 'firm', 'tough', 'rigid', 'sturdy', 'stiff'],
+    story:  'The Hoja knocked on the solid floorboard three times — a signal to the others below.',
+    prompt: 'Write a sentence with solid or firm about something a Hoja finds.',
+  },
+
+  // ── ADJECTIVES: SOUND ────────────────────────────────────────
+  {
+    id: 'loud', emoji: '📣', word: 'loud', cat: 'sound',
+    synonyms: ['noisy', 'booming', 'thunderous', 'blaring', 'rowdy', 'deafening'],
+    story:  'The fart was so thunderous it woke up the dog, the cat, and the next-door neighbours.',
+    prompt: 'Write a sentence about a Hoja making a thunderous or deafening sound.',
+  },
+  {
+    id: 'quiet', emoji: '🤫', word: 'quiet', cat: 'sound',
+    synonyms: ['silent', 'hushed', 'still', 'peaceful', 'calm', 'gentle'],
+    story:  'The house was perfectly silent — which meant the Hojas were definitely up to something.',
+    prompt: 'Write a sentence about a Hoja being silent or hushed. Why are they so quiet?',
+  },
+
+  // ── ADJECTIVES: TEMPERATURE ──────────────────────────────────
+  {
+    id: 'hot', emoji: '🌋', word: 'hot', cat: 'temp',
+    synonyms: ['scorching', 'blazing', 'boiling', 'sizzling', 'sweltering', 'fiery'],
+    story:  'The Hoja sat too close to the radiator and let out a scorching, furious fart of outrage.',
+    prompt: 'Write a sentence about a Hoja in something scorching or blazing hot.',
+  },
+  {
+    id: 'cold', emoji: '🧊', word: 'cold', cat: 'temp',
+    synonyms: ['freezing', 'icy', 'chilly', 'frosty', 'arctic', 'bitter'],
+    story:  'The Hoja had hidden in the freezer for a whole hour — emerging frosty, furious, and absolutely starving.',
+    prompt: 'Write a sentence about a Hoja who is absolutely freezing.',
+  },
+
+  // ── ADVERBS ──────────────────────────────────────────────────
+  {
+    id: 'quickly-adv', emoji: '⚡', word: 'quickly', cat: 'adverb',
+    synonyms: ['swiftly', 'hastily', 'speedily', 'briskly', 'rapidly', 'urgently'],
+    story:  'The Hoja swiftly grabbed the last biscuit and vanished under the floorboards before anyone turned around.',
+    prompt: 'Write a sentence about a Hoja doing something swiftly or hastily.',
+  },
+  {
+    id: 'quietly-adv', emoji: '🤫', word: 'quietly', cat: 'adverb',
+    synonyms: ['silently', 'softly', 'stealthily', 'gently', 'noiselessly', 'sneakily'],
+    story:  'The Hoja moved stealthily across the kitchen floor, not making a single sound.',
+    prompt: 'Write a sentence about a Hoja sneaking somewhere silently.',
+  },
+  {
+    id: 'loudly-adv', emoji: '📣', word: 'loudly', cat: 'adverb',
+    synonyms: ['noisily', 'thunderously', 'boisterously', 'raucously', 'deafeningly', 'rowdily'],
+    story:  'The Hoja burped so thunderously that everyone in the house froze and stared at the ceiling.',
+    prompt: 'Write a sentence about a Hoja doing something boisterously loud.',
+  },
+  {
+    id: 'carefully-adv', emoji: '🎯', word: 'carefully', cat: 'adverb',
+    synonyms: ['cautiously', 'gently', 'delicately', 'precisely', 'tenderly', 'meticulously'],
+    story:  'The Hoja cautiously lifted the edge of the tablecloth and peered underneath with one tiny eye.',
+    prompt: 'Write a sentence about a Hoja doing something very cautiously.',
+  },
+  {
+    id: 'suddenly-adv', emoji: '💥', word: 'suddenly', cat: 'adverb',
+    synonyms: ['abruptly', 'unexpectedly', 'instantly', 'immediately', 'sharply', 'all at once'],
+    story:  'Everything was peaceful. Then, abruptly, an extraordinary smell filled the entire room.',
+    prompt: 'Write a sentence where something abruptly or unexpectedly happens with the Hojas.',
+  },
+  {
+    id: 'bravely-adv', emoji: '🦁', word: 'bravely', cat: 'adverb',
+    synonyms: ['boldly', 'courageously', 'fearlessly', 'daringly', 'heroically', 'valiantly'],
+    story:  'The smallest Hoja boldly marched straight towards the dog and sat on its paw.',
+    prompt: 'Write a sentence about a Hoja doing something fearlessly.',
+  },
+
+  // ── VERBS ────────────────────────────────────────────────────
+  {
+    id: 'walked-verb', emoji: '👣', word: 'walked', cat: 'verb',
+    synonyms: ['tiptoed', 'crept', 'scurried', 'shuffled', 'waddled', 'stomped'],
+    story:  'The Hoja scurried across the kitchen floor at tremendous speed, heading straight for the cheese.',
+    prompt: 'Write a sentence about a Hoja moving. Did she tiptoe, waddle or stomp?',
+  },
+  {
+    id: 'ran-verb', emoji: '🏃', word: 'ran', cat: 'verb',
+    synonyms: ['sprinted', 'dashed', 'bolted', 'zoomed', 'hurtled', 'raced'],
+    story:  'The Hoja bolted under the sofa the moment she heard footsteps on the stairs.',
+    prompt: 'Write a sentence about a Hoja who sprints or dashes away from danger.',
+  },
+  {
+    id: 'said-verb', emoji: '💬', word: 'said', cat: 'verb',
+    synonyms: ['whispered', 'shouted', 'muttered', 'giggled', 'announced', 'declared'],
+    story:  '"This is the best hiding place," the Hoja whispered smugly from inside the wellington boot.',
+    prompt: 'Write a sentence where a Hoja whispers, mutters or giggles something.',
+  },
+  {
+    id: 'laughed-verb', emoji: '😂', word: 'laughed', cat: 'verb',
+    synonyms: ['chuckled', 'cackled', 'snorted', 'howled', 'giggled', 'guffawed'],
+    story:  'The Hoja cackled so hard at her own prank that she fell off the shelf.',
+    prompt: 'Write a sentence about a Hoja who cackles or guffaws at their own mischief.',
+  },
+  {
+    id: 'ate-verb', emoji: '🍪', word: 'ate', cat: 'verb',
+    synonyms: ['devoured', 'gobbled', 'nibbled', 'munched', 'chomped', 'wolfed'],
+    story:  'The Hoja devoured the entire biscuit tin in four minutes and felt absolutely no guilt.',
+    prompt: 'Write a sentence about a Hoja who gobbles or devours something they shouldn\'t.',
+  },
+  {
+    id: 'hid-verb', emoji: '🙈', word: 'hid', cat: 'verb',
+    synonyms: ['concealed', 'lurked', 'crouched', 'cowered', 'ducked', 'vanished'],
+    story:  'The Hoja lurked behind the cereal boxes, watching and waiting for the perfect moment.',
+    prompt: 'Write a sentence about a Hoja who lurks or crouches somewhere unexpected.',
+  },
+  {
+    id: 'looked-verb', emoji: '👀', word: 'looked', cat: 'verb',
+    synonyms: ['peered', 'glared', 'peeked', 'spied', 'gazed', 'squinted'],
+    story:  'The Hoja peered around the corner of the fridge with one very suspicious eye.',
+    prompt: 'Write a sentence where a Hoja peeks, peers or spies on something.',
+  },
 ];
 
 const CATEGORIES = [
-  { id: 'all',     label: 'All Words',   emoji: '⭐', color: '#ff6b35' },
-  { id: 'size',    label: 'Size',        emoji: '📏', color: '#3b82f6' },
-  { id: 'speed',   label: 'Speed',       emoji: '⚡', color: '#f97316' },
-  { id: 'feeling', label: 'Feelings',    emoji: '💛', color: '#ec4899' },
-  { id: 'looks',   label: 'Looks',       emoji: '👁️', color: '#8b5cf6' },
-  { id: 'texture', label: 'Texture',     emoji: '🤝', color: '#14b8a6' },
-  { id: 'sound',   label: 'Sound',       emoji: '🎵', color: '#eab308' },
-  { id: 'temp',    label: 'Temperature', emoji: '🌡️', color: '#ef4444' },
+  { id: 'all',     label: 'All Words',          emoji: '⭐', color: '#ff6b35' },
+  { id: 'size',    label: 'Adjectives: Size',    emoji: '📏', color: '#3b82f6' },
+  { id: 'speed',   label: 'Adjectives: Speed',   emoji: '⚡', color: '#f97316' },
+  { id: 'feeling', label: 'Adjectives: Feelings',emoji: '💛', color: '#ec4899' },
+  { id: 'looks',   label: 'Adjectives: Looks',   emoji: '👁️', color: '#8b5cf6' },
+  { id: 'texture', label: 'Adjectives: Texture', emoji: '🤝', color: '#14b8a6' },
+  { id: 'sound',   label: 'Adjectives: Sound',   emoji: '🎵', color: '#eab308' },
+  { id: 'temp',    label: 'Adjectives: Temp',    emoji: '🌡️', color: '#ef4444' },
+  { id: 'adverb',  label: 'Adverbs',             emoji: '🚀', color: '#7c3aed' },
+  { id: 'verb',    label: 'Verbs',               emoji: '🏃', color: '#0891b2' },
 ];
 
 const TICKER_WORDS = [
   'enormous', 'swift', 'joyful', 'radiant', 'fluffy', 'blazing',
-  'gigantic', 'speedy', 'cheerful', 'dazzling', 'squishy', 'scorching',
-  'towering', 'rapid', 'elated', 'gleaming', 'velvety', 'freezing',
+  'gigantic', 'speedy', 'gleeful', 'dazzling', 'stealthily', 'scorching',
+  'towering', 'rapid', 'devoured', 'gleaming', 'scurried', 'cackled',
 ];
+
+/* ═══════════════════════════════════════════════════════════════
+   WORD OF THE DAY
+   Seeded by date — same word all day, rotates daily.
+   Drawn from ALL words in the WORDS array above.
+═══════════════════════════════════════════════════════════════ */
+
+function getWordOfDay() {
+  const seed = new Date().toDateString();
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  const idx = (h >>> 0) % WORDS.length;
+  return WORDS[idx];
+}
 
 /* ═══════════════════════════════════════════════════════════════
    STATE
@@ -88,7 +290,9 @@ function getCurrentWord() {
   return words[state.cardIndex] || null;
 }
 
-/* ── TTS via local server (tts_server.py on :8081, uses macOS say) ── */
+/* ═══════════════════════════════════════════════════════════════
+   TTS via tts_server.py (macOS 'say', port 8081)
+═══════════════════════════════════════════════════════════════ */
 const TTS_SERVER = 'http://localhost:8081';
 
 function speak(text) {
@@ -109,6 +313,8 @@ function speak(text) {
 function renderHome() {
   state.screen = 'home';
   const tickerText = (TICKER_WORDS.join(' · ') + ' · ').repeat(2);
+  const wotd = getWordOfDay();
+  const wotdCat = getCatConfig(wotd.cat);
 
   $('app').innerHTML = `
     <div class="home-screen">
@@ -120,7 +326,22 @@ function renderHome() {
       <div class="home-hero">
         <div class="home-icon" aria-hidden="true">💬</div>
         <h1 class="home-title">Word Explorer</h1>
-        <p class="home-tagline">Discover bigger, better words!</p>
+        <p class="home-tagline">Discover bigger, better words for your Hojas stories!</p>
+      </div>
+
+      <div class="wotd-card" aria-label="Word of the day: ${safeText(wotd.word)}">
+        <div class="wotd-header">
+          <span class="wotd-badge">⭐ Word of the Day</span>
+          <button class="wotd-speak" data-action="speak-wotd"
+            data-text="${safeText(wotd.word + '. ' + wotd.story)}"
+            aria-label="Hear the word of the day">🔊</button>
+        </div>
+        <div class="wotd-word">${safeText(wotd.word)}</div>
+        <div class="wotd-cat" style="color:${safeText(wotdCat.color)}">${wotdCat.emoji} ${safeText(wotdCat.label)}</div>
+        <div class="wotd-synonyms">
+          ${wotd.synonyms.slice(0,4).map(s => `<span class="wotd-syn">${safeText(s)}</span>`).join('')}
+        </div>
+        <div class="wotd-story">${safeText(wotd.story)}</div>
       </div>
 
       <nav class="home-cats" aria-label="Choose a word category">
@@ -158,9 +379,7 @@ function renderBrowse() {
   if (!word) { renderHome(); return; }
 
   const catCfg = getCatConfig(word.cat);
-  const hdrCfg = state.filter === 'all'
-    ? getCatConfig('all')
-    : catCfg;
+  const hdrCfg = state.filter === 'all' ? getCatConfig('all') : catCfg;
 
   $('app').innerHTML = `
     <div class="browse-screen" style="--cat-color:${safeText(catCfg.color)}">
@@ -209,7 +428,6 @@ function renderBrowse() {
     if (Math.abs(diff) > 44) goCard(diff > 0 ? 1 : -1);
   }, { passive: true });
 
-  // Auto-speak after brief layout settle
   setTimeout(() => speakMain(), 220);
 }
 
@@ -225,8 +443,8 @@ function buildWordCard(slideDir) {
       aria-label="${safeText(word.word)} — tap a synonym to hear it">
       <div class="card-emoji" aria-hidden="true">${word.emoji}</div>
       <div class="card-word">${safeText(word.word)}</div>
-      <div class="card-also" aria-hidden="true">also means…</div>
-      <div class="synonym-grid" role="group" aria-label="Synonyms for ${safeText(word.word)}">
+      <div class="card-also" aria-hidden="true">in your story, try…</div>
+      <div class="synonym-grid" role="group" aria-label="Better words for ${safeText(word.word)}">
         ${word.synonyms.map(s => `
           <button class="synonym-chip${state.activeSynonym === s ? ' active' : ''}"
             data-action="speak-synonym"
@@ -236,6 +454,13 @@ function buildWordCard(slideDir) {
           </button>
         `).join('')}
       </div>
+      <div class="card-story-block">
+        <div class="card-story-label">📖 Hojas story:</div>
+        <div class="card-story">${safeText(word.story)}</div>
+        <button class="card-story-speak" data-action="speak-story"
+          aria-label="Hear the story sentence">🔊 Hear it</button>
+      </div>
+      <div class="card-prompt">${safeText(word.prompt)}</div>
     </div>
   `;
 }
@@ -249,7 +474,6 @@ function goCard(dir) {
 
   const card = $('word-card');
   if (card) {
-    // Update --cat-color on the parent screen for the new word
     const newWord = words[next];
     const newCat  = getCatConfig(newWord.cat);
     const screen  = card.closest('.browse-screen');
@@ -315,6 +539,10 @@ function handleClick(e) {
       speakMain();
       break;
 
+    case 'speak-wotd':
+      speak(btn.dataset.text);
+      break;
+
     case 'card-prev':
       goCard(-1);
       break;
@@ -332,6 +560,12 @@ function handleClick(e) {
       });
       break;
     }
+
+    case 'speak-story': {
+      const word = getCurrentWord();
+      if (word) speak(word.story);
+      break;
+    }
   }
 }
 
@@ -343,7 +577,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHome();
   $('app').addEventListener('click', handleClick);
 
-  // Keyboard navigation on browse screen
   document.addEventListener('keydown', e => {
     if (state.screen !== 'browse') return;
     if (e.key === 'ArrowRight') { e.preventDefault(); goCard(1); }

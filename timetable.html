@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cairo's School — Weekly Timetable</title>
+<style>
+/* ── Design tokens (Alpha School system) ─────────────────────────── */
+:root {
+  --c-header:  #ff6b35;
+  --c-focus:   #e65100;
+  --c-bg:      #fff8f0;
+  --c-card:    #ffffff;
+  --c-text:    #1f2937;
+  --c-muted:   #6b7280;
+  --c-shadow:  0 3px 14px rgba(0,0,0,0.10);
+  --c-done:    #16a34a;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --am-bg:     #eef7ff;
+  --am-text:   #1e40af;
+  --am-badge:  #dbeafe;
+
+  --pm-bg:     #fff8e8;
+  --pm-text:   #92400e;
+  --pm-badge:  #fef3c7;
+
+  --cs-bg:     #f3f4f6;
+  --cs-border: #e5e7eb;
+  --cs-text:   #9ca3af;
+
+  --sum-bg:     #f0fdf4;
+  --sum-border: #bbf7d0;
+  --sum-text:   #14532d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg:      #1a1410;
+    --c-card:    #26201a;
+    --c-text:    #f0e4d4;
+    --c-muted:   #9a8878;
+    --c-shadow:  0 3px 16px rgba(0,0,0,0.45);
+    --am-bg:     #101e2e;
+    --am-text:   #93c5fd;
+    --am-badge:  #1e3a5f;
+    --pm-bg:     #221a06;
+    --pm-text:   #fcd34d;
+    --pm-badge:  #3d2d04;
+    --cs-bg:     #211d19;
+    --cs-border: #302a24;
+    --cs-text:   #5c5248;
+    --sum-bg:    #052e16;
+    --sum-border:#166534;
+    --sum-text:  #86efac;
+  }
+}
+:root[data-theme="dark"] {
+  --c-bg:#1a1410;--c-card:#26201a;--c-text:#f0e4d4;--c-muted:#9a8878;
+  --c-shadow:0 3px 16px rgba(0,0,0,0.45);
+  --am-bg:#101e2e;--am-text:#93c5fd;--am-badge:#1e3a5f;
+  --pm-bg:#221a06;--pm-text:#fcd34d;--pm-badge:#3d2d04;
+  --cs-bg:#211d19;--cs-border:#302a24;--cs-text:#5c5248;
+  --sum-bg:#052e16;--sum-border:#166534;--sum-text:#86efac;
+}
+:root[data-theme="light"] {
+  --c-bg:#fff8f0;--c-card:#ffffff;--c-text:#1f2937;--c-muted:#6b7280;
+  --c-shadow:0 3px 14px rgba(0,0,0,0.10);
+  --am-bg:#eef7ff;--am-text:#1e40af;--am-badge:#dbeafe;
+  --pm-bg:#fff8e8;--pm-text:#92400e;--pm-badge:#fef3c7;
+  --cs-bg:#f3f4f6;--cs-border:#e5e7eb;--cs-text:#9ca3af;
+  --sum-bg:#f0fdf4;--sum-border:#bbf7d0;--sum-text:#14532d;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  background: var(--c-bg);
+  color: var(--c-text);
+  min-height: 100vh;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.site-header {
+  background: var(--c-header);
+  color: #fff;
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+.logo-star {
+  display: inline-block;
+  font-size: 1.5rem;
+  animation: spin-slow 10s linear infinite;
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+.header-meta { text-align: right; line-height: 1.3; }
+.header-greeting { font-size: 1rem; font-weight: 700; }
+.header-date     { font-size: 0.85rem; opacity: 0.82; }
+
+/* ── Week tracker (read-only, no navigation) ─────────────────────── */
+.week-bar {
+  background: var(--c-card);
+  border-bottom: 2px solid var(--c-bg);
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.week-bar::-webkit-scrollbar { display: none; }
+
+/* Each day is a display element only — not a button */
+.day-chip {
+  flex: 1 0 64px;
+  max-width: 140px;
+  min-height: 72px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--c-bg);
+  color: var(--c-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.4rem;
+  /* Not interactive — pointer-events kept default so it's visible but not actionable */
+  user-select: none;
+  cursor: default;
+  opacity: 0.45; /* future/past days fade back */
+}
+
+.day-chip.today {
+  opacity: 1;
+  background: var(--c-header);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(255,107,53,0.35);
+  position: relative;
+}
+.day-chip.today::before {
+  content: 'Today';
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  background: var(--c-header);
+  color: white;
+  padding: 0.1rem 0.5rem;
+  border-radius: 99px;
+  white-space: nowrap;
+  border: 1.5px solid rgba(255,255,255,0.4);
+}
+
+.day-short { font-size: 1rem; font-weight: 900; letter-spacing: -0.01em; }
+.day-full  { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.7; }
+.day-icons { font-size: 0.8rem; margin-top: 0.1rem; }
+.day-chip.today .day-icons { opacity: 0.9; }
+
+/* ── Day panel ───────────────────────────────────────────────────── */
+.day-panel {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Word of the Day card ────────────────────────────────────────── */
+.wotd-card {
+  background: #1e1b4b;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.wotd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.wotd-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.6);
+}
+
+.wotd-ask {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #a5b4fc;
+  background: rgba(165,180,252,0.15);
+  border-radius: 99px;
+  padding: 0.15rem 0.55rem;
+}
+
+.wotd-word {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.wotd-syns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.wotd-syn {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.12);
+  border-radius: 99px;
+  padding: 0.2rem 0.65rem;
+}
+
+.wotd-story {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.72);
+  font-style: italic;
+  line-height: 1.45;
+  border-left: 3px solid rgba(255,255,255,0.25);
+  padding-left: 0.65rem;
+  margin-top: 0.1rem;
+}
+
+/* ── Time block ──────────────────────────────────────────────────── */
+.time-block { border-radius: var(--radius-lg); padding: 1.5rem; }
+.time-block.morning   { background: var(--am-bg); }
+.time-block.afternoon { background: var(--pm-bg); }
+
+.block-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.block-title {
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.morning   .block-title { color: var(--am-text); }
+.afternoon .block-title { color: var(--pm-text); }
+
+.time-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.22rem 0.7rem;
+  border-radius: 99px;
+}
+.morning   .time-pill { background: var(--am-badge); color: var(--am-text); }
+.afternoon .time-pill { background: var(--pm-badge); color: var(--pm-text); }
+
+.block-note {
+  font-size: 0.78rem;
+  color: var(--c-muted);
+  font-weight: 600;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ── Activity grid ───────────────────────────────────────────────── */
+.activities {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+/* ── Activity card ───────────────────────────────────────────────── */
+.activity-card {
+  background: var(--c-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--c-shadow);
+  padding: 1.25rem 1.25rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.activity-card:not(.coming-soon):hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.activity-card.coming-soon {
+  background: var(--cs-bg);
+  border: 2px dashed var(--cs-border);
+  box-shadow: none;
+}
+.activity-card.done { border-left: 4px solid var(--c-done); }
+
+.act-icon { font-size: 2.5rem; line-height: 1; user-select: none; }
+.act-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--c-text);
+  text-wrap: balance;
+}
+.act-desc {
+  font-size: 0.88rem;
+  color: var(--c-muted);
+  flex: 1;
+  line-height: 1.4;
+}
+.activity-card.coming-soon .act-name,
+.activity-card.coming-soon .act-desc { color: var(--cs-text); }
+
+/* Done tick */
+.tick-badge {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.85rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  background: var(--c-done);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 900;
+  box-shadow: 0 2px 6px rgba(22,163,74,0.3);
+  animation: pop-in 0.18s ease;
+}
+@keyframes pop-in {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* Start button */
+.start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 48px;
+  padding: 0.55rem 1.2rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--c-header);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s, transform 0.1s;
+  align-self: flex-start;
+  margin-top: 0.15rem;
+}
+.start-btn:hover  { background: var(--c-focus); }
+.start-btn:active { transform: scale(0.97); }
+.start-btn:focus  { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+.activity-card.done .start-btn { background: var(--c-done); }
+.activity-card.done .start-btn:hover { background: #15803d; }
+
+/* Coming soon label */
+.soon-tag {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cs-text);
+  margin-top: 0.2rem;
+  padding: 0.3rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ── Day summary ─────────────────────────────────────────────────── */
+.day-summary {
+  border-radius: var(--radius-lg);
+  background: var(--sum-bg);
+  border: 2px solid var(--sum-border);
+  padding: 1.5rem;
+  display: none;
+}
+.day-summary.visible { display: block; }
+
+.summary-header {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--sum-text);
+  margin-bottom: 0.85rem;
+}
+
+.summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.5);
+  border: 1.5px solid var(--sum-border);
+  border-radius: 99px;
+  padding: 0.25rem 0.75rem 0.25rem 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--sum-text);
+}
+.chip-tick {
+  width: 1.3rem;
+  height: 1.3rem;
+  background: var(--c-done);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.summary-message {
+  font-size: 0.98rem;
+  color: var(--sum-text);
+  font-weight: 600;
+  background: rgba(255,255,255,0.45);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  line-height: 1.55;
+}
+
+/* ── Date card ───────────────────────────────────────────────────── */
+.date-card {
+  background: var(--c-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--c-shadow);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-left: 6px solid var(--c-header);
+  overflow: hidden;
+}
+
+.date-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex-shrink: 0;
+  padding-right: 1.75rem;
+  border-right: 2px solid var(--c-bg);
+}
+
+.date-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--c-header);
+}
+
+.date-day {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 900;
+  color: var(--c-header);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.date-parts {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+}
+
+.date-num {
+  font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+  font-weight: 900;
+  color: var(--c-text);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.date-month {
+  font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+  font-weight: 900;
+  color: var(--c-text);
+  line-height: 1;
+}
+
+.date-sep {
+  color: var(--c-muted);
+  font-size: 1.1rem;
+  font-weight: 300;
+}
+
+.date-year {
+  font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+  font-weight: 700;
+  color: var(--c-muted);
+  line-height: 1;
+}
+
+/* Quote — right panel */
+.date-quote {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-left: 1.75rem;
+  min-width: 0;
+}
+
+.quote-cat {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  line-height: 1;
+  user-select: none;
+}
+
+.quote-text {
+  font-size: clamp(1rem, 2.8vw, 1.25rem);
+  font-weight: 800;
+  color: var(--c-text);
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .site-header { padding: 1rem; }
+  .day-panel   { padding: 1rem 1rem 2.5rem; }
+  .time-block  { padding: 1.1rem; }
+  .activities  { grid-template-columns: 1fr; }
+  .day-btn     { min-height: 70px; }
+  .block-note  { display: none; }
+
+  /* Stack date + quote vertically on small screens */
+  .date-card   { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .date-body   { border-right: none; padding-right: 0; border-bottom: 2px solid var(--c-bg); padding-bottom: 1rem; width: 100%; }
+  .date-quote  { padding-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+
+<!-- ── Header ─────────────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="logo">
+    <span class="logo-star" aria-hidden="true">⭐</span>
+    Alpha School
+  </div>
+  <div class="header-meta">
+    <div class="header-greeting" id="greeting"></div>
+    <div class="header-date"    id="header-date"></div>
+  </div>
+</header>
+
+<!-- ── Week tracker (read-only) ───────────────────────────────────── -->
+<div class="week-bar" role="presentation" aria-hidden="true">
+  <!-- injected by JS -->
+</div>
+
+<!-- ── Day panel ──────────────────────────────────────────────────── -->
+<main class="day-panel" id="day-panel" aria-live="polite" aria-label="Cairo's activities">
+  <!-- injected by JS -->
+</main>
+
+<script>
+/* ─────────────────────────────────────────────────────────────────
+   DATA
+───────────────────────────────────────────────────────────────── */
+const DAYS  = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const SHORT = ['Mon','Tue','Wed','Thu','Fri'];
+
+// All activity definitions — referenced by SCHEDULE below
+const A = {
+  // ── Morning ──────────────────────────────────────────────────────
+  synthesis: {
+    id:   'synthesis',
+    icon: '🧮',
+    name: 'Synthesis',
+    desc: 'Maths puzzles and problem-solving adventures',
+    href: 'https://www.synthesis.com',
+  },
+  nightZookeeper: {
+    id:   'night-zookeeper',
+    icon: '🦒',
+    name: 'Night Zookeeper',
+    desc: 'Creative writing and stories with magical animals',
+    href: 'https://www.nightzookeeper.com',
+  },
+  wordExplorer: {
+    id:   'word-explorer',
+    icon: '📝',
+    name: 'Word Explorer',
+    desc: 'Discover brilliant new words and synonyms to use in your writing',
+    href: '../Word Explorer/word-explorer.html',
+  },
+  connectives: {
+    id:   'connectives',
+    icon: '🔗',
+    name: 'Connectives',
+    desc: 'Learn linking words — but, because, therefore, however — to make your sentences shine',
+    href: '../Connectives/connectives.html',
+  },
+  frenchExplorer: {
+    id:   'french-explorer',
+    icon: '🇫🇷',
+    name: 'French Explorer',
+    desc: 'Bonjour! Listen, speak and play in French',
+    href: '../French Explorer/french-explorer.html',
+  },
+  // ── Afternoon ────────────────────────────────────────────────────
+  clascrunch: {
+    id:   'clascrunch',
+    icon: '🔬',
+    name: 'ClassCrunch Labs',
+    desc: 'Science experiments, discoveries and big questions',
+    href: 'https://www.classcrunchlabs.org/curriculum',
+  },
+  financial: {
+    id:   'financial-literacy',
+    icon: '💰',
+    name: 'Financial Literacy',
+    desc: 'Learn about money, saving and spending wisely',
+    href: '../Money Jar Tracker/money-jar.html',
+  },
+  history: {
+    id:   'history',
+    icon: '🏛️',
+    name: 'Historical Heroes',
+    desc: 'Travel back in time and meet remarkable people',
+    href: '../Historical Heroes/historical-heroes.html',
+  },
+  brownieBusiness: {
+    id:   'brownie-trailhead',
+    icon: '🧁',
+    name: 'Brownie Trailhead',
+    desc: 'Run your own brownie business — bake, sell and learn about money',
+    href: '../Brownie Trailhead/brownie-trailhead.html',
+  },
+  art: {
+    id:   'art',
+    icon: '🎨',
+    name: 'Art & Creativity',
+    desc: 'Draw, make and explore colour and pattern',
+    href: 'https://www.tate.org.uk/kids',
+  },
+  music: {
+    id:   'music',
+    icon: '🎵',
+    name: 'Music & Movement',
+    desc: 'Rhythm games, songs and moving to the beat',
+    href: 'https://www.gonoodle.com',
+  },
+  whysThat: {
+    id:   'whys-that',
+    icon: '🔍',
+    name: "Why's That?",
+    desc: 'Ask any question about the world and discover something amazing',
+    href: '../Library of Whys/why-library.html',
+  },
+};
+
+// Full schedule — morning and afternoon per day (Mon=0 … Fri=4)
+//
+// English rotation:
+//   Mon & Wed → Night Zookeeper (write stories)
+//   Tue & Fri → Connectives     (learn linking words, apply next writing session)
+//   Thu       → Word Explorer   (discover new vocabulary, use in stories)
+//
+// Why's That is every afternoon — open-ended curiosity explorer
+const SCHEDULE = [
+  { // Monday
+    morning:   [A.synthesis, A.nightZookeeper, A.frenchExplorer],
+    afternoon: [A.clascrunch, A.brownieBusiness, A.whysThat],
+  },
+  { // Tuesday
+    morning:   [A.synthesis, A.connectives, A.frenchExplorer],
+    afternoon: [A.financial, A.history, A.whysThat],
+  },
+  { // Wednesday
+    morning:   [A.synthesis, A.nightZookeeper, A.frenchExplorer],
+    afternoon: [A.clascrunch, A.brownieBusiness, A.whysThat],
+  },
+  { // Thursday
+    morning:   [A.synthesis, A.wordExplorer, A.frenchExplorer],
+    afternoon: [A.financial, A.history, A.whysThat],
+  },
+  { // Friday
+    morning:   [A.synthesis, A.connectives, A.frenchExplorer],
+    afternoon: [A.clascrunch, A.financial, A.whysThat],
+  },
+];
+
+// Word of the Day — mirrors Word Explorer data, seeded by date
+// Only needs: word, synonyms (first 3), story sentence
+const WOTD_WORDS = [
+  { word:'enormous',    syns:['gigantic','vast','immense'],          story:'The Hoja let out an enormous fart that rattled every window in the house.' },
+  { word:'stealthily',  syns:['silently','sneakily','noiselessly'],  story:'The Hoja moved stealthily across the kitchen, heading straight for the cheese.' },
+  { word:'thunderous',  syns:['deafening','booming','blaring'],      story:'The burp was so thunderous it woke up the dog, the cat and next door.' },
+  { word:'gleeful',     syns:['joyful','delighted','elated'],        story:'The Hoja was absolutely gleeful — she had hidden a sock inside the sofa.' },
+  { word:'scurried',    syns:['darted','bolted','dashed'],           story:'The Hoja scurried across the floor the moment she heard footsteps.' },
+  { word:'devoured',    syns:['gobbled','wolfed','chomped'],         story:'The Hoja devoured the entire biscuit tin and felt absolutely no guilt.' },
+  { word:'furious',     syns:['livid','cross','outraged'],           story:'The Hoja was furious — someone had tidied the mess she spent all morning making.' },
+  { word:'cautiously',  syns:['carefully','gently','delicately'],    story:'The Hoja cautiously lifted the tablecloth and peered underneath with one tiny eye.' },
+  { word:'lurking',     syns:['hiding','creeping','crouching'],      story:'The Hoja was lurking behind the cereal boxes, watching and waiting.' },
+  { word:'magnificent', syns:['spectacular','splendid','glorious'],  story:'The Hoja thought her tiny poo sculpture was truly magnificent.' },
+  { word:'ferocious',   syns:['fierce','wild','furious'],            story:'The Hoja gave the cat the most ferocious glare a creature her size could manage.' },
+  { word:'peculiar',    syns:['strange','odd','unusual'],            story:'A peculiar smell had been drifting through the house all afternoon.' },
+  { word:'disastrous',  syns:['catastrophic','terrible','awful'],    story:'The plan had been brilliant. The result was completely disastrous.' },
+  { word:'preposterous',syns:['ridiculous','absurd','outrageous'],   story:'It was preposterous — three Hojas in a teacup and they still wanted more room.' },
+  { word:'mischievous', syns:['naughty','cheeky','troublesome'],     story:'The most mischievous Hoja had discovered where the chocolate biscuits were kept.' },
+  { word:'bewildered',  syns:['confused','baffled','puzzled'],       story:'Everyone was bewildered by the smell — nobody suspected the Hojas at all.' },
+  { word:'raucously',   syns:['noisily','loudly','boisterously'],    story:'The Hojas laughed raucously as they tumbled out from behind the fridge.' },
+  { word:'cunning',     syns:['clever','devious','crafty'],          story:'The most cunning Hoja had a plan involving the butter dish and the dog.' },
+  { word:'velvety',     syns:['silky','smooth','soft'],              story:'The Hoja sank into the velvety sofa cushion with a satisfied sigh.' },
+  { word:'cackled',     syns:['giggled','howled','guffawed'],        story:'The Hoja cackled so hard at her own trick that she fell off the shelf.' },
+];
+
+// Daily quotes — one shown per day, seeded from the date so it's consistent
+// on reload but feels random across days
+const QUOTES = [
+  // 💡 Curiosity & Loving to Learn
+  { cat:'💡', text:'Every question you ask makes your brain grow!' },
+  { cat:'💡', text:'Mistakes are just clues that help us learn.' },
+  { cat:'💡', text:'You are a learning superhero.' },
+  { cat:'💡', text:'The more you know, the further you will go.' },
+  { cat:'💡', text:'Your brain loves learning new things!' },
+  { cat:'💡', text:'Discovering new things is the best adventure.' },
+  { cat:'💡', text:'There is always something cool to find out.' },
+  { cat:'💡', text:"Asking 'why' is how we get smart." },
+  { cat:'💡', text:'You are an explorer of big ideas!' },
+  { cat:'💡', text:'Learning is like magic for your mind.' },
+  { cat:'💡', text:'Every day is a chance to know more.' },
+  { cat:'💡', text:'Your curiosity is your best tool.' },
+  // 💪 Effort & Not Giving Up
+  { cat:'💪', text:"If it's hard, it just means you're learning!" },
+  { cat:'💪', text:'Keep trying, you are getting closer.' },
+  { cat:'💪', text:'You can do hard things if you try.' },
+  { cat:'💪', text:'Practising makes you stronger every day.' },
+  { cat:'💪', text:"I can't do it... YET!" },
+  { cat:'💪', text:'Every little step is a big win.' },
+  { cat:'💪', text:'You don\'t have to be perfect to be amazing.' },
+  { cat:'💪', text:'Keep your chin up and try again.' },
+  { cat:'💪', text:'You are a hard worker, and it shows!' },
+  { cat:'💪', text:'Believing you can is half the battle.' },
+  { cat:'💪', text:'Every time you try, you win.' },
+  { cat:'💪', text:'Slow and steady wins the race.' },
+  // 🚀 Confidence & Inner Strength
+  { cat:'🚀', text:'You have a brain full of brilliant ideas.' },
+  { cat:'🚀', text:'No one can do this exactly the way you do.' },
+  { cat:'🚀', text:'You are capable of amazing things.' },
+  { cat:'🚀', text:"Trust yourself, you've got this!" },
+  { cat:'🚀', text:'Your thinking cap looks great on you.' },
+  { cat:'🚀', text:'You are smart, strong, and ready.' },
+  { cat:'🚀', text:'Be proud of how hard you work.' },
+  { cat:'🚀', text:'You are the boss of your own learning.' },
+  { cat:'🚀', text:'You are a star in the making.' },
+  { cat:'🚀', text:'Be yourself, because yourself is wonderful.' },
+  { cat:'🚀', text:'You are special just the way you are.' },
+  // 🌈 Creativity & Imagination
+  { cat:'🌈', text:'Think outside the toy box!' },
+  { cat:'🌈', text:'Your imagination has no limits.' },
+  { cat:'🌈', text:'Dream big, learn big!' },
+  { cat:'🌈', text:'Create something that makes you smile today.' },
+  { cat:'🌈', text:'There are no wrong answers in imagination.' },
+  { cat:'🌈', text:'Colour outside the lines if you want to!' },
+  { cat:'🌈', text:'Your mind is a world of adventures.' },
+  { cat:'🌈', text:'What can you invent today?' },
+  { cat:'🌈', text:'Use your imagination to build a better world.' },
+  { cat:'🌈', text:'You can be anything you want to be.' },
+];
+
+// Summary phrases for each activity id
+const PHRASES = {
+  'synthesis':          'worked on maths puzzles',
+  'night-zookeeper':   'wrote a creative story',
+  'word-explorer':     'explored new words',
+  'french-explorer':   'practised French',
+  'clascrunch':        'explored science',
+  'financial-literacy':'learnt about money',
+  'history':           'explored historical heroes',
+  'brownie-trailhead': 'ran the Brownie business',
+  'art':               'made something in Art & Creativity',
+  'music':             'danced and made music',
+  'whys-that':         'asked big questions in Why\'s That',
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   STATE — session-only, no localStorage (child safety)
+───────────────────────────────────────────────────────────────── */
+const done = new Set();
+
+/* ─────────────────────────────────────────────────────────────────
+   UTILITY
+───────────────────────────────────────────────────────────────── */
+function safeText(s) {
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+// Returns 0–4 (Mon–Fri) or null for weekends
+function todayWeekdayIndex() {
+  const d = new Date().getDay(); // 0 Sun, 6 Sat
+  if (d === 0 || d === 6) return null;
+  return d - 1;
+}
+
+function activitiesForDay(idx) {
+  return [...SCHEDULE[idx].morning, ...SCHEDULE[idx].afternoon].filter(a => !a.comingSoon);
+}
+
+function afternoonIconsForDay(idx) {
+  return SCHEDULE[idx].afternoon.map(a => a.icon).join(' ');
+}
+
+// Shared date-seeded hash (used by both WOTD and quote)
+function dateHash(extra) {
+  const seed = new Date().toDateString() + (extra || '');
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return h >>> 0;
+}
+
+function wotdForToday() {
+  return WOTD_WORDS[dateHash('wotd') % WOTD_WORDS.length];
+}
+
+function wotdcardHTML() {
+  const w = wotdForToday();
+  return `
+    <div class="wotd-card" role="note" aria-label="Word of the day: ${safeText(w.word)}">
+      <div class="wotd-header">
+        <span class="wotd-eyebrow">⭐ Word of the Day</span>
+        <span class="wotd-ask">Ask Cairo about it!</span>
+      </div>
+      <div class="wotd-word">${safeText(w.word)}</div>
+      <div class="wotd-syns">
+        ${w.syns.map(s => `<span class="wotd-syn">${safeText(s)}</span>`).join('')}
+      </div>
+      <div class="wotd-story">${safeText(w.story)}</div>
+    </div>`;
+}
+
+// Seeded random from the date string — same quote all day, random across days
+function quoteForToday() {
+  return QUOTES[dateHash('quote') % QUOTES.length];
+}
+
+function listToSentence(arr) {
+  if (arr.length === 0) return '';
+  if (arr.length === 1) return arr[0];
+  if (arr.length === 2) return arr[0] + ' and ' + arr[1];
+  return arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — date card
+───────────────────────────────────────────────────────────────── */
+function datecardHTML() {
+  const now     = new Date();
+  const dayName = now.toLocaleDateString('en-GB', { weekday: 'long' });
+  const dayNum  = now.toLocaleDateString('en-GB', { day:     'numeric' });
+  const month   = now.toLocaleDateString('en-GB', { month:   'long' });
+  const year    = now.toLocaleDateString('en-GB', { year:    'numeric' });
+  const quote   = quoteForToday();
+  return `
+    <div class="date-card" role="note" aria-label="Today is ${safeText(dayName)}, ${safeText(dayNum)} ${safeText(month)} ${safeText(year)}">
+      <div class="date-body">
+        <div class="date-label">Today is</div>
+        <div class="date-day">${safeText(dayName)}</div>
+        <div class="date-parts">
+          <span class="date-num">${safeText(dayNum)}</span>
+          <span class="date-month">${safeText(month)}</span>
+          <span class="date-sep">·</span>
+          <span class="date-year">${safeText(year)}</span>
+        </div>
+      </div>
+      <div class="date-quote" aria-label="Today's inspiration: ${safeText(quote.text)}">
+        <span class="quote-cat" aria-hidden="true">${quote.cat}</span>
+        <span class="quote-text">${safeText(quote.text)}</span>
+      </div>
+    </div>`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — week bar (read-only, no interaction)
+───────────────────────────────────────────────────────────────── */
+function renderWeekBar(todayIdx) {
+  document.querySelector('.week-bar').innerHTML = DAYS.map((day, i) => `
+    <div class="day-chip${i === todayIdx ? ' today' : ''}" aria-hidden="true">
+      <span class="day-short">${safeText(SHORT[i])}</span>
+      <span class="day-full">${safeText(day)}</span>
+      <span class="day-icons">${afternoonIconsForDay(i)}</span>
+    </div>
+  `).join('');
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — activity card
+───────────────────────────────────────────────────────────────── */
+function cardHTML(act) {
+  if (act.comingSoon) {
+    return `
+      <article class="activity-card coming-soon">
+        <div class="act-icon" aria-hidden="true">${act.icon}</div>
+        <div class="act-name">${safeText(act.name)}</div>
+        <div class="act-desc">${safeText(act.desc)}</div>
+        <div class="soon-tag">🔒 Coming soon</div>
+      </article>`;
+  }
+  const isDone = done.has(act.id);
+  return `
+    <article class="activity-card${isDone ? ' done' : ''}"
+             aria-label="${safeText(act.name)}${isDone ? ' — completed' : ''}">
+      ${isDone ? '<div class="tick-badge" aria-label="Completed">✓</div>' : ''}
+      <div class="act-icon" aria-hidden="true">${act.icon}</div>
+      <div class="act-name">${safeText(act.name)}</div>
+      <div class="act-desc">${safeText(act.desc)}</div>
+      <a class="start-btn"
+         href="${safeText(act.href)}"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-id="${act.id}"
+         aria-label="${isDone ? 'Open again: ' : 'Start: '}${safeText(act.name)}"
+      >${isDone ? '✓ Done — open again' : '▶ Start'}</a>
+    </article>`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — summary
+───────────────────────────────────────────────────────────────── */
+function summaryHTML(dayIdx) {
+  const allActs   = activitiesForDay(dayIdx);
+  const completed = allActs.filter(a => done.has(a.id));
+  if (completed.length === 0) {
+    return `<section class="day-summary" aria-live="polite"></section>`;
+  }
+  const chips = completed.map(a =>
+    `<span class="summary-chip"><span class="chip-tick" aria-hidden="true">✓</span>${safeText(a.icon)} ${safeText(a.name)}</span>`
+  ).join('');
+  const phrases  = completed.map(a => PHRASES[a.id]).filter(Boolean);
+  const sentence = `Cairo ${listToSentence(phrases)} today — ${completed.length} out of ${allActs.length} sessions done. Brilliant work! 🌟`;
+  return `
+    <section class="day-summary visible" aria-live="polite" aria-label="Cairo's progress today">
+      <div class="summary-header">🌟 Cairo's progress today</div>
+      <div class="summary-chips">${chips}</div>
+      <div class="summary-message">${safeText(sentence)}</div>
+    </section>`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — main panel (school day)
+───────────────────────────────────────────────────────────────── */
+function renderSchoolDay(dayIdx) {
+  const { morning, afternoon } = SCHEDULE[dayIdx];
+  document.getElementById('day-panel').innerHTML = `
+    ${datecardHTML()}
+    ${wotdcardHTML()}
+
+    <section class="time-block morning" aria-labelledby="morning-heading">
+      <header class="block-header">
+        <span class="time-pill" aria-hidden="true">Morning</span>
+        <h2 class="block-title" id="morning-heading">☀️ Morning sessions</h2>
+      </header>
+      <div class="activities">${morning.map(cardHTML).join('')}</div>
+    </section>
+
+    <section class="time-block afternoon" aria-labelledby="afternoon-heading">
+      <header class="block-header">
+        <span class="time-pill" aria-hidden="true">Afternoon</span>
+        <h2 class="block-title" id="afternoon-heading">🌤️ Afternoon sessions</h2>
+      </header>
+      <div class="activities">${afternoon.map(cardHTML).join('')}</div>
+    </section>
+
+    ${summaryHTML(dayIdx)}`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — weekend rest screen
+───────────────────────────────────────────────────────────────── */
+function renderWeekend() {
+  document.getElementById('day-panel').innerHTML = `
+    ${datecardHTML()}
+
+    <div style="
+      text-align: center;
+      padding: 3rem 2rem;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    ">
+      <div style="font-size: 4rem; line-height: 1;">🌈</div>
+      <h2 style="font-size: 1.6rem; font-weight: 900; color: var(--c-header);">
+        No school today, Cairo!
+      </h2>
+      <p style="font-size: 1.05rem; color: var(--c-muted); line-height: 1.6; max-width: 340px;">
+        It's the weekend — time to rest, play, and have fun.
+        See you back on Monday! 🌟
+      </p>
+    </div>`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────────────────── */
+(function init() {
+  const todayIdx = todayWeekdayIndex(); // null on weekends
+
+  // Header
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent =
+    h < 12 ? 'Good morning, Cairo! ☀️'
+    : h < 17 ? 'Good afternoon, Cairo! 🌤️'
+    : 'Good evening, Cairo! 🌙';
+
+  document.getElementById('header-date').textContent =
+    new Date().toLocaleDateString('en-GB', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+  // Week bar (read-only — shows all 5 days, today highlighted)
+  // Use 0 (Mon) as fallback highlight on weekends so bar still renders
+  renderWeekBar(todayIdx ?? 0);
+
+  // Panel
+  if (todayIdx === null) {
+    renderWeekend();
+  } else {
+    renderSchoolDay(todayIdx);
+
+    // Mark done when Start is clicked; brief delay lets the tab open first
+    document.getElementById('day-panel').addEventListener('click', e => {
+      const link = e.target.closest('.start-btn[data-id]');
+      if (!link) return;
+      done.add(link.dataset.id);
+      setTimeout(() => renderSchoolDay(todayIdx), 150);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

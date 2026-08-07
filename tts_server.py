@@ -14,6 +14,33 @@ from datetime import datetime
 LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         'Library of Whys', 'questions_log.json')
 
+# Voices tried in order — first one found on this Mac wins.
+# Download Premium voices in:
+#   System Settings → Accessibility → Spoken Content → System Voice → Manage Voices
+_PREFERRED_VOICES = [
+    'Ava (Enhanced)',
+    'Serena (Enhanced)',
+    'Daniel (Enhanced)',
+    'Ava',
+    'Serena',
+    'Flo (English (UK))',
+    'Sandy (English (UK))',
+    'Shelley (English (UK))',
+    'Daniel (English (UK))',
+]
+
+def _pick_voice():
+    try:
+        out = subprocess.run(['say', '-v', '?'], capture_output=True, text=True).stdout
+        for v in _PREFERRED_VOICES:
+            if v in out:
+                return v
+    except Exception:
+        pass
+    return None
+
+VOICE = os.environ.get('WHY_VOICE') or _pick_voice()
+
 CORS = {
     'Access-Control-Allow-Origin':  '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -97,15 +124,22 @@ class TTSHandler(BaseHTTPRequestHandler):
 
         # /speak (default)
         try:
-            text = str(json.loads(body).get('text', '')).strip()
+            data  = json.loads(body)
+            text  = str(data.get('text',  '')).strip()
+            voice = str(data.get('voice', '')).strip() or VOICE
         except Exception:
-            text = ''
+            text  = ''
+            voice = VOICE
 
         if text:
             with proc_lock:
                 if current_proc and current_proc.poll() is None:
                     current_proc.kill()
-                current_proc = subprocess.Popen(['say', '-r', '165', text])
+                cmd = ['say', '-r', '160']
+                if voice:
+                    cmd += ['-v', voice]
+                cmd.append(text)
+                current_proc = subprocess.Popen(cmd)
             current_proc.wait()
 
         self._ok()
@@ -130,5 +164,10 @@ class ThreadedTCPServer(ThreadingMixIn, TCPServer):
 if __name__ == '__main__':
     port = 8081
     print(f'TTS server → http://localhost:{port}')
+    print(f'Voice      → {VOICE or "system default"}')
+    if not VOICE or '(Enhanced)' not in (VOICE or ''):
+        print(f'  Tip: download "Ava (Enhanced)" or "Serena (Enhanced)" for a much')
+        print(f'  more natural voice: System Settings → Accessibility → Spoken')
+        print(f'  Content → System Voice → Manage Voices')
     server = ThreadedTCPServer(('localhost', port), TTSHandler)
     server.serve_forever()

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historical Heroes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <h1 class="site-title">🌟 Historical Heroes</h1>
+    <p class="site-subtitle">Meet amazing people from history and play their hero games!</p>
+  </header>
+
+  <main>
+
+    <!-- Unit selector -->
+    <nav class="card unit-strip" aria-label="Choose a unit">
+      <div id="unit-strip-inner" class="unit-strip-inner"></div>
+    </nav>
+
+    <!-- Progress -->
+    <section class="card progress-card" aria-label="Your progress">
+      <div class="progress-row">
+        <p id="progress-label" class="progress-label">You've met 0 of 6 heroes!</p>
+        <span class="progress-emoji" aria-hidden="true">⭐</span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-labelledby="progress-label"
+        aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" id="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </section>
+
+    <!-- Hero gallery -->
+    <section class="card gallery-card" aria-label="Hero gallery">
+      <h2 id="unit-title" class="unit-title"></h2>
+      <p id="unit-desc" class="unit-desc"></p>
+      <div id="hero-grid" class="hero-grid"></div>
+    </section>
+
+  </main>
+
+  <!-- Hero detail modal -->
+  <div id="hero-overlay" class="overlay hidden">
+    <div class="modal hero-modal" role="dialog" aria-modal="true" aria-labelledby="hero-modal-name" id="hero-modal">
+      <button type="button" class="icon-btn modal-close" id="hero-close-btn" aria-label="Close">✕</button>
+
+      <div class="hero-modal-body">
+        <p class="hero-counter" id="hero-counter"></p>
+        <div class="hero-photo-wrap hero-photo-wrap--lg" id="hero-avatar"></div>
+        <p class="hero-photo-credit hidden" id="hero-photo-credit"></p>
+        <h3 id="hero-modal-name" class="hero-modal-name"></h3>
+        <p id="hero-modal-tag" class="hero-modal-tag"></p>
+
+        <div class="achievement-box">
+          <p id="hero-achievement" class="hero-achievement"></p>
+          <button type="button" class="btn btn-listen" id="hero-listen-btn" aria-label="Listen to this hero's story">
+            <span aria-hidden="true">🔊</span> Listen
+          </button>
+        </div>
+
+        <p id="hero-funfact" class="hero-funfact"></p>
+
+        <blockquote class="hero-quote hidden" id="hero-quote">
+          <p id="hero-quote-text"></p>
+          <cite id="hero-quote-cite"></cite>
+        </blockquote>
+
+        <div class="hero-video hidden" id="hero-video" aria-label="Hero video"></div>
+
+        <div class="game-box" id="game-box">
+          <p class="game-question" id="game-question"></p>
+          <div class="game-options" id="game-options" role="group" aria-label="Pick the matching picture"></div>
+          <p class="game-feedback" id="game-feedback" aria-live="polite"></p>
+          <div class="game-earned hidden" id="game-earned" aria-live="polite">
+            <span aria-hidden="true">⭐</span> Star earned! You met this hero!
+          </div>
+        </div>
+
+        <div class="hero-nav-row">
+          <button type="button" class="btn btn-secondary hero-nav-btn" id="hero-prev-btn">‹ Previous</button>
+          <button type="button" class="btn btn-secondary hero-nav-btn" id="hero-next-btn">Next ›</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Celebration modal -->
+  <div id="celebration-overlay" class="overlay hidden">
+    <div class="modal celebration-modal" role="dialog" aria-modal="true" aria-labelledby="celebration-title">
+      <div class="confetti" aria-hidden="true">🎉 ⭐ 🎉 ⭐ 🎉</div>
+      <h3 id="celebration-title">You met all the heroes!</h3>
+      <p>You collected all 6 stars in this unit. Amazing work!</p>
+      <button type="button" class="btn btn-primary" id="celebration-close-btn">Hooray!</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

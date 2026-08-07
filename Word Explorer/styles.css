@@ -405,6 +405,152 @@ body {
   font-weight: 700;
 }
 
+/* ── Word of the Day card ── */
+.wotd-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.22);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wotd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wotd-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.75);
+}
+
+.wotd-speak {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+}
+.wotd-speak:hover { background: rgba(255,255,255,0.32); }
+.wotd-speak:focus-visible { outline: 3px solid rgba(255,255,255,0.8); outline-offset: 2px; }
+
+.wotd-word {
+  font-size: clamp(1.8rem, 7vw, 2.8rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.wotd-cat {
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.12);
+  border-radius: 99px;
+  padding: 0.15rem 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  align-self: flex-start;
+}
+
+.wotd-synonyms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.wotd-syn {
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.9);
+  border-radius: 99px;
+  padding: 0.2rem 0.65rem;
+}
+
+.wotd-story {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.78);
+  font-style: italic;
+  line-height: 1.45;
+  border-left: 3px solid rgba(255,255,255,0.3);
+  padding-left: 0.65rem;
+}
+
+/* ── Hojas story block on word cards ── */
+.card-story-block {
+  width: 100%;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+  text-align: left;
+}
+
+.card-story-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #16a34a;
+}
+
+.card-story {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #14532d;
+  line-height: 1.45;
+}
+
+.card-story-speak {
+  align-self: flex-start;
+  min-height: 40px;
+  padding: 0.3rem 0.85rem;
+  border: 1.5px solid #16a34a;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: #16a34a;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.card-story-speak:hover  { background: #16a34a; color: white; }
+.card-story-speak:focus-visible { outline: 3px solid #16a34a; outline-offset: 2px; }
+
+.card-prompt {
+  width: 100%;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--c-muted);
+  text-align: center;
+  font-style: italic;
+  padding: 0 0.5rem;
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }

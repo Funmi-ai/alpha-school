@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpha School — Weekly Timetable Demo</title>
+<style>
+/* ── Design tokens ───────────────────────────────────────────────── */
+:root {
+  --c-header:  #ff6b35;
+  --c-focus:   #e65100;
+  --c-bg:      #fff8f0;
+  --c-card:    #ffffff;
+  --c-text:    #1f2937;
+  --c-muted:   #6b7280;
+  --c-shadow:  0 3px 14px rgba(0,0,0,0.10);
+  --c-done:    #16a34a;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --am-bg:    #eef7ff;
+  --am-text:  #1e40af;
+  --am-badge: #dbeafe;
+  --pm-bg:    #fff8e8;
+  --pm-text:  #92400e;
+  --pm-badge: #fef3c7;
+  --sum-bg:     #f0fdf4;
+  --sum-border: #bbf7d0;
+  --sum-text:   #14532d;
+
+  /* Demo chrome */
+  --demo-bg:    #0f172a;
+  --demo-text:  #f1f5f9;
+  --demo-muted: #94a3b8;
+  --demo-tab-active: #ff6b35;
+  --demo-tab-hover:  rgba(255,107,53,0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg:    #1a1410; --c-card:  #26201a; --c-text:  #f0e4d4;
+    --c-muted: #9a8878; --c-shadow:0 3px 16px rgba(0,0,0,0.45);
+    --am-bg:#101e2e; --am-text:#93c5fd; --am-badge:#1e3a5f;
+    --pm-bg:#221a06; --pm-text:#fcd34d; --pm-badge:#3d2d04;
+    --sum-bg:#052e16; --sum-border:#166534; --sum-text:#86efac;
+  }
+}
+:root[data-theme="dark"] {
+  --c-bg:#1a1410;--c-card:#26201a;--c-text:#f0e4d4;--c-muted:#9a8878;
+  --c-shadow:0 3px 16px rgba(0,0,0,0.45);
+  --am-bg:#101e2e;--am-text:#93c5fd;--am-badge:#1e3a5f;
+  --pm-bg:#221a06;--pm-text:#fcd34d;--pm-badge:#3d2d04;
+  --sum-bg:#052e16;--sum-border:#166534;--sum-text:#86efac;
+}
+:root[data-theme="light"] {
+  --c-bg:#fff8f0;--c-card:#ffffff;--c-text:#1f2937;--c-muted:#6b7280;
+  --c-shadow:0 3px 14px rgba(0,0,0,0.10);
+  --am-bg:#eef7ff;--am-text:#1e40af;--am-badge:#dbeafe;
+  --pm-bg:#fff8e8;--pm-text:#92400e;--pm-badge:#fef3c7;
+  --sum-bg:#f0fdf4;--sum-border:#bbf7d0;--sum-text:#14532d;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  background: var(--c-bg);
+  color: var(--c-text);
+  min-height: 100vh;
+}
+
+/* ── Demo presentation chrome ────────────────────────────────────── */
+.demo-shell {
+  background: var(--demo-bg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.demo-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--c-header);
+  background: rgba(255,107,53,0.12);
+  border: 1px solid rgba(255,107,53,0.3);
+  border-radius: 99px;
+  padding: 0.25rem 0.75rem;
+}
+.demo-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--c-header);
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.7); }
+}
+
+.demo-label {
+  font-size: 0.82rem;
+  color: var(--demo-muted);
+  font-weight: 600;
+}
+.demo-label strong { color: var(--demo-text); }
+
+/* Day switcher tabs */
+.day-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.day-switcher::-webkit-scrollbar { display: none; }
+
+.day-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.7rem 1.1rem;
+  border: none;
+  background: transparent;
+  color: var(--demo-muted);
+  font-family: inherit;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-radius: 8px 8px 0 0;
+}
+.day-tab:hover { color: var(--demo-text); background: var(--demo-tab-hover); }
+.day-tab.active {
+  color: var(--c-header);
+  border-bottom-color: var(--c-header);
+  font-weight: 700;
+}
+.day-tab:focus-visible { outline: 2px solid var(--c-header); outline-offset: -2px; }
+
+.tab-day   { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+.tab-icons { font-size: 1rem; line-height: 1; }
+
+/* ── App header (mirrors the live product) ───────────────────────── */
+.site-header {
+  background: var(--c-header);
+  color: #fff;
+  padding: 1.1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: clamp(1.2rem, 3.5vw, 1.65rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+.logo-star { font-style: normal; }
+.header-meta { text-align: right; }
+.header-greeting { font-size: 0.95rem; font-weight: 700; opacity: 0.95; }
+.header-date     { font-size: 0.78rem; opacity: 0.8; font-weight: 600; }
+
+/* ── Feature callouts ────────────────────────────────────────────── */
+.feature-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 1rem 2rem;
+  background: var(--c-card);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.feature-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--c-muted);
+  background: var(--c-bg);
+  border: 1.5px solid rgba(0,0,0,0.08);
+  border-radius: 99px;
+  padding: 0.3rem 0.8rem;
+}
+.feature-chip .chip-icon { font-size: 0.9rem; }
+
+/* ── Day panel ───────────────────────────────────────────────────── */
+.day-panel {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Date card ───────────────────────────────────────────────────── */
+.date-card {
+  background: var(--c-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--c-shadow);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  align-items: center;
+  border-left: 6px solid var(--c-header);
+  overflow: hidden;
+  gap: 0;
+}
+.date-body {
+  display: flex; flex-direction: column; gap: 0.2rem;
+  flex-shrink: 0; padding-right: 1.75rem;
+  border-right: 2px solid var(--c-bg);
+}
+.date-label  { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-header); }
+.date-day    { font-size: clamp(1.8rem,5vw,2.6rem); font-weight: 900; color: var(--c-header); letter-spacing: -0.03em; line-height: 1; white-space: nowrap; }
+.date-parts  { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.3rem; }
+.date-num    { font-size: clamp(1.2rem,3.5vw,1.7rem); font-weight: 900; color: var(--c-text); line-height: 1; font-variant-numeric: tabular-nums; }
+.date-month  { font-size: clamp(1.2rem,3.5vw,1.7rem); font-weight: 900; color: var(--c-text); line-height: 1; }
+.date-sep    { color: var(--c-muted); font-size: 1.1rem; font-weight: 300; }
+.date-year   { font-size: clamp(0.95rem,2.5vw,1.2rem); font-weight: 700; color: var(--c-muted); line-height: 1; }
+.date-quote  { flex: 1; display: flex; align-items: center; gap: 0.7rem; padding-left: 1.75rem; min-width: 0; }
+.quote-cat   { font-size: 1.8rem; flex-shrink: 0; line-height: 1; user-select: none; }
+.quote-text  { font-size: clamp(0.95rem,2.6vw,1.15rem); font-weight: 800; color: var(--c-text); line-height: 1.4; text-wrap: balance; }
+
+/* ── WOTD card ───────────────────────────────────────────────────── */
+.wotd-card {
+  background: #1e1b4b;
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.75rem;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.wotd-header    { display: flex; align-items: center; justify-content: space-between; }
+.wotd-eyebrow   { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #a5b4fc; }
+.wotd-ask       { font-size: 0.72rem; font-weight: 700; color: #818cf8; background: rgba(129,140,248,0.15); border-radius: 99px; padding: 0.2rem 0.65rem; }
+.wotd-word      { font-size: clamp(2rem,6vw,3rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
+.wotd-syns      { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.wotd-syn       { font-size: 0.82rem; font-weight: 700; background: rgba(255,255,255,0.1); border-radius: 99px; padding: 0.2rem 0.65rem; color: #c7d2fe; }
+.wotd-story     { font-size: 0.95rem; color: #e0e7ff; font-style: italic; line-height: 1.55; border-left: 3px solid #6366f1; padding-left: 0.85rem; }
+
+/* ── Time blocks ─────────────────────────────────────────────────── */
+.time-block {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--c-shadow);
+}
+.block-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+.morning   .block-header { background: var(--am-bg); }
+.afternoon .block-header { background: var(--pm-bg); }
+.time-pill {
+  font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.1em; border-radius: 99px; padding: 0.2rem 0.65rem;
+}
+.morning   .time-pill { background: var(--am-badge); color: var(--am-text); }
+.afternoon .time-pill { background: var(--pm-badge); color: var(--pm-text); }
+.block-title {
+  font-size: 1rem; font-weight: 800; color: var(--c-text);
+  letter-spacing: -0.01em;
+}
+.activities {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  background: rgba(0,0,0,0.04);
+}
+
+/* ── Activity cards ──────────────────────────────────────────────── */
+.activity-card {
+  background: var(--c-card);
+  padding: 1.35rem 1.25rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+  position: relative;
+  transition: background 0.2s;
+}
+.activity-card.done { background: #f0fdf4; border-left: 4px solid var(--c-done); }
+
+.tick-badge {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 1.75rem; height: 1.75rem;
+  background: var(--c-done); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.85rem; font-weight: 900;
+}
+
+.act-icon { font-size: 2rem; line-height: 1; }
+.act-name { font-size: 1.05rem; font-weight: 900; letter-spacing: -0.01em; color: var(--c-text); }
+.act-desc { font-size: 0.82rem; color: var(--c-muted); font-weight: 600; line-height: 1.45; flex: 1; }
+
+.start-btn {
+  display: inline-block;
+  margin-top: 0.35rem;
+  align-self: flex-start;
+  background: var(--c-header);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s, transform 0.1s;
+  letter-spacing: 0.01em;
+}
+.start-btn:hover  { background: var(--c-focus); }
+.start-btn:active { transform: scale(0.97); }
+.start-btn.done-btn { background: var(--c-done); }
+
+/* ── Day summary ─────────────────────────────────────────────────── */
+.day-summary {
+  border-radius: var(--radius-lg);
+  background: var(--sum-bg);
+  border: 2px solid var(--sum-border);
+  padding: 1.5rem;
+  display: none;
+}
+.day-summary.visible { display: block; }
+.summary-header { font-size: 1.1rem; font-weight: 900; color: var(--sum-text); margin-bottom: 0.75rem; }
+.summary-chips  { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.summary-chip   {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: rgba(255,255,255,0.5); border: 1.5px solid var(--sum-border);
+  border-radius: 99px; padding: 0.25rem 0.75rem 0.25rem 0.5rem;
+  font-size: 0.85rem; font-weight: 700; color: var(--sum-text);
+}
+.chip-tick {
+  width: 1.3rem; height: 1.3rem; background: var(--c-done); border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.65rem; font-weight: 900; flex-shrink: 0;
+}
+.summary-message {
+  font-size: 0.95rem; color: var(--sum-text); font-weight: 600;
+  background: rgba(255,255,255,0.45); border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem; line-height: 1.55;
+}
+
+/* ── Demo note footer ────────────────────────────────────────────── */
+.demo-footer {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+}
+.demo-note {
+  background: var(--demo-bg);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  color: var(--demo-text);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem 2rem;
+}
+.demo-note-title {
+  grid-column: 1 / -1;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--c-header);
+  margin-bottom: 0.25rem;
+}
+.note-item { display: flex; gap: 0.75rem; align-items: flex-start; }
+.note-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem; }
+.note-text { font-size: 0.85rem; color: var(--demo-muted); line-height: 1.55; font-weight: 500; }
+.note-text strong { color: var(--demo-text); }
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .day-panel     { padding: 1rem 1rem 2.5rem; }
+  .activities    { grid-template-columns: 1fr; }
+  .date-card     { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .date-body     { border-right: none; padding-right: 0; border-bottom: 2px solid var(--c-bg); padding-bottom: 1rem; width: 100%; }
+  .date-quote    { padding-left: 0; }
+  .demo-top-bar  { padding: 0.65rem 1rem; }
+  .day-switcher  { padding: 0 1rem; }
+  .feature-strip { padding: 0.75rem 1rem; }
+  .demo-note     { grid-template-columns: 1fr; }
+  .site-header   { padding: 1rem; }
+  .demo-footer   { padding: 0 1rem 2.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Demo presentation chrome ────────────────────────────────────── -->
+<div class="demo-shell">
+  <div class="demo-top-bar">
+    <span class="demo-badge">Demo Preview</span>
+    <span class="demo-label"><strong>Alpha School</strong> — Weekly Timetable · Click any day to explore</span>
+  </div>
+  <nav class="day-switcher" aria-label="Select a day to preview" id="day-switcher">
+    <!-- injected by JS -->
+  </nav>
+</div>
+
+<!-- ── Live app header ──────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="logo">
+    <span class="logo-star" aria-hidden="true">⭐</span>
+    Alpha School
+  </div>
+  <div class="header-meta">
+    <div class="header-greeting" id="greeting"></div>
+    <div class="header-date"    id="header-date"></div>
+  </div>
+</header>
+
+<!-- ── Feature callout strip ───────────────────────────────────────── -->
+<div class="feature-strip" aria-label="Key features" role="list">
+  <span class="feature-chip" role="listitem"><span class="chip-icon">🔒</span> Live version locks to today's day only</span>
+  <span class="feature-chip" role="listitem"><span class="chip-icon">✓</span> Green tick when an activity is opened</span>
+  <span class="feature-chip" role="listitem"><span class="chip-icon">📖</span> New Word of the Day, every day</span>
+  <span class="feature-chip" role="listitem"><span class="chip-icon">💬</span> Daily inspirational quote</span>
+  <span class="feature-chip" role="listitem"><span class="chip-icon">📱</span> All resources open in a new tab</span>
+</div>
+
+<!-- ── Day panel ───────────────────────────────────────────────────── -->
+<main class="day-panel" id="day-panel" aria-live="polite" aria-label="Day preview">
+  <!-- injected by JS -->
+</main>
+
+<!-- ── How it works note ───────────────────────────────────────────── -->
+<footer class="demo-footer">
+  <div class="demo-note" role="note">
+    <div class="demo-note-title">How it works</div>
+    <div class="note-item">
+      <span class="note-icon">🗓️</span>
+      <span class="note-text"><strong>Every morning</strong> — the child opens the timetable and sees only that day's sessions. No jumping ahead.</span>
+    </div>
+    <div class="note-item">
+      <span class="note-icon">▶</span>
+      <span class="note-text"><strong>One tap to start</strong> — each activity card opens directly in a new tab. The timetable stays open behind it.</span>
+    </div>
+    <div class="note-item">
+      <span class="note-icon">🏗️</span>
+      <span class="note-text"><strong>Fully custom-built</strong> — Connectives and Word Explorer are bespoke resources designed to directly feed Night Zookeeper writing sessions. French Explorer, Brownie Trailhead and Historical Heroes are standalone custom resources.</span>
+    </div>
+    <div class="note-item">
+      <span class="note-icon">🔄</span>
+      <span class="note-text"><strong>English rotates</strong> — Night Zookeeper (Mon/Wed), Connectives (Tue/Fri) and Word Explorer (Thu) cycle through the week so content builds on itself.</span>
+    </div>
+    <div class="note-item">
+      <span class="note-icon">🧁</span>
+      <span class="note-text"><strong>Real-world themes</strong> — Brownie Trailhead is built around a business the child is actually running. Learning stays grounded in real life.</span>
+    </div>
+    <div class="note-item">
+      <span class="note-icon">🔊</span>
+      <span class="note-text"><strong>Text-to-speech throughout</strong> — vocabulary and story sentences are spoken aloud via a local Python server, keeping it immersive for early readers.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+/* ─────────────────────────────────────────────────────────────────
+   DATA (mirrors the live timetable exactly)
+───────────────────────────────────────────────────────────────── */
+const DAYS  = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const SHORT = ['Mon','Tue','Wed','Thu','Fri'];
+
+const A = {
+  synthesis: {
+    id:'synthesis', icon:'🧮', name:'Synthesis',
+    desc:'Maths puzzles and problem-solving adventures',
+    href:'https://www.synthesis.com',
+  },
+  nightZookeeper: {
+    id:'night-zookeeper', icon:'🦒', name:'Night Zookeeper',
+    desc:'Creative writing and stories with magical animals',
+    href:'https://www.nightzookeeper.com',
+  },
+  wordExplorer: {
+    id:'word-explorer', icon:'📝', name:'Word Explorer',
+    desc:'Discover brilliant new words and synonyms to use in your writing',
+    href:'Word Explorer/word-explorer.html',
+  },
+  connectives: {
+    id:'connectives', icon:'🔗', name:'Connectives',
+    desc:'Learn linking words — but, because, therefore, however — to make your sentences shine',
+    href:'Connectives/connectives.html',
+  },
+  frenchExplorer: {
+    id:'french-explorer', icon:'🇫🇷', name:'French Explorer',
+    desc:'Bonjour! Listen, speak and play in French',
+    href:'French Explorer/french-explorer.html',
+  },
+  clascrunch: {
+    id:'clascrunch', icon:'🔬', name:'ClassCrunch Labs',
+    desc:'Science experiments, discoveries and big questions',
+    href:'https://www.classcrunchlabs.org/curriculum',
+  },
+  financial: {
+    id:'financial-literacy', icon:'💰', name:'Financial Literacy',
+    desc:'Learn about money, saving and spending wisely',
+    href:'Money Jar Tracker/money-jar.html',
+  },
+  history: {
+    id:'history', icon:'🏛️', name:'Historical Heroes',
+    desc:'Travel back in time and meet remarkable people',
+    href:'Historical Heroes/historical-heroes.html',
+  },
+  brownieBusiness: {
+    id:'brownie-trailhead', icon:'🧁', name:'Brownie Trailhead',
+    desc:'Run your own brownie business — bake, sell and learn about money',
+    href:'Brownie Trailhead/brownie-trailhead.html',
+  },
+  whysThat: {
+    id:'whys-that', icon:'🔍', name:"Why's That?",
+    desc:'Ask any question about the world and discover something amazing',
+    href:'Library of Whys/why-library.html',
+  },
+};
+
+const SCHEDULE = [
+  { morning:[A.synthesis, A.nightZookeeper, A.frenchExplorer],
+    afternoon:[A.clascrunch, A.brownieBusiness, A.whysThat] },
+  { morning:[A.synthesis, A.connectives, A.frenchExplorer],
+    afternoon:[A.financial, A.history, A.whysThat] },
+  { morning:[A.synthesis, A.nightZookeeper, A.frenchExplorer],
+    afternoon:[A.clascrunch, A.brownieBusiness, A.whysThat] },
+  { morning:[A.synthesis, A.wordExplorer, A.frenchExplorer],
+    afternoon:[A.financial, A.history, A.whysThat] },
+  { morning:[A.synthesis, A.connectives, A.frenchExplorer],
+    afternoon:[A.clascrunch, A.financial, A.whysThat] },
+];
+
+const WOTD_POOL = [
+  { word:'enormous',    syns:['gigantic','vast','immense'],         story:'The Hoja let out an enormous fart that rattled every window in the house.' },
+  { word:'stealthily',  syns:['silently','sneakily','noiselessly'], story:'The Hoja moved stealthily across the kitchen, heading straight for the cheese.' },
+  { word:'gleeful',     syns:['joyful','delighted','elated'],       story:'The Hoja was absolutely gleeful — she had hidden a sock inside the sofa.' },
+  { word:'mischievous', syns:['naughty','cheeky','troublesome'],    story:'The most mischievous Hoja had discovered where the chocolate biscuits were kept.' },
+  { word:'cunning',     syns:['clever','devious','crafty'],         story:'The most cunning Hoja had a plan involving the butter dish and the dog.' },
+];
+
+const QUOTES = [
+  { cat:'💡', text:'Every question you ask makes your brain grow!' },
+  { cat:'💪', text:"If it's hard, it just means you're learning!" },
+  { cat:'🚀', text:'You are capable of amazing things.' },
+  { cat:'🌈', text:'Your imagination has no limits.' },
+  { cat:'💡', text:'Discovering new things is the best adventure.' },
+];
+
+const PHRASES = {
+  'synthesis':           'worked on maths puzzles',
+  'night-zookeeper':    'wrote a creative story',
+  'word-explorer':      'explored new words',
+  'connectives':        'learnt linking words',
+  'french-explorer':    'practised French',
+  'clascrunch':         'explored science',
+  'financial-literacy': 'learnt about money',
+  'history':            'explored historical heroes',
+  'brownie-trailhead':  'ran the Brownie business',
+  'whys-that':          "asked big questions in Why's That",
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   STATE
+───────────────────────────────────────────────────────────────── */
+// Each day gets its own done-set so progress is tracked per day in the demo
+const doneByDay = [new Set(), new Set(), new Set(), new Set(), new Set()];
+let selectedDay = 0; // always start on Monday for a consistent demo
+
+/* ─────────────────────────────────────────────────────────────────
+   UTILITY
+───────────────────────────────────────────────────────────────── */
+function safeText(s) {
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function dateHash(extra) {
+  const seed = new Date().toDateString() + (extra || '');
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return h >>> 0;
+}
+function wotdForDay(dayIdx)  { return WOTD_POOL[dateHash('wotd-'  + dayIdx) % WOTD_POOL.length]; }
+function quoteForDay(dayIdx) { return QUOTES[dateHash('quote-' + dayIdx)    % QUOTES.length]; }
+
+function getDemoDate(dayIdx) {
+  // Return the date string for the *next upcoming* instance of this weekday
+  // (purely cosmetic in the demo — shows a plausible date for each day)
+  const today = new Date();
+  const todayDow = today.getDay(); // 0=Sun
+  const targetDow = dayIdx + 1;   // Mon=1 … Fri=5
+  let diff = targetDow - todayDow;
+  if (diff <= 0) diff += 7;
+  const target = new Date(today);
+  target.setDate(today.getDate() + diff);
+  return target;
+}
+
+function listToSentence(arr) {
+  if (!arr.length) return '';
+  if (arr.length === 1) return arr[0];
+  if (arr.length === 2) return arr[0] + ' and ' + arr[1];
+  return arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+}
+
+function afternoonIconsForDay(idx) {
+  return SCHEDULE[idx].afternoon.map(a => a.icon).join(' ');
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — day switcher
+───────────────────────────────────────────────────────────────── */
+function renderSwitcher() {
+  document.getElementById('day-switcher').innerHTML = DAYS.map((day, i) => `
+    <button class="day-tab${i === selectedDay ? ' active' : ''}"
+      data-day="${i}"
+      aria-label="View ${safeText(day)}"
+      aria-pressed="${i === selectedDay}">
+      <span class="tab-day">${safeText(SHORT[i])}</span>
+      <span class="tab-icons" aria-hidden="true">${afternoonIconsForDay(i)}</span>
+    </button>
+  `).join('');
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — date card
+───────────────────────────────────────────────────────────────── */
+function datecardHTML(dayIdx) {
+  const d       = getDemoDate(dayIdx);
+  const dayName = DAYS[dayIdx];
+  const dayNum  = d.toLocaleDateString('en-GB', { day: 'numeric' });
+  const month   = d.toLocaleDateString('en-GB', { month: 'long' });
+  const year    = d.toLocaleDateString('en-GB', { year: 'numeric' });
+  const quote   = quoteForDay(dayIdx);
+  return `
+    <div class="date-card" role="note">
+      <div class="date-body">
+        <div class="date-label">Today is</div>
+        <div class="date-day">${safeText(dayName)}</div>
+        <div class="date-parts">
+          <span class="date-num">${safeText(dayNum)}</span>
+          <span class="date-month">${safeText(month)}</span>
+          <span class="date-sep">·</span>
+          <span class="date-year">${safeText(year)}</span>
+        </div>
+      </div>
+      <div class="date-quote">
+        <span class="quote-cat" aria-hidden="true">${quote.cat}</span>
+        <span class="quote-text">${safeText(quote.text)}</span>
+      </div>
+    </div>`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — WOTD card
+───────────────────────────────────────────────────────────────── */
+function wotdHTML(dayIdx) {
+  const w = wotdForDay(dayIdx);
+  return `
+    <div class="wotd-card" role="note" aria-label="Word of the day: ${safeText(w.word)}">
+      <div class="wotd-header">
+        <span class="wotd-eyebrow">⭐ Word of the Day</span>
+        <span class="wotd-ask">Ask Cairo about it!</span>
+      </div>
+      <div class="wotd-word">${safeText(w.word)}</div>
+      <div class="wotd-syns">${w.syns.map(s => `<span class="wotd-syn">${safeText(s)}</span>`).join('')}</div>
+      <div class="wotd-story">${safeText(w.story)}</div>
+    </div>`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — activity card
+───────────────────────────────────────────────────────────────── */
+function cardHTML(act, dayIdx) {
+  const isDone = doneByDay[dayIdx].has(act.id);
+  return `
+    <article class="activity-card${isDone ? ' done' : ''}"
+             aria-label="${safeText(act.name)}${isDone ? ' — completed' : ''}">
+      ${isDone ? '<div class="tick-badge" aria-label="Completed">✓</div>' : ''}
+      <div class="act-icon" aria-hidden="true">${act.icon}</div>
+      <div class="act-name">${safeText(act.name)}</div>
+      <div class="act-desc">${safeText(act.desc)}</div>
+      <a class="start-btn${isDone ? ' done-btn' : ''}"
+         href="${safeText(act.href)}"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-id="${act.id}"
+         aria-label="${isDone ? 'Open again: ' : 'Start: '}${safeText(act.name)}"
+      >${isDone ? '✓ Done — open again' : '▶ Start'}</a>
+    </article>`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — summary
+───────────────────────────────────────────────────────────────── */
+function summaryHTML(dayIdx) {
+  const allActs   = [...SCHEDULE[dayIdx].morning, ...SCHEDULE[dayIdx].afternoon];
+  const completed = allActs.filter(a => doneByDay[dayIdx].has(a.id));
+  if (!completed.length) return `<section class="day-summary"></section>`;
+  const chips = completed.map(a =>
+    `<span class="summary-chip"><span class="chip-tick">✓</span>${a.icon} ${safeText(a.name)}</span>`
+  ).join('');
+  const phrases  = completed.map(a => PHRASES[a.id]).filter(Boolean);
+  const msg = `Cairo ${listToSentence(phrases)} today — ${completed.length} of ${allActs.length} sessions done. Brilliant work! 🌟`;
+  return `
+    <section class="day-summary visible" aria-label="Progress summary">
+      <div class="summary-header">🌟 Cairo's progress today</div>
+      <div class="summary-chips">${chips}</div>
+      <div class="summary-message">${safeText(msg)}</div>
+    </section>`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RENDER — full day view
+───────────────────────────────────────────────────────────────── */
+function renderDay(dayIdx) {
+  const { morning, afternoon } = SCHEDULE[dayIdx];
+  document.getElementById('day-panel').innerHTML = `
+    ${datecardHTML(dayIdx)}
+    ${wotdHTML(dayIdx)}
+
+    <section class="time-block morning" aria-labelledby="morning-heading">
+      <header class="block-header">
+        <span class="time-pill">Morning</span>
+        <h2 class="block-title" id="morning-heading">☀️ Morning sessions</h2>
+      </header>
+      <div class="activities">${morning.map(a => cardHTML(a, dayIdx)).join('')}</div>
+    </section>
+
+    <section class="time-block afternoon" aria-labelledby="afternoon-heading">
+      <header class="block-header">
+        <span class="time-pill">Afternoon</span>
+        <h2 class="block-title" id="afternoon-heading">🌤️ Afternoon sessions</h2>
+      </header>
+      <div class="activities">${afternoon.map(a => cardHTML(a, dayIdx)).join('')}</div>
+    </section>
+
+    ${summaryHTML(dayIdx)}`;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────────────────── */
+(function init() {
+  // Header greeting
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent =
+    h < 12 ? 'Good morning, Cairo! ☀️'
+    : h < 17 ? 'Good afternoon, Cairo! 🌤️'
+    : 'Good evening, Cairo! 🌙';
+
+  document.getElementById('header-date').textContent =
+    new Date().toLocaleDateString('en-GB', {
+      weekday:'long', day:'numeric', month:'long', year:'numeric'
+    });
+
+  // Initial render
+  renderSwitcher();
+  renderDay(selectedDay);
+
+  // Tab switching
+  document.getElementById('day-switcher').addEventListener('click', e => {
+    const tab = e.target.closest('[data-day]');
+    if (!tab) return;
+    selectedDay = parseInt(tab.dataset.day, 10);
+    renderSwitcher();
+    renderDay(selectedDay);
+  });
+
+  // Mark done on activity click
+  document.getElementById('day-panel').addEventListener('click', e => {
+    const link = e.target.closest('.start-btn[data-id]');
+    if (!link) return;
+    doneByDay[selectedDay].add(link.dataset.id);
+    setTimeout(() => renderDay(selectedDay), 150);
+  });
+})();
+</script>
+</body>
+</html>
