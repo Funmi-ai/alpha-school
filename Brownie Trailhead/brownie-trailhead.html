@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brownie Trailhead</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-top">
+      <div class="header-titles">
+        <h1 class="site-title">🥾 Brownie Trailhead</h1>
+        <p class="site-subtitle">Hike the trail to learn the words, then set up camp and run your own brownie stand!</p>
+      </div>
+      <div class="header-buttons">
+        <button type="button" id="home-btn" class="btn btn-secondary" aria-label="Back to the trail map">🗺️ Trail Map</button>
+        <button type="button" id="wordbank-btn" class="btn btn-secondary wordbank-btn" aria-haspopup="dialog">📜 Word Bank</button>
+      </div>
+    </div>
+    <div class="stat-bar">
+      <button type="button" id="coin-badge-btn" class="coin-badge" aria-haspopup="dialog">🪙 <span id="coin-badge-count">0</span></button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HOME / TRAIL MAP (landing page — the 4 stops, nothing in front of them) -->
+    <section id="phase-home" class="phase card">
+      <canvas id="dust-canvas" class="dust-canvas" aria-hidden="true"></canvas>
+      <div class="phase-home-inner">
+        <h2>Choose Your Stop on the Trail</h2>
+        <p class="phase-intro-text">Explore each stop to learn its words and test yourself.</p>
+        <div id="trail-grid" class="trail-grid"></div>
+
+        <button type="button" id="play-cta" class="play-cta">
+          <span class="play-cta-icon" aria-hidden="true">🍫</span>
+          <span class="play-cta-body">
+            <span class="play-cta-title">Run Your Stand</span>
+            <span class="play-cta-desc">Set up your own brownie stand and see if you can turn a profit!</span>
+            <span class="play-cta-stats">
+              <span class="play-cta-chip">Day <strong id="play-cta-day">1</strong></span>
+              <span class="play-cta-chip">Float: <strong id="play-cta-float">£0.00</strong></span>
+              <span class="play-cta-chip">🏦 Savings: <strong id="play-cta-savings">£0.00</strong></span>
+            </span>
+          </span>
+          <span class="play-cta-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- LEARN -->
+    <section id="phase-learn" class="phase card hidden" aria-hidden="true">
+      <h2 id="learn-title">Learn</h2>
+      <p class="phase-intro-text" id="learn-subtitle"></p>
+      <div id="learn-card-stage" class="card-stage">
+        <button type="button" id="learn-prev-btn" class="nav-arrow" aria-label="Previous word">◀</button>
+        <div id="learn-card-display" class="card-display"></div>
+        <button type="button" id="learn-next-btn" class="nav-arrow" aria-label="Next word">▶</button>
+      </div>
+      <div class="card-footer">
+        <div class="progress-track" id="learn-progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="16" aria-valuenow="1">
+          <div class="progress-fill" id="learn-progress-fill"></div>
+        </div>
+        <div class="card-counter" id="learn-counter" aria-live="polite"></div>
+      </div>
+      <div class="phase-actions">
+        <button type="button" id="learn-home-btn" class="btn btn-secondary">🗺️ Trail Map</button>
+        <button type="button" id="learn-quiz-btn" class="btn btn-primary">Quiz Me →</button>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="phase-quiz" class="phase card hidden" aria-hidden="true">
+      <div id="quiz-content"></div>
+    </section>
+
+    <!-- PLAY: intro -->
+    <section id="phase-play-intro" class="phase card hidden" aria-hidden="true">
+      <h2>⛺ Run Your Stand</h2>
+      <p class="phase-intro-text">
+        Every day you'll run your own brownie stand. First you'll set it up, then pick a price,
+        then tell people about it, then sell to your customers — and see how much profit you made.
+      </p>
+      <p class="phase-intro-text">Ready to get baking?</p>
+      <div class="phase-actions">
+        <button type="button" id="play-intro-home-btn" class="btn btn-secondary">🗺️ Trail Map</button>
+        <button type="button" id="start-btn" class="btn btn-primary">Start Day 1 →</button>
+      </div>
+    </section>
+
+    <!-- PLAY: setup -->
+    <section id="phase-setup" class="phase card hidden" aria-hidden="true">
+      <h2>🧺 Set Up Your Stand</h2>
+      <div id="fallout-banner" class="fallout-banner hidden" aria-live="polite"></div>
+      <p class="phase-intro-text">Every business needs supplies. Pick what goes in your brownies!</p>
+      <div id="ingredient-list" class="ingredient-grid"></div>
+      <p class="cost-summary" id="cost-summary" aria-live="polite"></p>
+      <p class="owned-upgrades" id="owned-upgrades"></p>
+      <div class="phase-actions">
+        <button type="button" id="to-pricing-btn" class="btn btn-primary">Next: Set Your Price →</button>
+      </div>
+    </section>
+
+    <!-- PLAY: pricing -->
+    <section id="phase-pricing" class="phase card hidden" aria-hidden="true">
+      <h2>🏷️ Set Your Price</h2>
+      <p class="phase-intro-text">How much will you charge for one brownie?</p>
+      <div id="price-options" class="price-grid"></div>
+      <p id="price-feedback" class="feedback-text" aria-live="polite"></p>
+      <div class="phase-actions">
+        <button type="button" id="back-to-setup-btn" class="btn btn-secondary">← Back</button>
+        <button type="button" id="to-marketing-btn" class="btn btn-primary" disabled>Next: Tell People →</button>
+      </div>
+    </section>
+
+    <!-- PLAY: marketing -->
+    <section id="phase-marketing" class="phase card hidden" aria-hidden="true">
+      <h2>📣 Make It Known</h2>
+      <p class="phase-intro-text">Marketing means telling people your business exists. Pick as many as you can afford.</p>
+      <div id="marketing-list" class="marketing-grid"></div>
+      <p class="cost-summary" id="marketing-cost-summary" aria-live="polite"></p>
+      <div class="phase-actions">
+        <button type="button" id="back-to-pricing-btn" class="btn btn-secondary">← Back</button>
+        <button type="button" id="open-stand-btn" class="btn btn-primary">Open the Stand! 🎉</button>
+      </div>
+    </section>
+
+    <!-- PLAY: selling -->
+    <section id="phase-selling" class="phase card hidden" aria-hidden="true">
+      <h2>🍫 Sell Your Brownies!</h2>
+      <p id="weather-line" class="phase-intro-text"></p>
+      <p id="queue-status" class="queue-status" aria-live="polite"></p>
+      <div id="customer-area" class="customer-area"></div>
+      <div id="change-area" class="change-area hidden" aria-live="polite"></div>
+    </section>
+
+    <!-- PLAY: summary -->
+    <section id="phase-summary" class="phase card hidden" aria-hidden="true">
+      <h2>📊 Day <span id="summary-day"></span> Summary</h2>
+      <div id="summary-content"></div>
+      <div class="phase-actions">
+        <button type="button" id="summary-home-btn" class="btn btn-secondary">🗺️ Trail Map</button>
+        <button type="button" id="next-day-btn" class="btn btn-primary">Continue →</button>
+      </div>
+    </section>
+
+    <!-- PLAY: crossroads (Savings, then sometimes an Investment or Temptation) -->
+    <section id="phase-crossroads" class="phase card hidden" aria-hidden="true">
+      <h2>🛤️ Crossroads</h2>
+      <div id="crossroads-content"></div>
+    </section>
+
+  </main>
+
+  <div id="wordbank-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="wordbank-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="wordbank-title">📜 Word Bank</h2>
+        <button type="button" id="wordbank-close" class="btn-icon" aria-label="Close word bank">✕</button>
+      </div>
+      <div id="wordbank-list" class="wordbank-list"></div>
+    </div>
+  </div>
+
+  <div id="coin-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="coin-modal-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="coin-modal-title">🪙 Knowledge Coins</h2>
+        <button type="button" id="coin-modal-close" class="btn-icon" aria-label="Close Knowledge Coins">✕</button>
+      </div>
+      <p class="coin-total-label">Total earned</p>
+      <p class="coin-total" id="coin-total">0</p>
+      <div id="coin-rows" class="coin-rows"></div>
+      <hr class="coin-divider">
+      <p class="coin-grownup-label">🔒 For grown-ups</p>
+      <button type="button" id="coin-reset-btn" class="btn btn-secondary coin-reset-btn">Reset after reward</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
