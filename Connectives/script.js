@@ -2,7 +2,7 @@
 
 /* ═══════════════════════════════════════════════════════════════
    DATA
-   All Hojas-themed examples live here. Edit this section only
+   All Hodgers-themed examples live here. Edit this section only
    to add new connectives or update story sentences.
 ═══════════════════════════════════════════════════════════════ */
 
@@ -18,29 +18,29 @@ const GROUPS = [
         id:       'and',
         word:     'and',
         does:     'joins two ideas together',
-        example:  'The Hoja found the perfect hiding spot and immediately did a massive fart.',
-        prompt:   'The Hoja crept under the sofa and…',
+        example:  'The Hodger found the perfect hiding spot and immediately did a massive fart.',
+        prompt:   'The Hodger crept under the sofa and…',
       },
       {
         id:       'also',
         word:     'also',
         does:     'adds another thing on top',
-        example:  'The Hojas stole all the biscuits. They also sat on the dog.',
-        prompt:   'The Hoja made a terrible smell. She also…',
+        example:  'The Hodgers stole all the biscuits. They also sat on the dog.',
+        prompt:   'The Hodger made a terrible smell. She also…',
       },
       {
         id:       'as-well-as',
         word:     'as well as',
         does:     'says there is even more',
-        example:  'The Hoja left muddy footprints everywhere, as well as a very suspicious smell.',
-        prompt:   'The Hojas caused mischief in the kitchen, as well as…',
+        example:  'The Hodger left muddy footprints everywhere, as well as a very suspicious smell.',
+        prompt:   'The Hodgers caused mischief in the kitchen, as well as…',
       },
       {
         id:       'too',
         word:     'too',
         does:     'says something else joins in',
-        example:  'The big Hoja was grumpy. The little one was absolutely furious too.',
-        prompt:   'The Hoja was hiding. Her friend was hiding too, but…',
+        example:  'The big Hodger was grumpy. The little one was absolutely furious too.',
+        prompt:   'The Hodger was hiding. Her friend was hiding too, but…',
       },
     ],
   },
@@ -56,36 +56,36 @@ const GROUPS = [
         id:       'but',
         word:     'but',
         does:     'something different or opposite happens',
-        example:  'The Hojas tried to be quiet, but the biggest one did a thunderous burp.',
-        prompt:   'The Hoja tiptoed across the floor, but…',
+        example:  'The Hodgers tried to be quiet, but the biggest one did a thunderous burp.',
+        prompt:   'The Hodger tiptoed across the floor, but…',
       },
       {
         id:       'however',
         word:     'however',
         does:     'a surprising thing happens instead',
-        example:  'The kitchen looked spotless. However, the Hojas had been extremely busy under the floorboards.',
-        prompt:   'Everything seemed fine. However, the Hojas…',
+        example:  'The kitchen looked spotless. However, the Hodgers had been extremely busy under the floorboards.',
+        prompt:   'Everything seemed fine. However, the Hodgers…',
       },
       {
         id:       'although',
         word:     'although',
         does:     'even though one thing is true, something else is too',
-        example:  'Although the Hojas were tiny, they could cause an absolutely enormous amount of trouble.',
-        prompt:   'Although the Hoja was only the size of a thumb, she…',
+        example:  'Although the Hodgers were tiny, they could cause an absolutely enormous amount of trouble.',
+        prompt:   'Although the Hodger was only the size of a thumb, she…',
       },
       {
         id:       'yet',
         word:     'yet',
         does:     'something still happens even so',
-        example:  'The Hoja had been warned about the cat, yet she still crept straight towards the food bowl.',
-        prompt:   'The Hoja knew it was dangerous, yet…',
+        example:  'The Hodger had been warned about the cat, yet she still crept straight towards the food bowl.',
+        prompt:   'The Hodger knew it was dangerous, yet…',
       },
       {
         id:       'even-though',
         word:     'even though',
         does:     'something happens despite the situation',
-        example:  'Even though the whole family was watching, the Hoja still managed to steal a crumpet.',
-        prompt:   'Even though everyone was looking, the Hoja…',
+        example:  'Even though the whole family was watching, the Hodger still managed to steal a crumpet.',
+        prompt:   'Even though everyone was looking, the Hodger…',
       },
     ],
   },
@@ -101,36 +101,36 @@ const GROUPS = [
         id:       'because',
         word:     'because',
         does:     'explains why something happened',
-        example:  'The whole room smelled terrible because a Hoja had been hiding behind the radiator all afternoon.',
+        example:  'The whole room smelled terrible because a Hodger had been hiding behind the radiator all afternoon.',
         prompt:   'Everyone had to open the windows because…',
       },
       {
         id:       'so',
         word:     'so',
         does:     'shows what happened as a result',
-        example:  'The Hoja ate seventeen biscuits, so she had to undo her tiny belt.',
-        prompt:   'The Hoja had been very naughty all day, so…',
+        example:  'The Hodger ate seventeen biscuits, so she had to undo her tiny belt.',
+        prompt:   'The Hodger had been very naughty all day, so…',
       },
       {
         id:       'therefore',
         word:     'therefore',
         does:     'because of that, this happened',
-        example:  'The Hojas had caused terrible mischief. Therefore, they hid behind the washing machine and waited.',
-        prompt:   'The Hoja had been spotted. Therefore, she…',
+        example:  'The Hodgers had caused terrible mischief. Therefore, they hid behind the washing machine and waited.',
+        prompt:   'The Hodger had been spotted. Therefore, she…',
       },
       {
         id:       'since',
         word:     'since',
         does:     'because something was already true',
-        example:  'Since the Hoja had been farting under the floorboards all morning, everyone blamed the dog.',
-        prompt:   'Since the Hojas had eaten all the cheese…',
+        example:  'Since the Hodger had been farting under the floorboards all morning, everyone blamed the dog.',
+        prompt:   'Since the Hodgers had eaten all the cheese…',
       },
       {
         id:       'as-a-result',
         word:     'as a result',
         does:     'this is what happened because of that',
-        example:  'The Hoja sat in the butter dish. As a result, things got very slippery very quickly.',
-        prompt:   'The Hoja had been extremely mischievous. As a result…',
+        example:  'The Hodger sat in the butter dish. As a result, things got very slippery very quickly.',
+        prompt:   'The Hodger had been extremely mischievous. As a result…',
       },
     ],
   },
@@ -146,57 +146,57 @@ const GROUPS = [
         id:       'first',
         word:     'first',
         does:     'the very first thing that happened',
-        example:  'First, the Hoja checked that absolutely nobody was looking.',
-        prompt:   'First, the Hoja…',
+        example:  'First, the Hodger checked that absolutely nobody was looking.',
+        prompt:   'First, the Hodger…',
       },
       {
         id:       'next',
         word:     'next',
         does:     'what happened straight after',
         example:  'Next, she tiptoed across the kitchen floor on her tiny feet.',
-        prompt:   'Next, the Hoja sneaked towards…',
+        prompt:   'Next, the Hodger sneaked towards…',
       },
       {
         id:       'then',
         word:     'then',
         does:     'what happened after that',
         example:  'Then she sat directly in the middle of the butter dish and grinned.',
-        prompt:   'Then the Hoja…',
+        prompt:   'Then the Hodger…',
       },
       {
         id:       'after',
         word:     'after',
         does:     'something happened following that',
-        example:  'After the great biscuit disaster, the Hojas decided to hide in the sock drawer for a while.',
-        prompt:   'After the Hojas caused so much trouble…',
+        example:  'After the great biscuit disaster, the Hodgers decided to hide in the sock drawer for a while.',
+        prompt:   'After the Hodgers caused so much trouble…',
       },
       {
         id:       'before',
         word:     'before',
         does:     'something happened earlier',
-        example:  'Before anyone noticed, the Hojas had eaten all the cheese and completely disappeared.',
-        prompt:   'Before the family came home, the Hojas…',
+        example:  'Before anyone noticed, the Hodgers had eaten all the cheese and completely disappeared.',
+        prompt:   'Before the family came home, the Hodgers…',
       },
       {
         id:       'when',
         word:     'when',
         does:     'at the same moment as something else',
-        example:  'When the lights went off, the Hojas crept out from under the kitchen cupboards.',
-        prompt:   'When nobody was watching, the Hoja…',
+        example:  'When the lights went off, the Hodgers crept out from under the kitchen cupboards.',
+        prompt:   'When nobody was watching, the Hodger…',
       },
       {
         id:       'while',
         word:     'while',
         does:     'two things happening at the same time',
-        example:  'While everyone was eating dinner, the Hojas were doing something disgusting in the garden.',
-        prompt:   'While the family was asleep, the Hojas…',
+        example:  'While everyone was eating dinner, the Hodgers were doing something disgusting in the garden.',
+        prompt:   'While the family was asleep, the Hodgers…',
       },
       {
         id:       'finally',
         word:     'finally',
         does:     'the last thing — the ending!',
-        example:  'Finally, after holding it in all afternoon, the Hoja let out the most enormous fart anyone had ever heard.',
-        prompt:   'Finally, after all that mischief, the Hoja…',
+        example:  'Finally, after holding it in all afternoon, the Hodger let out the most enormous fart anyone had ever heard.',
+        prompt:   'Finally, after all that mischief, the Hodger…',
       },
     ],
   },
@@ -219,36 +219,36 @@ const GROUPS = [
         id:       'meanwhile',
         word:     'meanwhile',
         does:     'something else was happening somewhere else at the same time',
-        example:  'The family thought everything was fine. Meanwhile, in the kitchen cupboard, the Hojas were planning something absolutely awful.',
-        prompt:   'The family went to bed. Meanwhile, the Hojas…',
+        example:  'The family thought everything was fine. Meanwhile, in the kitchen cupboard, the Hodgers were planning something absolutely awful.',
+        prompt:   'The family went to bed. Meanwhile, the Hodgers…',
       },
       {
         id:       'until',
         word:     'until',
         does:     'something was happening right up to the moment when',
-        example:  'Everything was peaceful and lovely until the Hojas arrived and discovered the fridge.',
+        example:  'Everything was peaceful and lovely until the Hodgers arrived and discovered the fridge.',
         prompt:   'The house was tidy and clean until…',
       },
       {
         id:       'luckily',
         word:     'luckily',
         does:     'something good happened just in time',
-        example:  'The Hoja had almost been caught — luckily, she dived inside a wellington boot just in time.',
-        prompt:   'The Hoja was spotted! Luckily…',
+        example:  'The Hodger had almost been caught — luckily, she dived inside a wellington boot just in time.',
+        prompt:   'The Hodger was spotted! Luckily…',
       },
       {
         id:       'unfortunately',
         word:     'unfortunately',
         does:     'something bad happened — oh no!',
-        example:  'Unfortunately for the family, the Hojas had discovered where the chocolate biscuits were hidden.',
-        prompt:   'The Hojas had a brilliant plan. Unfortunately…',
+        example:  'Unfortunately for the family, the Hodgers had discovered where the chocolate biscuits were hidden.',
+        prompt:   'The Hodgers had a brilliant plan. Unfortunately…',
       },
       {
         id:       'worst-of-all',
         word:     'worst of all',
         does:     'the most terrible thing of everything',
-        example:  'The Hojas had eaten the cake, stolen the cheese, and sat on the cat — but worst of all, nobody knew it was them.',
-        prompt:   'The Hoja had caused so much trouble, but worst of all…',
+        example:  'The Hodgers had eaten the cake, stolen the cheese, and sat on the cat — but worst of all, nobody knew it was them.',
+        prompt:   'The Hodger had caused so much trouble, but worst of all…',
       },
     ],
   },
@@ -292,24 +292,36 @@ function getWord()     { return getWords()[state.wordIndex] ?? null; }
    TTS — browser Web Speech API (works on GitHub Pages, no server)
 ═══════════════════════════════════════════════════════════════ */
 
-// Prime voice list on load (Chrome needs this)
+// Prime voice list on load (Chrome needs this before first speak)
 if ('speechSynthesis' in window) {
   window.speechSynthesis.getVoices();
   window.speechSynthesis.addEventListener('voiceschanged', () => {}, { once: true });
 }
 
-function speak(text, onDone) {
-  if (!('speechSynthesis' in window) || !text) { if (onDone) onDone(); return; }
+// Speak an array of strings in sequence, with a pause (ms) between each.
+function speakSequence(parts, gapMs) {
+  if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang  = 'en-GB';
-  utt.rate  = 0.9;
-  if (onDone) utt.onend = onDone;
-  window.speechSynthesis.speak(utt);
   state.speaking = true;
-  utt.onend = () => { state.speaking = false; if (onDone) onDone(); };
-  const el = $('speak-status');
-  if (el) el.textContent = text;
+  const gap = gapMs ?? 850;
+  function next(i) {
+    if (i >= parts.length) { state.speaking = false; return; }
+    const text = String(parts[i] || '').trim();
+    if (!text) { setTimeout(() => next(i + 1), gap); return; }
+    const utt  = new SpeechSynthesisUtterance(text);
+    utt.lang   = 'en-GB';
+    utt.rate   = 0.88;
+    utt.onend  = () => setTimeout(() => next(i + 1), gap);
+    window.speechSynthesis.speak(utt);
+    const el = $('speak-status');
+    if (el) el.textContent = text;
+  }
+  next(0);
+}
+
+// Single phrase (used by hear-example / hear-prompt buttons)
+function speak(text) {
+  speakSequence([text]);
 }
 
 function cancelSpeech() {
@@ -317,12 +329,10 @@ function cancelSpeech() {
   state.speaking = false;
 }
 
-// Speak: word → short pause → example sentence
+// Auto-speak on card arrival: word → pause → example sentence
 function speakCard(word) {
   cancelSpeech();
-  speak(word.word, () => {
-    setTimeout(() => speak(word.example), 400);
-  });
+  speakSequence([word.word, word.example], 900);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -342,7 +352,7 @@ function renderHome() {
         <div class="home-logo" aria-hidden="true">🔗</div>
         <h1 class="home-title">Connectives</h1>
         <p class="home-sub">Words that join your story together</p>
-        <p class="home-hojas">Every example features the Hojas 💨</p>
+        <p class="home-hojas">Every example features the Hodgers 💨</p>
       </header>
 
       <nav class="group-grid" aria-label="Choose a connective group">
@@ -443,7 +453,7 @@ function renderCard(slideDir) {
           </div>
 
           <div class="cc-example-block">
-            <div class="cc-example-label">📖 Hojas story:</div>
+            <div class="cc-example-label">📖 Hodgers story:</div>
             <blockquote class="cc-example">
               ${highlightWord(word.example, word.word)}
             </blockquote>
