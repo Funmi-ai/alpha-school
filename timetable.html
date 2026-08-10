@@ -581,6 +581,26 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* ── WOTD speaker button ─────────────────────────────────────────── */
+.wotd-speak-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  flex-shrink: 0;
+}
+.wotd-speak-btn:hover  { background: rgba(255,255,255,0.28); }
+.wotd-speak-btn:active { transform: scale(0.93); }
+.wotd-speak-btn:focus-visible { outline: 2px solid #a5b4fc; outline-offset: 2px; }
 </style>
 
 <!-- ── Header ─────────────────────────────────────────────────────── -->
@@ -606,6 +626,30 @@ body {
 </main>
 
 <script>
+
+/* ── TTS — Web Speech API ───────────────────────────────────────── */
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', () => {}, { once: true });
+}
+
+function speakSequence(parts, gapMs) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const gap = gapMs ?? 900;
+  function next(i) {
+    if (i >= parts.length) return;
+    const text = String(parts[i] || '').trim();
+    if (!text) { setTimeout(() => next(i + 1), gap); return; }
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang  = 'en-GB';
+    utt.rate  = 0.88;
+    utt.onend = () => setTimeout(() => next(i + 1), gap);
+    window.speechSynthesis.speak(utt);
+  }
+  next(0);
+}
+
 /* ─────────────────────────────────────────────────────────────────
    DATA
 ───────────────────────────────────────────────────────────────── */
@@ -877,6 +921,7 @@ function wotdcardHTML() {
       <div class="wotd-header">
         <span class="wotd-eyebrow">⭐ Word of the Day</span>
         <span class="wotd-ask">Ask Cairo about it!</span>
+        <button class="wotd-speak-btn" data-action="speak-wotd" aria-label="Hear the word of the day">🔊</button>
       </div>
       <div class="wotd-word">${safeText(w.word)}</div>
       <div class="wotd-syns">
@@ -1079,6 +1124,13 @@ function renderWeekend() {
 
     // Mark done when Start is clicked; brief delay lets the tab open first
     document.getElementById('day-panel').addEventListener('click', e => {
+      // WOTD speaker
+      if (e.target.closest('[data-action="speak-wotd"]')) {
+        const w = wotdForToday();
+        speakSequence([w.word, 'you could also say: ' + w.syns.join(', '), w.story], 900);
+        return;
+      }
+      // Activity start → mark done
       const link = e.target.closest('.start-btn[data-id]');
       if (!link) return;
       done.add(link.dataset.id);
