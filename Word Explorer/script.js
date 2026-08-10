@@ -291,17 +291,22 @@ function getCurrentWord() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TTS via tts_server.py (macOS 'say', port 8081)
+   TTS — browser Web Speech API (works on GitHub Pages, no server)
 ═══════════════════════════════════════════════════════════════ */
-const TTS_SERVER = 'http://localhost:8081';
+
+// Prime voice list on load (Chrome needs this)
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', () => {}, { once: true });
+}
 
 function speak(text) {
-  fetch(TTS_SERVER + '/cancel', { method: 'POST' }).catch(() => {});
-  fetch(TTS_SERVER + '/speak', {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ text }),
-  }).catch(() => {});
+  if (!('speechSynthesis' in window) || !text) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-GB';
+  utt.rate = 0.9;
+  window.speechSynthesis.speak(utt);
   const status = $('speak-status');
   if (status) status.textContent = text;
 }

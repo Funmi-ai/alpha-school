@@ -289,29 +289,31 @@ function getWords()    { return getGroup()?.words ?? []; }
 function getWord()     { return getWords()[state.wordIndex] ?? null; }
 
 /* ═══════════════════════════════════════════════════════════════
-   TTS — routes through tts_server.py (macOS 'say', port 8081)
+   TTS — browser Web Speech API (works on GitHub Pages, no server)
 ═══════════════════════════════════════════════════════════════ */
 
-const TTS = 'http://localhost:8081';
+// Prime voice list on load (Chrome needs this)
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', () => {}, { once: true });
+}
 
-async function speak(text, onDone) {
-  if (!text) { if (onDone) onDone(); return; }
+function speak(text, onDone) {
+  if (!('speechSynthesis' in window) || !text) { if (onDone) onDone(); return; }
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang  = 'en-GB';
+  utt.rate  = 0.9;
+  if (onDone) utt.onend = onDone;
+  window.speechSynthesis.speak(utt);
   state.speaking = true;
-  try {
-    await fetch(TTS + '/speak', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ text }),
-    });
-  } catch (e) { /* server not running — silent fail */ }
-  state.speaking = false;
-  if (onDone) onDone();
+  utt.onend = () => { state.speaking = false; if (onDone) onDone(); };
   const el = $('speak-status');
   if (el) el.textContent = text;
 }
 
 function cancelSpeech() {
-  fetch(TTS + '/cancel', { method: 'POST' }).catch(() => {});
+  window.speechSynthesis.cancel();
   state.speaking = false;
 }
 
