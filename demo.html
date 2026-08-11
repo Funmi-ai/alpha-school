@@ -550,6 +550,11 @@ const A = {
     desc:'Creative writing and stories with magical animals',
     href:'https://www.nightzookeeper.com',
   },
+  synonyms: {
+    id:'synonyms', icon:'🧠', name:'Synonyms',
+    desc:"Friday recap — find a synonym for each of this week's 4 Words of the Day",
+    href:'Synonyms/synonyms.html',
+  },
   wordExplorer: {
     id:'word-explorer', icon:'📝', name:'Word Explorer',
     desc:'Discover brilliant new words and synonyms to use in your writing',
@@ -601,7 +606,7 @@ const SCHEDULE = [
     afternoon:[A.clascrunch, A.brownieBusiness, A.whysThat] },
   { morning:[A.frenchExplorer, A.wordExplorer, A.synthesis],
     afternoon:[A.financial, A.history, A.whysThat] },
-  { morning:[A.frenchExplorer, A.nightZookeeper, A.synthesis],
+  { morning:[A.frenchExplorer, A.synonyms, A.synthesis],
     afternoon:[A.clascrunch, A.financial, A.whysThat] },
 ];
 
@@ -624,6 +629,7 @@ const QUOTES = [
 const PHRASES = {
   'synthesis':           'worked on maths puzzles',
   'night-zookeeper':    'wrote a creative story',
+  'synonyms':           "found synonyms for this week's words",
   'word-explorer':      'explored new words',
   'connectives':        'learnt linking words',
   'french-explorer':    'practised French',
