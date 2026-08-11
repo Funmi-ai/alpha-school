@@ -998,13 +998,13 @@ function presentationActivity() {
 }
 
 // Today's afternoon list, with the end-of-month swap applied if it's
-// the day for it. Middle slot only — the first slot (the day's main
-// subject) and Why's That (the daily anchor) stay put.
+// the day for it. Replaces Why's That (last slot) — the day's two
+// subject activities stay put.
 function todaysAfternoon(idx) {
   const base = SCHEDULE[idx].afternoon;
   if (!isLastSchoolDayOfMonth(new Date())) return base;
   const swapped = base.slice();
-  swapped[1] = presentationActivity();
+  swapped[swapped.length - 1] = presentationActivity();
   return swapped;
 }
 

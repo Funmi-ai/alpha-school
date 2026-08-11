@@ -28,6 +28,12 @@ const WORDS = [
     story:  'From the towering height of the kitchen counter, the Hodger looked down at the dog below.',
     prompt: 'Write a sentence about a Hodger climbing something very high.',
   },
+  {
+    id: 'enormous', emoji: '🐋', word: 'enormous', cat: 'size',
+    synonyms: ['gigantic', 'vast', 'immense'],
+    story:  'The Hodger let out an enormous fart that rattled every window in the house.',
+    prompt: 'Write a sentence about a Hodger doing something enormous — or making an enormous mess.',
+  },
 
   // ── ADJECTIVES: SPEED ────────────────────────────────────────
   {
@@ -74,6 +80,30 @@ const WORDS = [
     story:  'The Hodgers were absolutely buzzing — they had discovered an unguarded trifle on the kitchen table.',
     prompt: 'What would make a Hodger overjoyed? Write a sentence about it.',
   },
+  {
+    id: 'gleeful', emoji: '😆', word: 'gleeful', cat: 'feeling',
+    synonyms: ['joyful', 'delighted', 'elated'],
+    story:  'The Hodger was absolutely gleeful — she had hidden a sock inside the sofa.',
+    prompt: 'Write a sentence about a Hodger who is gleeful about some mischief.',
+  },
+  {
+    id: 'furious', emoji: '🤬', word: 'furious', cat: 'feeling',
+    synonyms: ['livid', 'cross', 'outraged'],
+    story:  'The Hodger was furious — someone had tidied the mess she spent all morning making.',
+    prompt: 'Write a sentence about a Hodger who is furious about something.',
+  },
+  {
+    id: 'ferocious', emoji: '🐯', word: 'ferocious', cat: 'feeling',
+    synonyms: ['fierce', 'wild', 'furious'],
+    story:  'The Hodger gave the cat the most ferocious glare a creature her size could manage.',
+    prompt: 'Write a sentence about a Hodger being ferocious.',
+  },
+  {
+    id: 'bewildered', emoji: '😵‍💫', word: 'bewildered', cat: 'feeling',
+    synonyms: ['confused', 'baffled', 'puzzled'],
+    story:  'Everyone was bewildered by the smell — nobody suspected the Hodgers at all.',
+    prompt: 'Write a sentence about someone who is bewildered by the Hodgers\' mischief.',
+  },
 
   // ── ADJECTIVES: LOOKS ────────────────────────────────────────
   {
@@ -108,6 +138,12 @@ const WORDS = [
     story:  'The Hodger knocked on the solid floorboard three times — a signal to the others below.',
     prompt: 'Write a sentence with solid or firm about something a Hodger finds.',
   },
+  {
+    id: 'velvety', emoji: '🛋️', word: 'velvety', cat: 'texture',
+    synonyms: ['silky', 'smooth', 'soft'],
+    story:  'The Hodger sank into the velvety sofa cushion with a satisfied sigh.',
+    prompt: 'Write a sentence about a Hodger finding something velvety to sit on.',
+  },
 
   // ── ADJECTIVES: SOUND ────────────────────────────────────────
   {
@@ -121,6 +157,12 @@ const WORDS = [
     synonyms: ['silent', 'hushed', 'still', 'peaceful', 'calm', 'gentle'],
     story:  'The house was perfectly silent — which meant the Hodgers were definitely up to something.',
     prompt: 'Write a sentence about a Hodger being silent or hushed. Why are they so quiet?',
+  },
+  {
+    id: 'thunderous', emoji: '⛈️', word: 'thunderous', cat: 'sound',
+    synonyms: ['deafening', 'booming', 'blaring'],
+    story:  'The burp was so thunderous it woke up the dog, the cat and next door.',
+    prompt: 'Write a sentence about a Hodger making a thunderous noise.',
   },
 
   // ── ADJECTIVES: TEMPERATURE ──────────────────────────────────
@@ -174,6 +216,24 @@ const WORDS = [
     story:  'The smallest Hodger boldly marched straight towards the dog and sat on its paw.',
     prompt: 'Write a sentence about a Hodger doing something fearlessly.',
   },
+  {
+    id: 'stealthily-adv', emoji: '🥷', word: 'stealthily', cat: 'adverb',
+    synonyms: ['silently', 'sneakily', 'noiselessly'],
+    story:  'The Hodger moved stealthily across the kitchen, heading straight for the cheese.',
+    prompt: 'Write a sentence about a Hodger sneaking somewhere stealthily.',
+  },
+  {
+    id: 'cautiously-adv', emoji: '🧐', word: 'cautiously', cat: 'adverb',
+    synonyms: ['carefully', 'gently', 'delicately'],
+    story:  'The Hodger cautiously lifted the tablecloth and peered underneath with one tiny eye.',
+    prompt: 'Write a sentence about a Hodger doing something cautiously.',
+  },
+  {
+    id: 'raucously-adv', emoji: '🥳', word: 'raucously', cat: 'adverb',
+    synonyms: ['noisily', 'loudly', 'boisterously'],
+    story:  'The Hodgers laughed raucously as they tumbled out from behind the fridge.',
+    prompt: 'Write a sentence about the Hodgers laughing raucously.',
+  },
 
   // ── VERBS ────────────────────────────────────────────────────
   {
@@ -217,5 +277,69 @@ const WORDS = [
     synonyms: ['peered', 'glared', 'peeked', 'spied', 'gazed', 'squinted'],
     story:  'The Hodger peered around the corner of the fridge with one very suspicious eye.',
     prompt: 'Write a sentence where a Hodger peeks, peers or spies on something.',
+  },
+  {
+    id: 'scurried-verb', emoji: '🐁', word: 'scurried', cat: 'verb',
+    synonyms: ['darted', 'bolted', 'dashed'],
+    story:  'The Hodger scurried across the floor the moment she heard footsteps.',
+    prompt: 'Write a sentence about a Hodger who scurries away quickly.',
+  },
+  {
+    id: 'devoured-verb', emoji: '😋', word: 'devoured', cat: 'verb',
+    synonyms: ['gobbled', 'wolfed', 'chomped'],
+    story:  'The Hodger devoured the entire biscuit tin and felt absolutely no guilt.',
+    prompt: 'Write a sentence about a Hodger who devours something they shouldn\'t.',
+  },
+  {
+    id: 'lurking-verb', emoji: '🕵️', word: 'lurking', cat: 'verb',
+    synonyms: ['hiding', 'creeping', 'crouching'],
+    story:  'The Hodger was lurking behind the cereal boxes, watching and waiting.',
+    prompt: 'Write a sentence about a Hodger lurking somewhere unexpected.',
+  },
+  {
+    id: 'cackled-verb', emoji: '🧙', word: 'cackled', cat: 'verb',
+    synonyms: ['giggled', 'howled', 'guffawed'],
+    story:  'The Hodger cackled so hard at her own trick that she fell off the shelf.',
+    prompt: 'Write a sentence about a Hodger who cackled at her own trick.',
+  },
+
+  // ── ADJECTIVES: OPINIONS ─────────────────────────────────────
+  // "Opinion adjectives" — judgement/reaction words, distinct from the
+  // sensory categories above (size/speed/feeling/looks/texture/sound/temp).
+  {
+    id: 'magnificent', emoji: '👑', word: 'magnificent', cat: 'opinion',
+    synonyms: ['spectacular', 'splendid', 'glorious'],
+    story:  'The Hodger thought her tiny poo sculpture was truly magnificent.',
+    prompt: 'Write a sentence about something a Hodger thinks is magnificent.',
+  },
+  {
+    id: 'peculiar', emoji: '🤔', word: 'peculiar', cat: 'opinion',
+    synonyms: ['strange', 'odd', 'unusual'],
+    story:  'A peculiar smell had been drifting through the house all afternoon.',
+    prompt: 'Write a sentence about something peculiar the Hodgers left behind.',
+  },
+  {
+    id: 'disastrous', emoji: '🌪️', word: 'disastrous', cat: 'opinion',
+    synonyms: ['catastrophic', 'terrible', 'awful'],
+    story:  'The plan had been brilliant. The result was completely disastrous.',
+    prompt: 'Write a sentence about a Hodger plan that turned out disastrous.',
+  },
+  {
+    id: 'preposterous', emoji: '🙃', word: 'preposterous', cat: 'opinion',
+    synonyms: ['ridiculous', 'absurd', 'outrageous'],
+    story:  'It was preposterous — three Hodgers in a teacup and they still wanted more room.',
+    prompt: 'Write a sentence about something preposterous the Hodgers tried to do.',
+  },
+  {
+    id: 'mischievous', emoji: '😏', word: 'mischievous', cat: 'opinion',
+    synonyms: ['naughty', 'cheeky', 'troublesome'],
+    story:  'The most mischievous Hodger had discovered where the chocolate biscuits were kept.',
+    prompt: 'Write a sentence about the most mischievous Hodger you can imagine.',
+  },
+  {
+    id: 'cunning', emoji: '🦊', word: 'cunning', cat: 'opinion',
+    synonyms: ['clever', 'devious', 'crafty'],
+    story:  'The most cunning Hodger had a plan involving the butter dish and the dog.',
+    prompt: 'Write a sentence about a cunning plan a Hodger comes up with.',
   },
 ];

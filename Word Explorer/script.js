@@ -18,6 +18,7 @@ const CATEGORIES = [
   { id: 'texture', label: 'Adjectives: Texture', emoji: '🤝', color: '#14b8a6' },
   { id: 'sound',   label: 'Adjectives: Sound',   emoji: '🎵', color: '#eab308' },
   { id: 'temp',    label: 'Adjectives: Temp',    emoji: '🌡️', color: '#ef4444' },
+  { id: 'opinion', label: 'Adjectives: Opinions',emoji: '💭', color: '#d97706' },
   { id: 'adverb',  label: 'Adverbs',             emoji: '🚀', color: '#7c3aed' },
   { id: 'verb',    label: 'Verbs',               emoji: '🏃', color: '#0891b2' },
 ];
