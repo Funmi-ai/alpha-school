@@ -515,17 +515,22 @@ function speakSequence(parts, gapMs) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const gap = gapMs ?? 900;
-  function next(i) {
-    if (i >= parts.length) return;
-    const text = String(parts[i] || '').trim();
-    if (!text) { setTimeout(() => next(i + 1), gap); return; }
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang  = 'en-GB';
-    utt.rate  = 0.88;
-    utt.onend = () => setTimeout(() => next(i + 1), gap);
-    window.speechSynthesis.speak(utt);
-  }
-  next(0);
+  // 150 ms buffer after cancel() stops Chrome locking up when a tap
+  // interrupts a sequence; resume() unpauses if the tab was backgrounded
+  setTimeout(() => {
+    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    function next(i) {
+      if (i >= parts.length) return;
+      const text = String(parts[i] || '').trim();
+      if (!text) { setTimeout(() => next(i + 1), gap); return; }
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang  = 'en-GB';
+      utt.rate  = 0.88;
+      utt.onend = () => setTimeout(() => next(i + 1), gap);
+      window.speechSynthesis.speak(utt);
+    }
+    next(0);
+  }, 150);
 }
 
 /* ─────────────────────────────────────────────────────────────────

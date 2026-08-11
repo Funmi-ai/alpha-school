@@ -298,25 +298,28 @@ if ('speechSynthesis' in window) {
   window.speechSynthesis.addEventListener('voiceschanged', () => {}, { once: true });
 }
 
-// Speak an array of strings in sequence, with a pause (ms) between each.
+// Speak an array of strings in sequence with pauses between each.
+// The 150 ms delay after cancel() prevents Chrome locking up when
+// a new tap interrupts a sequence that is already playing.
 function speakSequence(parts, gapMs) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
-  state.speaking = true;
-  const gap = gapMs ?? 850;
-  function next(i) {
-    if (i >= parts.length) { state.speaking = false; return; }
-    const text = String(parts[i] || '').trim();
-    if (!text) { setTimeout(() => next(i + 1), gap); return; }
-    const utt  = new SpeechSynthesisUtterance(text);
-    utt.lang   = 'en-GB';
-    utt.rate   = 0.88;
-    utt.onend  = () => setTimeout(() => next(i + 1), gap);
-    window.speechSynthesis.speak(utt);
-    const el = $('speak-status');
-    if (el) el.textContent = text;
-  }
-  next(0);
+  const gap = gapMs ?? 900;
+  setTimeout(() => {
+    // Resume if Chrome silently paused synthesis (e.g. tab was backgrounded)
+    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    function next(i) {
+      if (i >= parts.length) return;
+      const text = String(parts[i] || '').trim();
+      if (!text) { setTimeout(() => next(i + 1), gap); return; }
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang  = 'en-GB';
+      utt.rate  = 0.88;
+      utt.onend = () => setTimeout(() => next(i + 1), gap);
+      window.speechSynthesis.speak(utt);
+    }
+    next(0);
+  }, 150);
 }
 
 // Single phrase (used by hear-example / hear-prompt buttons)

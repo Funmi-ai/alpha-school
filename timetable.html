@@ -582,6 +582,50 @@ body {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
 
+/* ── Weekly Challenge / Monthly Skill spotlight cards ────────────── */
+/* Same bold-solid-card language as .wotd-card, deliberately fixed
+   colours regardless of theme — these two are "special", not routine
+   chrome, same reasoning as WOTD. No score, no badge: ungamified on
+   purpose, since these are real-world tasks, not app practice. */
+.spotlight-card {
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.spotlight-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.65);
+}
+.spotlight-title {
+  font-size: clamp(1.3rem, 3.6vw, 1.7rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+.spotlight-desc {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+}
+.spotlight-note {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  border-left: 3px solid rgba(255,255,255,0.25);
+  padding-left: 0.65rem;
+  margin-top: 0.1rem;
+}
+.week-card  { background: #7c2d12; }  /* terracotta — out in the real world */
+.month-card { background: #134e4a; }  /* deep teal — workshop / craft practice */
+
 /* ── WOTD speaker button ─────────────────────────────────────────── */
 .wotd-speak-btn {
   display: inline-flex;
@@ -637,17 +681,22 @@ function speakSequence(parts, gapMs) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const gap = gapMs ?? 900;
-  function next(i) {
-    if (i >= parts.length) return;
-    const text = String(parts[i] || '').trim();
-    if (!text) { setTimeout(() => next(i + 1), gap); return; }
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang  = 'en-GB';
-    utt.rate  = 0.88;
-    utt.onend = () => setTimeout(() => next(i + 1), gap);
-    window.speechSynthesis.speak(utt);
-  }
-  next(0);
+  // 150 ms buffer after cancel() stops Chrome locking up when a tap
+  // interrupts a sequence; resume() unpauses if the tab was backgrounded
+  setTimeout(() => {
+    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    function next(i) {
+      if (i >= parts.length) return;
+      const text = String(parts[i] || '').trim();
+      if (!text) { setTimeout(() => next(i + 1), gap); return; }
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang  = 'en-GB';
+      utt.rate  = 0.88;
+      utt.onend = () => setTimeout(() => next(i + 1), gap);
+      window.speechSynthesis.speak(utt);
+    }
+    next(0);
+  }, 150);
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -802,6 +851,38 @@ const WOTD_WORDS = [
   { word:'cackled',     syns:['giggled','howled','guffawed'],        story:'The Hoja cackled so hard at her own trick that she fell off the shelf.' },
 ];
 
+// This Week's Challenge — a real, offline social/speaking task, seeded by
+// week-start so it holds for the whole week. Deliberately ungamified: no
+// score, no badge — this is the Alpha School (Austin) "real world application"
+// idea, talking to real people is the point, not app points.
+const WEEKLY_CHALLENGES = [
+  { title: 'Order your own food', desc: 'At a café, restaurant or stall — ask, say please, and answer any questions yourself.', builds: 'Clear requests & talking to new people' },
+  { title: 'Phone a friend to make a plan', desc: 'Call or video-call to arrange something together — say who you are, ask, and listen.', builds: 'Phone manners & listening' },
+  { title: 'Ask a shop assistant for help', desc: "Describe what you're looking for to someone who doesn't already know.", builds: 'Describing things clearly' },
+  { title: 'Introduce yourself to someone new', desc: 'Say hello, your name, and ask them one question about themselves.', builds: 'Starting a conversation' },
+  { title: 'Give a 1-minute show and tell', desc: 'Tell the family about something you made or learned this week.', builds: 'Speaking to a small audience' },
+  { title: 'Book something over the phone', desc: 'With an adult nearby, call to book a table, a slot, or an appointment.', builds: 'Formal phone manner' },
+  { title: 'Ask a librarian for a recommendation', desc: 'Describe the kind of story you like and see what they suggest.', builds: 'Explaining preferences to a stranger' },
+  { title: 'Interview a grandparent or family friend', desc: 'Prepare 3 questions in advance and ask them properly.', builds: 'Planning questions & listening' },
+  { title: 'Teach someone a game you know', desc: "Explain the rules to someone who's never played before.", builds: 'Explaining things step by step' },
+  { title: 'Say a proper thank you', desc: 'Give someone who helped you this week a specific, genuine thank you.', builds: 'Gratitude as a spoken skill' },
+];
+
+// This Month's Skill — one new thing to learn at home, seeded by month so
+// it holds for the whole month. Low-material, mostly self-practised.
+const MONTHLY_SKILLS = [
+  { title: 'Juggle 3 objects', materials: 'Scrunched-up socks', desc: 'Start with 2, then add a 3rd once that feels easy.' },
+  { title: 'Learn 5 useful knots', materials: 'A shoelace or string', desc: 'Shoelace bow, reef knot, and 3 more of your choosing.' },
+  { title: 'Learn a magic trick', materials: 'A deck of cards', desc: 'Practise it enough to perform it for the family at the end of the month.' },
+  { title: 'Whistle with your fingers', materials: 'None', desc: 'Pure practice and feedback — keep trying different finger shapes.' },
+  { title: 'Do a cartwheel or a handstand', materials: 'Soft grass or floor space', desc: 'Ask an adult to spot you while you practise.' },
+  { title: 'Do 10 keepie-uppies with a football', materials: 'A football', desc: 'Count your best score each week and watch it climb.' },
+  { title: 'Fold an origami crane', materials: 'Square paper', desc: 'Then try 2–3 other simple models once the crane clicks.' },
+  { title: 'Learn 10 constellations', materials: 'A clear night sky', desc: 'Point them out for real — pairs nicely with the Solar System unit.' },
+  { title: 'Sew on a button, or fold a fitted sheet', materials: 'Needle & thread, or a bed sheet', desc: 'A genuine grown-up skill to add to the list.' },
+  { title: 'Learn basic first aid', materials: 'A plaster', desc: 'How to clean and cover a small cut, calmly and properly.' },
+];
+
 // Daily quotes — one shown per day, seeded from the date so it's consistent
 // on reload but feels random across days
 const QUOTES = [
@@ -900,9 +981,9 @@ function afternoonIconsForDay(idx) {
   return SCHEDULE[idx].afternoon.map(a => a.icon).join(' ');
 }
 
-// Shared date-seeded hash (used by both WOTD and quote)
-function dateHash(extra) {
-  const seed = new Date().toDateString() + (extra || '');
+// Shared string hash — dateHash/weekHash/monthHash all seed from this,
+// each just varying what date string goes in.
+function hashSeed(seed) {
   let h = 0;
   for (let i = 0; i < seed.length; i++) {
     h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
@@ -910,8 +991,39 @@ function dateHash(extra) {
   return h >>> 0;
 }
 
+// Same day, all day
+function dateHash(extra) {
+  return hashSeed(new Date().toDateString() + (extra || ''));
+}
+
+// Same result all week — seeded from the Monday of the current week
+function startOfWeek(d) {
+  const date = new Date(d);
+  const day = date.getDay(); // 0 Sun .. 6 Sat
+  date.setDate(date.getDate() + (day === 0 ? -6 : 1 - day));
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+function weekHash(extra) {
+  return hashSeed(startOfWeek(new Date()).toDateString() + (extra || ''));
+}
+
+// Same result all month — seeded from year + month only
+function monthHash(extra) {
+  const n = new Date();
+  return hashSeed(n.getFullYear() + '-' + n.getMonth() + (extra || ''));
+}
+
 function wotdForToday() {
   return WOTD_WORDS[dateHash('wotd') % WOTD_WORDS.length];
+}
+
+function challengeForThisWeek() {
+  return WEEKLY_CHALLENGES[weekHash('challenge') % WEEKLY_CHALLENGES.length];
+}
+
+function skillForThisMonth() {
+  return MONTHLY_SKILLS[monthHash('skill') % MONTHLY_SKILLS.length];
 }
 
 function wotdcardHTML() {
@@ -928,6 +1040,28 @@ function wotdcardHTML() {
         ${w.syns.map(s => `<span class="wotd-syn">${safeText(s)}</span>`).join('')}
       </div>
       <div class="wotd-story">${safeText(w.story)}</div>
+    </div>`;
+}
+
+function weekCardHTML() {
+  const c = challengeForThisWeek();
+  return `
+    <div class="spotlight-card week-card" role="note" aria-label="This week's challenge: ${safeText(c.title)}">
+      <span class="spotlight-eyebrow">🗣️ This Week's Challenge</span>
+      <div class="spotlight-title">${safeText(c.title)}</div>
+      <div class="spotlight-desc">${safeText(c.desc)}</div>
+      <div class="spotlight-note">Builds: ${safeText(c.builds)}</div>
+    </div>`;
+}
+
+function monthCardHTML() {
+  const s = skillForThisMonth();
+  return `
+    <div class="spotlight-card month-card" role="note" aria-label="This month's skill: ${safeText(s.title)}">
+      <span class="spotlight-eyebrow">🛠️ This Month's Skill</span>
+      <div class="spotlight-title">${safeText(s.title)}</div>
+      <div class="spotlight-desc">${safeText(s.desc)}</div>
+      <div class="spotlight-note">You'll need: ${safeText(s.materials)}</div>
     </div>`;
 }
 
@@ -1046,6 +1180,8 @@ function renderSchoolDay(dayIdx) {
   document.getElementById('day-panel').innerHTML = `
     ${datecardHTML()}
     ${wotdcardHTML()}
+    ${weekCardHTML()}
+    ${monthCardHTML()}
 
     <section class="time-block morning" aria-labelledby="morning-heading">
       <header class="block-header">
@@ -1072,6 +1208,8 @@ function renderSchoolDay(dayIdx) {
 function renderWeekend() {
   document.getElementById('day-panel').innerHTML = `
     ${datecardHTML()}
+    ${weekCardHTML()}
+    ${monthCardHTML()}
 
     <div style="
       text-align: center;
