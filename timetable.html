@@ -576,6 +576,9 @@ body {
   .date-card   { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .date-body   { border-right: none; padding-right: 0; border-bottom: 2px solid var(--c-bg); padding-bottom: 1rem; width: 100%; }
   .date-quote  { padding-left: 0; }
+
+  /* Challenge + Skill drop back to one column on small screens */
+  .paired-row  { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -626,6 +629,16 @@ body {
 .week-card  { background: #7c2d12; }  /* terracotta — out in the real world */
 .month-card { background: #134e4a; }  /* deep teal — workshop / craft practice */
 
+/* Challenge + Skill paired side by side under WOTD — WOTD keeps its
+   own full-width row unchanged. */
+.paired-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+.paired-row .spotlight-card { height: 100%; }
+
 /* ── WOTD speaker button ─────────────────────────────────────────── */
 .wotd-speak-btn {
   display: inline-flex;
@@ -669,6 +682,8 @@ body {
   <!-- injected by JS -->
 </main>
 
+<!-- Same WORDS array Word Explorer uses, so the Word of the Day always matches -->
+<script src="Word Explorer/words-data.js"></script>
 <script>
 
 /* ── TTS — Web Speech API ───────────────────────────────────────── */
@@ -826,30 +841,9 @@ const SCHEDULE = [
   },
 ];
 
-// Word of the Day — mirrors Word Explorer data, seeded by date
-// Only needs: word, synonyms (first 3), story sentence
-const WOTD_WORDS = [
-  { word:'enormous',    syns:['gigantic','vast','immense'],          story:'The Hoja let out an enormous fart that rattled every window in the house.' },
-  { word:'stealthily',  syns:['silently','sneakily','noiselessly'],  story:'The Hoja moved stealthily across the kitchen, heading straight for the cheese.' },
-  { word:'thunderous',  syns:['deafening','booming','blaring'],      story:'The burp was so thunderous it woke up the dog, the cat and next door.' },
-  { word:'gleeful',     syns:['joyful','delighted','elated'],        story:'The Hoja was absolutely gleeful — she had hidden a sock inside the sofa.' },
-  { word:'scurried',    syns:['darted','bolted','dashed'],           story:'The Hoja scurried across the floor the moment she heard footsteps.' },
-  { word:'devoured',    syns:['gobbled','wolfed','chomped'],         story:'The Hoja devoured the entire biscuit tin and felt absolutely no guilt.' },
-  { word:'furious',     syns:['livid','cross','outraged'],           story:'The Hoja was furious — someone had tidied the mess she spent all morning making.' },
-  { word:'cautiously',  syns:['carefully','gently','delicately'],    story:'The Hoja cautiously lifted the tablecloth and peered underneath with one tiny eye.' },
-  { word:'lurking',     syns:['hiding','creeping','crouching'],      story:'The Hoja was lurking behind the cereal boxes, watching and waiting.' },
-  { word:'magnificent', syns:['spectacular','splendid','glorious'],  story:'The Hoja thought her tiny poo sculpture was truly magnificent.' },
-  { word:'ferocious',   syns:['fierce','wild','furious'],            story:'The Hoja gave the cat the most ferocious glare a creature her size could manage.' },
-  { word:'peculiar',    syns:['strange','odd','unusual'],            story:'A peculiar smell had been drifting through the house all afternoon.' },
-  { word:'disastrous',  syns:['catastrophic','terrible','awful'],    story:'The plan had been brilliant. The result was completely disastrous.' },
-  { word:'preposterous',syns:['ridiculous','absurd','outrageous'],   story:'It was preposterous — three Hojas in a teacup and they still wanted more room.' },
-  { word:'mischievous', syns:['naughty','cheeky','troublesome'],     story:'The most mischievous Hoja had discovered where the chocolate biscuits were kept.' },
-  { word:'bewildered',  syns:['confused','baffled','puzzled'],       story:'Everyone was bewildered by the smell — nobody suspected the Hojas at all.' },
-  { word:'raucously',   syns:['noisily','loudly','boisterously'],    story:'The Hojas laughed raucously as they tumbled out from behind the fridge.' },
-  { word:'cunning',     syns:['clever','devious','crafty'],          story:'The most cunning Hoja had a plan involving the butter dish and the dog.' },
-  { word:'velvety',     syns:['silky','smooth','soft'],              story:'The Hoja sank into the velvety sofa cushion with a satisfied sigh.' },
-  { word:'cackled',     syns:['giggled','howled','guffawed'],        story:'The Hoja cackled so hard at her own trick that she fell off the shelf.' },
-];
+// Word of the Day — now the exact same WORDS array Word Explorer uses
+// (loaded above via Word Explorer/words-data.js), with the exact same
+// date-seeded index (see wotdForToday below), so the two always match.
 
 // This Week's Challenge — a real, offline social/speaking task, seeded by
 // week-start so it holds for the whole week. Deliberately ungamified: no
@@ -1015,7 +1009,9 @@ function monthHash(extra) {
 }
 
 function wotdForToday() {
-  return WOTD_WORDS[dateHash('wotd') % WOTD_WORDS.length];
+  // Same seed Word Explorer's getWordOfDay() uses (no extra suffix) so the
+  // two pick the exact same index into the exact same WORDS array.
+  return WORDS[hashSeed(new Date().toDateString()) % WORDS.length];
 }
 
 function challengeForThisWeek() {
@@ -1037,7 +1033,7 @@ function wotdcardHTML() {
       </div>
       <div class="wotd-word">${safeText(w.word)}</div>
       <div class="wotd-syns">
-        ${w.syns.map(s => `<span class="wotd-syn">${safeText(s)}</span>`).join('')}
+        ${w.synonyms.slice(0, 4).map(s => `<span class="wotd-syn">${safeText(s)}</span>`).join('')}
       </div>
       <div class="wotd-story">${safeText(w.story)}</div>
     </div>`;
@@ -1180,8 +1176,7 @@ function renderSchoolDay(dayIdx) {
   document.getElementById('day-panel').innerHTML = `
     ${datecardHTML()}
     ${wotdcardHTML()}
-    ${weekCardHTML()}
-    ${monthCardHTML()}
+    <div class="paired-row">${weekCardHTML()}${monthCardHTML()}</div>
 
     <section class="time-block morning" aria-labelledby="morning-heading">
       <header class="block-header">
@@ -1208,8 +1203,7 @@ function renderSchoolDay(dayIdx) {
 function renderWeekend() {
   document.getElementById('day-panel').innerHTML = `
     ${datecardHTML()}
-    ${weekCardHTML()}
-    ${monthCardHTML()}
+    <div class="paired-row">${weekCardHTML()}${monthCardHTML()}</div>
 
     <div style="
       text-align: center;
@@ -1265,7 +1259,7 @@ function renderWeekend() {
       // WOTD speaker
       if (e.target.closest('[data-action="speak-wotd"]')) {
         const w = wotdForToday();
-        speakSequence([w.word, 'you could also say: ' + w.syns.join(', '), w.story], 900);
+        speakSequence([w.word, 'you could also say: ' + w.synonyms.slice(0, 4).join(', '), w.story], 900);
         return;
       }
       // Activity start → mark done

@@ -449,6 +449,7 @@ body {
 }
 .wotd-speak:hover { background: rgba(255,255,255,0.32); }
 .wotd-speak:focus-visible { outline: 3px solid rgba(255,255,255,0.8); outline-offset: 2px; }
+.wotd-speak.playing { animation: speakerPulse 0.55s ease-out; }
 
 .wotd-word {
   font-size: clamp(1.8rem, 7vw, 2.8rem);
@@ -495,7 +496,7 @@ body {
   padding-left: 0.65rem;
 }
 
-/* ── Hojas story block on word cards ── */
+/* ── Hodgers story block on word cards ── */
 .card-story-block {
   width: 100%;
   background: #f0fdf4;
