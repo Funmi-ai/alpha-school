@@ -864,17 +864,20 @@ const WEEKLY_CHALLENGES = [
 
 // This Month's Skill — one new thing to learn at home, seeded by month so
 // it holds for the whole month. Low-material, mostly self-practised.
+// `present` is what goes in the end-of-month "Present Your Skill" card
+// (see presentationActivity() below) — a short phrase completing
+// "Present ___ to the family".
 const MONTHLY_SKILLS = [
-  { title: 'Juggle 3 objects', materials: 'Scrunched-up socks', desc: 'Start with 2, then add a 3rd once that feels easy.' },
-  { title: 'Learn 5 useful knots', materials: 'A shoelace or string', desc: 'Shoelace bow, reef knot, and 3 more of your choosing.' },
-  { title: 'Learn a magic trick', materials: 'A deck of cards', desc: 'Practise it enough to perform it for the family at the end of the month.' },
-  { title: 'Whistle with your fingers', materials: 'None', desc: 'Pure practice and feedback — keep trying different finger shapes.' },
-  { title: 'Do a cartwheel or a handstand', materials: 'Soft grass or floor space', desc: 'Ask an adult to spot you while you practise.' },
-  { title: 'Do 10 keepie-uppies with a football', materials: 'A football', desc: 'Count your best score each week and watch it climb.' },
-  { title: 'Fold an origami crane', materials: 'Square paper', desc: 'Then try 2–3 other simple models once the crane clicks.' },
-  { title: 'Learn 10 constellations', materials: 'A clear night sky', desc: 'Point them out for real — pairs nicely with the Solar System unit.' },
-  { title: 'Sew on a button, or fold a fitted sheet', materials: 'Needle & thread, or a bed sheet', desc: 'A genuine grown-up skill to add to the list.' },
-  { title: 'Learn basic first aid', materials: 'A plaster', desc: 'How to clean and cover a small cut, calmly and properly.' },
+  { title: 'Juggle 3 objects', materials: 'Scrunched-up socks', desc: 'Start with 2, then add a 3rd once that feels easy.', present: 'your juggling — show off your best run' },
+  { title: 'Learn 5 useful knots', materials: 'A shoelace or string', desc: 'Shoelace bow, reef knot, and 3 more of your choosing.', present: 'the 5 knots you\'ve been learning' },
+  { title: 'Learn a magic trick', materials: 'A deck of cards', desc: 'Practise it enough to perform it for the family at the end of the month.', present: 'your magic trick' },
+  { title: 'Whistle with your fingers', materials: 'None', desc: 'Pure practice and feedback — keep trying different finger shapes.', present: 'your finger whistle' },
+  { title: 'Do a cartwheel or a handstand', materials: 'Soft grass or floor space', desc: 'Ask an adult to spot you while you practise.', present: 'your cartwheel or handstand' },
+  { title: 'Do 10 keepie-uppies with a football', materials: 'A football', desc: 'Count your best score each week and watch it climb.', present: 'your keepie-uppies — see how many you can do in a row' },
+  { title: 'Fold an origami crane', materials: 'Square paper', desc: 'Then try 2–3 other simple models once the crane clicks.', present: 'the origami models you\'ve folded' },
+  { title: 'Learn 10 constellations', materials: 'A clear night sky', desc: 'Point them out for real — pairs nicely with the Solar System unit.', present: '3 constellations you can point out' },
+  { title: 'Sew on a button, or fold a fitted sheet', materials: 'Needle & thread, or a bed sheet', desc: 'A genuine grown-up skill to add to the list.', present: 'the button you sewed, or the sheet you folded' },
+  { title: 'Learn basic first aid', materials: 'A plaster', desc: 'How to clean and cover a small cut, calmly and properly.', present: 'how to clean and cover a cut' },
 ];
 
 // Daily quotes — one shown per day, seeded from the date so it's consistent
@@ -944,6 +947,7 @@ const PHRASES = {
   'art':               'made something in Art & Creativity',
   'music':             'danced and made music',
   'whys-that':         'asked big questions in Why\'s That',
+  'present-skill':     'presented what they learned this month',
 };
 
 /* ─────────────────────────────────────────────────────────────────
@@ -967,8 +971,45 @@ function todayWeekdayIndex() {
   return d - 1;
 }
 
+// True on the last weekday of the calendar month — i.e. the next
+// weekday belongs to a different month.
+function isLastSchoolDayOfMonth(d) {
+  const date = new Date(d);
+  const month = date.getMonth();
+  const next = new Date(date);
+  next.setDate(next.getDate() + 1);
+  while (next.getDay() === 0 || next.getDay() === 6) next.setDate(next.getDate() + 1);
+  return next.getMonth() !== month;
+}
+
+// End-of-month public-speaking prompt — replaces one afternoon activity
+// on the last school day of the month, tied to whatever This Month's
+// Skill actually was. Reuses the normal activity-card shape (see
+// cardHTML's noLink branch) rather than being a bespoke card type.
+function presentationActivity() {
+  const s = skillForThisMonth();
+  return {
+    id:   'present-skill',
+    icon: '🎤',
+    name: 'Present Your Skill',
+    desc: `Present ${s.present} to the family — show what you've been practising all month.`,
+    noLink: true,
+  };
+}
+
+// Today's afternoon list, with the end-of-month swap applied if it's
+// the day for it. Middle slot only — the first slot (the day's main
+// subject) and Why's That (the daily anchor) stay put.
+function todaysAfternoon(idx) {
+  const base = SCHEDULE[idx].afternoon;
+  if (!isLastSchoolDayOfMonth(new Date())) return base;
+  const swapped = base.slice();
+  swapped[1] = presentationActivity();
+  return swapped;
+}
+
 function activitiesForDay(idx) {
-  return [...SCHEDULE[idx].morning, ...SCHEDULE[idx].afternoon].filter(a => !a.comingSoon);
+  return [...SCHEDULE[idx].morning, ...todaysAfternoon(idx)].filter(a => !a.comingSoon);
 }
 
 function afternoonIconsForDay(idx) {
@@ -1129,6 +1170,19 @@ function cardHTML(act) {
       </article>`;
   }
   const isDone = done.has(act.id);
+  // Real-world activities (e.g. the end-of-month presentation prompt)
+  // have nothing to open — mark done in place instead of an outbound link.
+  const actionHTML = act.noLink
+    ? `<button class="start-btn" type="button" data-id="${act.id}"
+         aria-label="${isDone ? 'Done: ' : 'Mark done: '}${safeText(act.name)}"
+       >${isDone ? '✓ Done — well done!' : '🎤 We did it!'}</button>`
+    : `<a class="start-btn"
+         href="${safeText(act.href)}"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-id="${act.id}"
+         aria-label="${isDone ? 'Open again: ' : 'Start: '}${safeText(act.name)}"
+      >${isDone ? '✓ Done — open again' : '▶ Start'}</a>`;
   return `
     <article class="activity-card${isDone ? ' done' : ''}"
              aria-label="${safeText(act.name)}${isDone ? ' — completed' : ''}">
@@ -1136,13 +1190,7 @@ function cardHTML(act) {
       <div class="act-icon" aria-hidden="true">${act.icon}</div>
       <div class="act-name">${safeText(act.name)}</div>
       <div class="act-desc">${safeText(act.desc)}</div>
-      <a class="start-btn"
-         href="${safeText(act.href)}"
-         target="_blank"
-         rel="noopener noreferrer"
-         data-id="${act.id}"
-         aria-label="${isDone ? 'Open again: ' : 'Start: '}${safeText(act.name)}"
-      >${isDone ? '✓ Done — open again' : '▶ Start'}</a>
+      ${actionHTML}
     </article>`;
 }
 
@@ -1172,7 +1220,8 @@ function summaryHTML(dayIdx) {
    RENDER — main panel (school day)
 ───────────────────────────────────────────────────────────────── */
 function renderSchoolDay(dayIdx) {
-  const { morning, afternoon } = SCHEDULE[dayIdx];
+  const { morning } = SCHEDULE[dayIdx];
+  const afternoon = todaysAfternoon(dayIdx);
   document.getElementById('day-panel').innerHTML = `
     ${datecardHTML()}
     ${wotdcardHTML()}
