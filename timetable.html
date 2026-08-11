@@ -1050,9 +1050,10 @@ function monthHash(extra) {
 }
 
 function wotdForToday() {
-  // Same seed Word Explorer's getWordOfDay() uses (no extra suffix) so the
-  // two pick the exact same index into the exact same WORDS array.
-  return WORDS[hashSeed(new Date().toDateString()) % WORDS.length];
+  // wordOfDayFor() lives in words-data.js — same function Word Explorer's
+  // getWordOfDay() calls, including the historical-override check, so
+  // both always agree.
+  return wordOfDayFor(new Date());
 }
 
 function challengeForThisWeek() {

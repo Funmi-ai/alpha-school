@@ -36,13 +36,7 @@ const TICKER_WORDS = [
 ═══════════════════════════════════════════════════════════════ */
 
 function getWordOfDay() {
-  const seed = new Date().toDateString();
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) {
-    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
-  }
-  const idx = (h >>> 0) % WORDS.length;
-  return WORDS[idx];
+  return wordOfDayFor(new Date());
 }
 
 /* ═══════════════════════════════════════════════════════════════
