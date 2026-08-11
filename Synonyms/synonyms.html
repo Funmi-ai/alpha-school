@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synonyms</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <h1 class="site-title">Synonyms</h1>
+    <p class="site-subtitle">This week's four Words of the Day, all in one recap</p>
+  </header>
+
+  <main id="main">
+
+    <!-- ══════════ VIEW: Intro ══════════ -->
+    <section class="view active" id="view-intro" aria-labelledby="intro-heading">
+      <div class="stage">
+        <h2 id="intro-heading" class="sr-only" tabindex="-1">Start the Synonyms quiz</h2>
+        <div class="week-strip" id="week-strip" aria-label="This week's four words"></div>
+        <p class="intro-copy">Four questions — one for each Word of the Day from Monday to Thursday. The word is highlighted in its Hodger story — find another word that means the same thing.</p>
+        <button class="btn btn-primary btn-full" id="btn-start">Start the quiz →</button>
+      </div>
+    </section>
+
+    <!-- ══════════ VIEW: Quiz ══════════ -->
+    <section class="view" id="view-quiz" aria-labelledby="quiz-heading">
+      <div class="stage">
+        <h2 id="quiz-heading" class="sr-only" tabindex="-1">Quiz question</h2>
+
+        <div class="progress-row">
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill" role="progressbar"
+                 aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-label="Question progress"></div>
+          </div>
+          <span class="progress-count" id="progress-count">Q1 / 4</span>
+        </div>
+
+        <article class="card" id="quiz-card">
+          <div class="day-tag" id="day-tag"></div>
+          <p class="sentence" id="sentence"></p>
+          <p class="question" id="question"></p>
+          <div class="options" id="options" role="group" aria-label="Answer options"></div>
+          <p class="feedback" id="feedback" aria-live="polite"></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ══════════ VIEW: Complete ══════════ -->
+    <section class="view" id="view-complete" aria-labelledby="complete-heading">
+      <div class="stage complete">
+        <div class="badge" id="badge" aria-hidden="true">🏅</div>
+        <h2 id="complete-heading" tabindex="-1">Great recap!</h2>
+        <p class="score" id="complete-score">4 / 4</p>
+        <div class="recap" id="recap"></div>
+        <div class="complete-actions">
+          <button class="btn btn-ghost" id="btn-retry">🔁 Try Again</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Same shared word list Word Explorer and the timetable's Word of
+       the Day card use, so this quiz always tests the exact words
+       Cairo was actually shown that week — see Word Explorer/words-data.js -->
+  <script src="../Word Explorer/words-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

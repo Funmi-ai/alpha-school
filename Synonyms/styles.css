@@ -1,0 +1,186 @@
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.hidden { display: none !important; }
+
+/* ── Design system (shared across all Alpha School resources) ── */
+:root {
+  --c-header:  #ff6b35;
+  --c-focus:   #e65100;
+  --c-bg:      #fff8f0;
+  --c-card:    #ffffff;
+  --c-text:    #1f2937;
+  --c-muted:   #6b7280;
+  --c-shadow:  0 3px 14px rgba(0,0,0,0.10);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+}
+
+/* ── Base ── */
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-size: 18px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.site-header {
+  background: var(--c-header);
+  color: #fff;
+  text-align: center;
+  padding: 1.5rem 1rem 1.25rem;
+}
+
+.site-title {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.site-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  opacity: 0.9;
+  margin-top: 0.4rem;
+}
+
+/* ── Main ── */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--c-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--c-shadow);
+  padding: 1.5rem;
+}
+
+/* ── Buttons (shared) ── */
+.btn {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: 48px;
+  padding: 0.7rem 1.25rem;
+  transition: background 0.12s, transform 0.1s;
+}
+.btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary { background: var(--c-header); color: #fff; }
+.btn-primary:hover { background: var(--c-focus); }
+
+.btn-secondary { background: #f0f0f0; color: var(--c-text); }
+.btn-secondary:hover { background: #e0e0e0; }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+}
+
+/* ── Resource-specific styles below ── */
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+}
+
+.btn-full { width: 100%; }
+.btn-ghost { background: var(--c-bg); color: var(--c-text); border: 2px solid var(--c-shadow); }
+.btn-ghost:hover { background: #f0e9dd; }
+
+/* ── View plumbing — siblings, toggled, never destroyed ──────────── */
+.view { display: none; }
+.view.active { display: block; }
+.stage { max-width: 620px; margin: 0 auto; }
+
+/* ── Intro ─────────────────────────────────────────────────────── */
+.week-strip { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.1rem; }
+.week-chip {
+  background: var(--c-card); border-radius: 99px; box-shadow: var(--c-shadow);
+  padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700; color: var(--c-text);
+  display: inline-flex; align-items: center; gap: 0.35rem;
+}
+.week-chip .day { color: var(--c-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; }
+.intro-copy { color: var(--c-muted); font-size: 0.95rem; line-height: 1.55; margin-bottom: 1.25rem; }
+
+/* ── Progress bar ──────────────────────────────────────────────── */
+.progress-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.1rem; }
+.progress-track { flex: 1; height: 8px; border-radius: 99px; background: rgba(0,0,0,0.08); overflow: hidden; }
+.progress-fill { height: 100%; background: var(--c-header); transition: width 0.25s ease; }
+.progress-count {
+  font-variant-numeric: tabular-nums; color: var(--c-muted); font-size: 0.85rem; white-space: nowrap;
+}
+
+/* ── Quiz card ─────────────────────────────────────────────────── */
+#quiz-card { border-top: 4px solid var(--c-header); }
+.day-tag {
+  font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--c-header); margin-bottom: 0.6rem;
+}
+.sentence { font-size: 1.2rem; font-weight: 600; line-height: 1.6; margin-bottom: 1rem; }
+.sentence mark {
+  background: #fef08a; color: #713f12; font-weight: 800;
+  padding: 0.05em 0.35em; border-radius: 6px;
+}
+.question { font-size: 1.05rem; font-weight: 800; margin-bottom: 1.2rem; }
+
+.options { display: grid; gap: 0.7rem; }
+.opt {
+  background: var(--c-bg); border: 2px solid transparent; border-radius: var(--radius-md);
+  color: var(--c-text); text-align: left; padding: 0.85rem 1.1rem; min-height: 48px;
+  font-family: inherit; cursor: pointer; font-size: 1.05rem; font-weight: 700;
+}
+.opt:hover:not([disabled]) { border-color: var(--c-header); }
+.opt:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+.opt.correct { border-color: #16a34a; background: rgba(22,163,74,0.12); }
+.opt.incorrect { border-color: #dc2626; background: rgba(220,38,38,0.1); }
+.opt[disabled] { cursor: default; }
+
+.feedback { min-height: 1.4em; margin-top: 1rem; font-weight: 800; }
+.feedback.correct { color: #16a34a; }
+.feedback.incorrect { color: #dc2626; }
+
+/* ── Completion ────────────────────────────────────────────────── */
+.complete { text-align: center; }
+.badge {
+  width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 1.1rem;
+  display: flex; align-items: center; justify-content: center; font-size: 2.75rem;
+  background: var(--c-header); box-shadow: var(--c-shadow);
+}
+.complete h2 { margin-bottom: 0.3rem; font-size: 1.4rem; }
+.score { font-weight: 800; color: var(--c-muted); margin-bottom: 1.5rem; }
+.recap { text-align: left; display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.5rem; }
+.recap-item {
+  background: var(--c-card); border-radius: var(--radius-md); box-shadow: var(--c-shadow);
+  padding: 0.9rem 1.1rem; display: flex; gap: 0.7rem; align-items: baseline;
+}
+.recap-word { font-weight: 900; color: var(--c-header); }
+.recap-syn { color: var(--c-muted); font-size: 0.88rem; }
+.complete-actions { display: flex; justify-content: center; }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg: #1a1410; --c-card: #26201a; --c-text: #f0e4d4; --c-muted: #9a8878;
+    --c-shadow: 0 3px 16px rgba(0,0,0,0.45);
+  }
+  .sentence mark { background: #a16207; color: #fef9c3; }
+  .opt { background: #1f1912; }
+}
