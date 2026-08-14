@@ -444,7 +444,24 @@ button:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
 .complete-score { color: var(--ink-soft); font-weight: 700; }
 .quiz-complete .phase-actions { justify-content: center; }
 
-/* ── Ingredient grid (Set Up phase) ── */
+/* ── Recipe recap (Set Up phase, Day 2+ — read-only, no daily re-prompt) ── */
+.recipe-recap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.recipe-chip {
+  font-weight: 700;
+  font-size: 0.92rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment-dk);
+  border-radius: 99px;
+  padding: 0.35rem 0.85rem;
+}
+.recipe-chip--flavour { background: var(--parchment-lt); border-color: var(--brass-dk); color: var(--brass-dk); }
+
+/* ── Ingredient grid (Set Up phase, Day 1 only) ── */
 .ingredient-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -585,29 +602,68 @@ button:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
 .change-choice { background: var(--parchment); color: var(--ink); border: 1px solid var(--parchment-dk); }
 .change-choice:hover { background: var(--parchment-dk); }
 
-/* ── Summary phase ── */
-.summary-list {
-  list-style: none;
+/* ── Summary phase — profit & loss statement ──
+   Real accountant-report shape: Revenue → itemised Cost of Ingredients →
+   Gross Profit → Expenses → Net Profit, so a child can see where the
+   money actually went instead of one lump "cost" figure. */
+.pl-statement {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
-.summary-list li {
+.pl-line {
   display: flex;
   justify-content: space-between;
+  gap: 0.75rem;
   padding: 0.5rem 0.75rem;
-  background: var(--parchment);
-  border-radius: var(--radius-sm);
   font-variant-numeric: tabular-nums;
 }
 
-.summary-total {
+.pl-line.pl-revenue {
+  background: var(--parchment);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.pl-note {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.pl-section-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brass-dk);
+  padding: 0.5rem 0.75rem 0.1rem;
+}
+
+.pl-line.pl-indent {
+  padding-left: 1.5rem;
+  color: var(--ink-soft);
+}
+
+.pl-line.pl-indent.is-saving strong { color: var(--profit); }
+
+.pl-line.pl-subtotal {
+  background: var(--parchment-lt);
+  border-radius: var(--radius-sm);
+  border-top: 2px solid var(--parchment-dk);
+  font-weight: 800;
+  margin-top: 0.2rem;
+}
+
+.pl-line.pl-total {
   font-size: 1.15rem;
   font-weight: 800;
+  border-radius: var(--radius-sm);
+  margin-top: 0.3rem;
 }
-.summary-total.is-profit { color: var(--profit); background: #E1EFE3; }
-.summary-total.is-loss { color: var(--loss); background: #F3E1DD; }
+.pl-line.pl-total.is-profit { color: var(--profit); background: #E1EFE3; }
+.pl-line.pl-total.is-loss { color: var(--loss); background: #F3E1DD; }
 
 /* ── Owned upgrades (Set Up phase) ── */
 .owned-upgrades { color: var(--brass-dk); font-weight: 600; font-size: 0.88rem; margin-top: 0.4rem; }
@@ -794,6 +850,79 @@ button:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 .pop-in { animation: popIn 0.25s ease-out; }
+
+/* ── Brand modal (founding + rebrand) ── */
+.field-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin: 0.9rem 0 0.35rem;
+}
+
+.text-input {
+  width: 100%;
+  min-height: 48px;
+  font: inherit;
+  font-size: 1rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--parchment-dk);
+  border-radius: var(--radius-sm);
+  background: var(--parchment-lt);
+  color: var(--ink);
+}
+.text-input:focus { outline: 3px solid var(--c-focus); outline-offset: 1px; }
+
+.logo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.logo-option {
+  font-size: 1.4rem;
+  width: 3rem;
+  height: 3rem;
+  min-height: 48px;
+  border: 1px solid var(--parchment-dk);
+  border-radius: var(--radius-sm);
+  background: var(--parchment-lt);
+  cursor: pointer;
+}
+.logo-option:hover { background: #EDE0BC; }
+.logo-option.is-on { background: var(--parchment); border: 2px solid var(--brass-dk); }
+.logo-option:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+
+.rebrand-btn { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
+.grownup-note { font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.5rem; }
+
+/* ── Player picker ── */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+.profile-card {
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid var(--brass-dk);
+  border-radius: var(--radius-lg);
+  background: var(--parchment-lt);
+  padding: 1.6rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 48px;
+}
+.profile-card:hover { background: var(--parchment); transform: translateY(-2px); }
+.profile-card:active { transform: scale(0.98); }
+.profile-card--new { border-style: dashed; color: var(--ink-soft); }
+.profile-card-logo { font-size: 2.4rem; }
+.profile-card-name { font-size: 1.05rem; font-weight: 800; color: var(--ink); }
+.profile-card-meta { font-size: 0.85rem; color: var(--brass-dk); font-weight: 700; font-variant-numeric: tabular-nums; }
 
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {

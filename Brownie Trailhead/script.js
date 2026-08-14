@@ -94,14 +94,22 @@ const INGREDIENTS = [
   { id: 'sugar',     name: 'Sugar',           emoji: '🍚', cost: 10, required: true,  note: 'Makes them sweet and gooey.' },
   { id: 'butter',    name: 'Butter',          emoji: '🧈', cost: 15, required: true,  note: 'Gives brownies that rich, fudgy texture.' },
   { id: 'chocolate', name: 'Chocolate',       emoji: '🍫', cost: 20, required: true,  note: 'The most important part!' },
-  { id: 'chocChips', name: 'Chocolate chips', emoji: '🍬', cost: 15, required: false, boost: 2, note: 'Melty pockets of extra chocolate.' },
-  { id: 'walnuts',   name: 'Walnuts',         emoji: '🌰', cost: 20, required: false, boost: 3, note: 'A crunchy, grown-up favourite.' },
-]; // pence — required total 55p, a genuinely realistic homemade-brownie ingredient cost
+  { id: 'chocChips',    name: 'Chocolate chips',          emoji: '🍬', cost: 15, required: false, boost: 2, note: 'Melty pockets of extra chocolate.' },
+  { id: 'walnuts',      name: 'Walnuts',                  emoji: '🌰', cost: 20, required: false, boost: 3, note: 'A crunchy, grown-up favourite.' },
+  { id: 'peanutButter', name: 'Peanut butter swirl',      emoji: '🥜', cost: 18, required: false, boost: 3, note: 'A sweet and salty swirl through the middle.' },
+  { id: 'marshmallow',  name: 'Marshmallow chunks',       emoji: '🍡', cost: 15, required: false, boost: 2, note: 'Gooey pockets that melt into the mixture.' },
+  { id: 'saltedCaramel',name: 'Salted caramel',           emoji: '🧂', cost: 22, required: false, boost: 4, note: 'Sweet with a pinch of salt — a real favourite.' },
+  { id: 'whiteChoc',    name: 'White chocolate chunks',   emoji: '🤍', cost: 18, required: false, boost: 3, note: 'Creamy chunks that make every bite different.' },
+  { id: 'chocButtons',  name: 'Colourful chocolate buttons', emoji: '🌈', cost: 16, required: false, boost: 3, note: 'Bright little buttons that make brownies fun to look at.' },
+]; // pence — required total 55p, a genuinely realistic homemade-brownie ingredient cost. Flavours (non-required) are single-select — see state.flavourId.
 
 const PRICE_OPTIONS = [100, 150, 200, 250, 300]; // pence — £1.00 to £3.00, real bake-sale pricing
 
+// "Give your stand a name" used to live here as a re-toggleable daily boost —
+// removed because naming a business isn't a decision you redo every morning.
+// It's now a one-time founding step (see BRAND / confirmBrand()), and the
+// same +2 boost it used to offer is now a permanent brandBoost() instead.
 const MARKETING_OPTIONS = [
-  { id: 'catchyName',  name: 'Give your stand a name', emoji: '✨', cost: 0, boost: 2, feet: 1, desc: 'A fun name is easy to remember.' },
   { id: 'plainSign',   name: 'Make a sign',            emoji: '📝', cost: 0, boost: 1, feet: 1, desc: "Let people know what you're selling, and for how much." },
   { id: 'tellFriends', name: 'Tell your friends',      emoji: '🗣️', cost: 0, boost: 3, feet: 2, desc: 'Word of mouth brings people over.' },
   { id: 'poster',      name: 'Colourful poster',       emoji: '🎨', cost: 200, boost: 4, feet: 2, desc: 'Bright colours can be spotted from far away.' },
@@ -141,6 +149,10 @@ const TEMPTATION_ITEMS = [
   { name: 'Trading Cards Pack', emoji: '🎴' },
 ];
 
+// Logo choices for the founding/rebrand moment — kept to the game's existing
+// emoji-only visual language rather than introducing a drawing tool.
+const LOGO_OPTIONS = ['🍫', '🧁', '🍪', '🍰', '🥧', '⭐', '🌈', '🚀', '💎', '🔥'];
+
 /* ============================================================
    CONFIG
    Gameplay tuning — not content, not rendering.
@@ -148,7 +160,7 @@ const TEMPTATION_ITEMS = [
 
 const STARTING_FLOAT = 500;      // pence — £5.00 Day 1 float
 const MAX_CUSTOMERS = 10;        // caps the queue so it's never overwhelming
-const COIN_VALUES = [5, 10, 20, 50, 100, 200, 500, 1000]; // pence — real UK coins/notes a customer might pay with
+const COIN_VALUES = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000]; // pence — real UK coins/notes a customer might pay with (up to a £50 note)
 const INTEREST_RATE = 0.02;      // 2% per in-game day on the Savings Account — sped up on purpose, and said so on-screen
 const MIN_TEMPTATION_FLOAT = 200; // don't offer a temptation below £2 float — not a meaningful choice otherwise
 const MIN_COST_PER_CUP = 25;     // floor so equipment upgrades can never make brownies absurdly cheap
@@ -162,10 +174,6 @@ function coinTierForPct(pct) {
   return 0;
 }
 
-// Phases that belong to the "Run Your Stand" arm — used to remember where
-// to resume when the child leaves via the trail map and comes back.
-const PLAY_PHASES = new Set(['setup', 'pricing', 'marketing', 'selling', 'summary', 'crossroads']);
-
 
 /* ============================================================
    STATE
@@ -177,12 +185,15 @@ const state = {
   float: STARTING_FLOAT,
   savings: 0,
   upgradesOwned: new Set(),
+  businessName: null,    // set once during founding (confirmBrand()), before Day 1 starts; rebrandable later
+  businessLogo: '🍫',
+  businessTagline: '',
   pendingSecondaryType: null, // 'invest' | 'temptation' | null — rolled once per day, resolved after the savings step
   pendingTemptation: null,    // { item, price } — set for the duration of a rendered Temptation card, read by its click handler
   pendingFallout: null,       // { itemName, emoji } — set if a temptation was accepted, shown once on the next Setup screen
   lastProfit: 0,
   weather: null,
-  selectedOptional: new Set(),
+  flavourId: null, // null = Classic. Single-select, not a Set — a batch of brownies has one flavour twist, not a pile of add-ins. Chosen once on Day 1, only changed afterwards via the occasional "Try a new flavour?" Crossroads.
   price: null,
   selectedMarketing: new Set(),
   marketingSpendToday: 0,
@@ -196,8 +207,6 @@ const state = {
   modalOpenerEl: null,
 
   // Trail / Learn / Quiz
-  playStarted: false,
-  lastPlayPhase: null,
   learnCategory: null,
   learnIndex: 0,
   quizCategory: null,
@@ -325,59 +334,130 @@ function drawTrailDust() {
 
 
 /* ============================================================
-   PERSISTENCE
-   Two anonymous progress records — no names, no transcripts, no
-   PII — same carve-out Historical Heroes already established for
-   its star progress: bare numbers under a namespaced key.
+   PERSISTENCE — profiles
+   One child = one profile = their whole save (business + learning
+   progress together), since Knowledge Coins and quiz scores are
+   just as much "theirs" as the Day/Float/Savings numbers are —
+   two siblings sharing a device must never see each other's business
+   or each other's quiz mastery. Anonymous throughout: no names beyond
+   whatever the child typed as their own business name, no transcripts,
+   no PII — same carve-out Historical Heroes established for star progress.
    ============================================================ */
 
-const COINS_STORAGE_KEY = 'brownieTrailhead_knowledgeCoins';
-const PLAY_STORAGE_KEY = 'brownieTrailhead_playState';
+const PROFILES_KEY = 'brownieTrailhead_profiles';
+// Pre-profiles single-save keys — read once to migrate, then retired.
+const LEGACY_PLAY_KEY = 'brownieTrailhead_playState';
+const LEGACY_COINS_KEY = 'brownieTrailhead_knowledgeCoins';
 
-function loadKnowledgeCoins() {
-  try {
-    const raw = localStorage.getItem(COINS_STORAGE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    CONCEPT_CATEGORIES.forEach(cat => {
-      if (typeof parsed?.byCategory?.[cat.id] === 'number') {
-        state.knowledgeCoins.byCategory[cat.id] = parsed.byCategory[cat.id];
-      }
-    });
-  } catch (e) { /* corrupt or missing — start from zero rather than break the app */ }
+let profiles = [];          // [{ id, name, logo, tagline, day, float, savings, upgradesOwned:[], flavourId, price, knowledgeCoins:{}, quizBestScores:{} }]
+let activeProfileId = null;
+
+function makeBlankProfile(name, logo, tagline) {
+  return {
+    id: 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1000),
+    name, logo, tagline,
+    day: 1,
+    float: STARTING_FLOAT,
+    savings: 0,
+    upgradesOwned: [],
+    flavourId: null,
+    price: null,
+    knowledgeCoins: { business: 0, saving: 0, spending: 0, investing: 0 },
+    quizBestScores: {},
+  };
 }
 
-function saveKnowledgeCoins() {
+function getActiveProfile() { return profiles.find(p => p.id === activeProfileId) || null; }
+
+/** Loads every profile, or migrates a pre-profiles single save into Profile 1 the first time this runs after the update. */
+function loadProfiles() {
   try {
-    localStorage.setItem(COINS_STORAGE_KEY, JSON.stringify(state.knowledgeCoins));
+    const raw = localStorage.getItem(PROFILES_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed?.profiles)) profiles = parsed.profiles;
+      if (typeof parsed?.activeProfileId === 'string') activeProfileId = parsed.activeProfileId;
+      return;
+    }
+  } catch (e) { /* corrupt — fall through and try migration instead */ }
+
+  try {
+    const legacyPlay = JSON.parse(localStorage.getItem(LEGACY_PLAY_KEY) || 'null');
+    if (legacyPlay) {
+      const legacyCoins = JSON.parse(localStorage.getItem(LEGACY_COINS_KEY) || 'null');
+      const migrated = makeBlankProfile(
+        legacyPlay.businessName || 'Your Brownie Stand',
+        legacyPlay.businessLogo || '🍫',
+        legacyPlay.businessTagline || ''
+      );
+      if (typeof legacyPlay.day === 'number') migrated.day = legacyPlay.day;
+      if (typeof legacyPlay.float === 'number') migrated.float = legacyPlay.float;
+      if (typeof legacyPlay.savings === 'number') migrated.savings = legacyPlay.savings;
+      if (Array.isArray(legacyPlay.upgradesOwned)) migrated.upgradesOwned = legacyPlay.upgradesOwned;
+      if (typeof legacyPlay.price === 'number') migrated.price = legacyPlay.price;
+      if (typeof legacyPlay.flavourId === 'string' || legacyPlay.flavourId === null) migrated.flavourId = legacyPlay.flavourId;
+      if (legacyCoins?.byCategory) migrated.knowledgeCoins = { ...migrated.knowledgeCoins, ...legacyCoins.byCategory };
+      profiles = [migrated];
+      activeProfileId = migrated.id;
+      saveProfiles();
+      localStorage.removeItem(LEGACY_PLAY_KEY);
+      localStorage.removeItem(LEGACY_COINS_KEY);
+    }
+  } catch (e) { /* nothing usable to migrate — start with an empty roster */ }
+}
+
+function saveProfiles() {
+  try {
+    localStorage.setItem(PROFILES_KEY, JSON.stringify({ activeProfileId, profiles }));
   } catch (e) { /* storage may be unavailable (private browsing etc) — fail silently */ }
 }
 
-/** Day / Float / Savings / upgrades — so the business (and its Savings Account) genuinely continues across real days. */
-function loadPlayState() {
-  try {
-    const raw = localStorage.getItem(PLAY_STORAGE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    if (typeof parsed?.day === 'number') state.day = parsed.day;
-    if (typeof parsed?.float === 'number') state.float = parsed.float;
-    if (typeof parsed?.savings === 'number') state.savings = parsed.savings;
-    if (Array.isArray(parsed?.upgradesOwned)) state.upgradesOwned = new Set(parsed.upgradesOwned);
-    if (typeof parsed?.playStarted === 'boolean') state.playStarted = parsed.playStarted;
-  } catch (e) { /* corrupt or missing — start fresh rather than break the app */ }
+/** Copies a stored profile's saved fields into the live `state`, and resets everything session-only for whoever's turn it is now. */
+function applyProfileToState(profile) {
+  state.businessName = profile.name;
+  state.businessLogo = profile.logo;
+  state.businessTagline = profile.tagline;
+  state.day = profile.day;
+  state.float = profile.float;
+  state.savings = profile.savings;
+  state.upgradesOwned = new Set(profile.upgradesOwned);
+  state.flavourId = profile.flavourId;
+  state.price = profile.price;
+  state.knowledgeCoins.byCategory = { business: 0, saving: 0, spending: 0, investing: 0, ...profile.knowledgeCoins };
+  state.quizBestScores = { ...profile.quizBestScores };
+
+  // Session-only — never carried between profiles
+  state.lastProfit = 0; state.weather = null;
+  state.selectedMarketing = new Set(); state.marketingSpendToday = 0;
+  state.queue = []; state.queueIndex = 0; state.currentPayment = null;
+  state.showingSample = false; state.freeCupsGiven = 0; state.cupsSold = 0; state.revenue = 0;
+  state.pendingSecondaryType = null; state.pendingTemptation = null; state.pendingFallout = null;
+  state.learnCategory = null; state.learnIndex = 0; state.quizCategory = null;
+  state.quiz = { items: [], index: 0, score: 0, answered: false };
 }
 
-function savePlayState() {
-  try {
-    localStorage.setItem(PLAY_STORAGE_KEY, JSON.stringify({
-      day: state.day,
-      float: state.float,
-      savings: state.savings,
-      upgradesOwned: [...state.upgradesOwned],
-      playStarted: state.playStarted,
-    }));
-  } catch (e) { /* storage may be unavailable — fail silently */ }
+/** Writes the live state's persisted fields back into the active profile and saves. The stable "save now" entry point used everywhere else in the file. */
+function persistActiveProfile() {
+  const profile = getActiveProfile();
+  if (!profile) return;
+  profile.name = state.businessName;
+  profile.logo = state.businessLogo;
+  profile.tagline = state.businessTagline;
+  profile.day = state.day;
+  profile.float = state.float;
+  profile.savings = state.savings;
+  profile.upgradesOwned = [...state.upgradesOwned];
+  profile.flavourId = state.flavourId;
+  profile.price = state.price;
+  profile.knowledgeCoins = { ...state.knowledgeCoins.byCategory };
+  profile.quizBestScores = { ...state.quizBestScores };
+  saveProfiles();
 }
+
+// savePlayState()/saveKnowledgeCoins() are kept as the stable names every
+// other function already calls — only what's underneath them changed.
+function savePlayState() { persistActiveProfile(); }
+function saveKnowledgeCoins() { persistActiveProfile(); }
 
 
 /* ============================================================
@@ -413,11 +493,13 @@ function buildQuizItems(categoryId) {
   return all.slice(0, Math.min(QUIZ_LENGTH_CAP, all.length));
 }
 
+function activeFlavour() { return INGREDIENTS.find(i => i.id === state.flavourId) || null; }
+
 function costPerCup() {
   let c = 0;
-  INGREDIENTS.forEach(ing => {
-    if (ing.required || state.selectedOptional.has(ing.id)) c += ing.cost;
-  });
+  INGREDIENTS.forEach(ing => { if (ing.required) c += ing.cost; });
+  const flavour = activeFlavour();
+  if (flavour) c += flavour.cost;
   let discount = 0;
   state.upgradesOwned.forEach(id => {
     const u = EQUIPMENT_UPGRADES.find(x => x.id === id);
@@ -427,11 +509,8 @@ function costPerCup() {
 }
 
 function qualityBoost() {
-  let b = 0;
-  INGREDIENTS.forEach(ing => {
-    if (!ing.required && state.selectedOptional.has(ing.id)) b += (ing.boost || 0);
-  });
-  return b;
+  const flavour = activeFlavour();
+  return flavour ? (flavour.boost || 0) : 0;
 }
 
 function marketingBoost() {
@@ -470,12 +549,35 @@ function priceFeedback() {
   return `That's quite expensive for a brownie — fewer people may stop.`;
 }
 
+/** A named, memorable business is a little easier for customers to find — the
+ * same permanent +2 the old "Give your stand a name" daily toggle used to give. */
+function brandBoost() { return state.businessName ? 2 : 0; }
+
 function computeCustomerCount() {
-  let count = state.weather.base + qualityBoost() + marketingBoost();
+  let count = state.weather.base + qualityBoost() + marketingBoost() + brandBoost();
   const margin = state.price - costPerCup();
   if (margin > 200) count -= 4;
   else if (margin > 120) count -= 2;
   return Math.max(2, Math.min(Math.round(count), MAX_CUSTOMERS));
+}
+
+/** Picks what a customer pays with. Weighted towards the nearest coin/note
+ * above the price (most realistic — most people pay close to the amount),
+ * halving in likelihood for each denomination further away, so a big note
+ * is rare but genuinely possible — exactly what real customers do. Replaces
+ * the old `COIN_VALUES.find(...)`, which always picked the same coin for a
+ * given price and made every customer in a day pay identically. */
+function pickPaymentCoin(price) {
+  const valid = COIN_VALUES.filter(c => c > price);
+  if (valid.length === 0) return COIN_VALUES[COIN_VALUES.length - 1];
+  const weights = valid.map((_, i) => 2 ** (valid.length - 1 - i));
+  const total = weights.reduce((a, b) => a + b, 0);
+  let roll = Math.random() * total;
+  for (let i = 0; i < valid.length; i++) {
+    roll -= weights[i];
+    if (roll <= 0) return valid[i];
+  }
+  return valid[0];
 }
 
 /** Builds 4 unique, positive, plausible change choices including the correct one. */
@@ -495,19 +597,42 @@ function generateChangeChoices(correct, price, paid) {
   return shuffle(candidates.slice(0, 4));
 }
 
+/** Builds the day's profit & loss line items — same shape an accountant's
+ * report uses (Revenue → itemised Cost of Ingredients → Gross Profit →
+ * Expenses → Net Profit), so "where the money went" is actually visible
+ * rather than one lump "cost" number. */
 function computeSummary() {
+  const units = state.cupsSold + state.freeCupsGiven;
   const cpc = costPerCup();
-  const ingredientsCost = cpc * (state.cupsSold + state.freeCupsGiven);
-  const totalCost = ingredientsCost + state.marketingSpendToday;
-  const profit = state.revenue - totalCost;
+  const flavour = activeFlavour();
+  const requiredCost = INGREDIENTS.filter(i => i.required).reduce((s, i) => s + i.cost, 0);
+  const rawCost = requiredCost + (flavour ? flavour.cost : 0);
+  const appliedDiscount = rawCost - cpc; // how much of the upgrade discount actually applied, respecting MIN_COST_PER_CUP
+  const ingredientsCost = cpc * units;
+
+  const required = INGREDIENTS.filter(i => i.required);
+  const lineItems = [
+    { label: `${required.map(i => i.emoji).join('')} ${required.map(i => i.name).join(', ')}`,
+      cost: requiredCost * units },
+  ];
+  if (flavour) lineItems.push({ label: `${flavour.emoji} ${flavour.name}`, cost: flavour.cost * units });
+  if (appliedDiscount > 0) {
+    lineItems.push({ label: '🔧 Equipment savings', cost: -appliedDiscount * units, isSaving: true });
+  }
+
+  const grossProfit = state.revenue - ingredientsCost;
+  const marketingSpend = state.marketingSpendToday;
+  const profit = grossProfit - marketingSpend;
+
   // Marketing was already deducted when the stand opened. Floor at 0 — a business
   // can run out of money, but we keep the concept of debt out of a young child's game.
   state.float = Math.max(0, state.float + state.revenue - ingredientsCost);
   return {
     cpc,
     ingredientsCost,
-    marketingSpend: state.marketingSpendToday,
-    totalCost,
+    lineItems,
+    grossProfit,
+    marketingSpend,
     profit,
     revenue: state.revenue,
     cupsSold: state.cupsSold,
@@ -523,12 +648,13 @@ function applyDailyInterest() {
   return earned;
 }
 
-/** Decides *whether* a secondary Crossroads fires today — eligibility (afford it? any left?) is checked later, after the savings step. */
+/** Decides *whether* a secondary Crossroads fires today — eligibility (afford it? any left? day gate?) is checked later, after the savings step. */
 function rollSecondaryType() {
   const roll = Math.random();
-  if (roll < 0.4) return 'invest';
-  if (roll < 0.7) return 'temptation';
-  return null;
+  if (roll < 0.3) return 'invest';
+  if (roll < 0.55) return 'temptation';
+  if (roll < 0.75) return 'flavour';
+  return null; // a quiet day, roughly a quarter of the time
 }
 
 
@@ -544,7 +670,6 @@ function showPhase(name) {
     sec.setAttribute('aria-hidden', String(!match));
   });
   state.view = name;
-  if (PLAY_PHASES.has(name)) state.lastPlayPhase = name;
   const heading = $(`phase-${name}`)?.querySelector('h2');
   if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus(); }
 }
@@ -683,28 +808,54 @@ function renderQuizComplete() {
   if (gained > 0) burstStars($('coin-badge-btn'));
 }
 
+/** Day 1 only: the child picks their starting flavour (or Classic). From
+ * Day 2 onward this is a read-only recap, not a daily re-prompt — the
+ * recipe only changes via the occasional "Try a new flavour?" Crossroads
+ * (see renderFlavourCrossroads()). Real sellers don't re-decide their base
+ * recipe from scratch every morning. */
 function renderSetup() {
   const list = $('ingredient-list');
-  list.innerHTML = INGREDIENTS.map(ing => {
-    if (ing.required) {
-      return `
-        <div class="ingredient-chip ingredient-chip--fixed">
-          <span class="ingredient-emoji" aria-hidden="true">${ing.emoji}</span>
-          <span class="ingredient-name">${safeText(ing.name)}</span>
-          <span class="ingredient-note">${safeText(ing.note)}</span>
-          <span class="ingredient-cost">${money(ing.cost)}/cup · always included</span>
-        </div>`;
-    }
-    const on = state.selectedOptional.has(ing.id);
-    return `
-      <button type="button" class="ingredient-chip ingredient-chip--toggle${on ? ' is-on' : ''}"
-        data-ingredient="${ing.id}" aria-pressed="${on}">
-        <span class="ingredient-emoji" aria-hidden="true">${ing.emoji}</span>
-        <span class="ingredient-name">${safeText(ing.name)}</span>
-        <span class="ingredient-note">${safeText(ing.note)}</span>
-        <span class="ingredient-cost">+${money(ing.cost)}/cup</span>
-      </button>`;
-  }).join('');
+  const intro = $('setup-intro');
+  const required = INGREDIENTS.filter(i => i.required);
+  const flavours = INGREDIENTS.filter(i => !i.required);
+
+  if (state.day === 1) {
+    if (intro) intro.textContent = 'Every business needs supplies. Pick a flavour twist for your brownies — or keep it classic!';
+    const classicOn = state.flavourId == null;
+    list.innerHTML = `
+      <div class="recipe-recap">
+        ${required.map(ing => `<span class="recipe-chip">${ing.emoji} ${safeText(ing.name)}</span>`).join('')}
+      </div>
+      <div class="ingredient-grid">
+        <button type="button" class="ingredient-chip ingredient-chip--toggle${classicOn ? ' is-on' : ''}"
+          data-flavour="classic" aria-pressed="${classicOn}">
+          <span class="ingredient-emoji" aria-hidden="true">🍫</span>
+          <span class="ingredient-name">Classic</span>
+          <span class="ingredient-note">Just the essentials — simple and delicious.</span>
+          <span class="ingredient-cost">No extra cost</span>
+        </button>
+        ${flavours.map(ing => {
+          const on = state.flavourId === ing.id;
+          return `
+            <button type="button" class="ingredient-chip ingredient-chip--toggle${on ? ' is-on' : ''}"
+              data-flavour="${ing.id}" aria-pressed="${on}">
+              <span class="ingredient-emoji" aria-hidden="true">${ing.emoji}</span>
+              <span class="ingredient-name">${safeText(ing.name)}</span>
+              <span class="ingredient-note">${safeText(ing.note)}</span>
+              <span class="ingredient-cost">+${money(ing.cost)}/cup</span>
+            </button>`;
+        }).join('')}
+      </div>`;
+  } else {
+    if (intro) intro.textContent = "Today's recipe is ready to go.";
+    const flavour = activeFlavour();
+    list.innerHTML = `
+      <div class="recipe-recap">
+        ${required.map(ing => `<span class="recipe-chip">${ing.emoji} ${safeText(ing.name)}</span>`).join('')}
+        <span class="recipe-chip recipe-chip--flavour">${flavour ? `${flavour.emoji} ${safeText(flavour.name)}` : '🍫 Classic'}</span>
+      </div>`;
+  }
+
   $('cost-summary').textContent = `It costs ${money(costPerCup())} to bake each brownie.`;
 
   const owned = [...state.upgradesOwned].map(id => EQUIPMENT_UPGRADES.find(u => u.id === id)).filter(Boolean);
@@ -732,6 +883,12 @@ function renderPricing() {
     const on = state.price === p;
     return `<button type="button" class="price-chip${on ? ' is-on' : ''}" data-price="${p}" aria-pressed="${on}">${money(p)}</button>`;
   }).join('');
+  const intro = $('pricing-intro');
+  if (intro) {
+    intro.textContent = (state.price == null)
+      ? 'How much will you charge for one brownie?'
+      : `Your price is currently ${money(state.price)}. Keep it, or try something new?`;
+  }
   $('price-feedback').textContent = priceFeedback();
   $('to-marketing-btn').disabled = state.price == null;
 }
@@ -817,7 +974,9 @@ function renderSelling() {
 }
 
 function renderSummary(s) {
-  $('summary-day').textContent = state.day;
+  $('summary-heading').innerHTML = state.businessName
+    ? `📊 ${state.businessLogo} ${safeText(state.businessName)} — Day ${state.day} Report`
+    : `📊 Day ${state.day} Summary`;
 
   let tip;
   if (s.profit > s.cpc * 5) tip = 'Fantastic! Your stand did really well today.';
@@ -825,19 +984,41 @@ function renderSummary(s) {
   else if (s.profit === 0) tip = 'You broke even — you spent exactly what you earned. Try a different price or some marketing tomorrow.';
   else tip = "You spent a little more than you earned today. That's called a loss — it happens to real businesses too. Maybe try again tomorrow!";
 
+  const revenueNote = s.freeCupsGiven
+    ? `${s.cupsSold} sold + ${s.freeCupsGiven} free bites`
+    : `${s.cupsSold} brownie${s.cupsSold === 1 ? '' : 's'} sold`;
+
+  const cogsLines = s.lineItems.map(item => `
+    <div class="pl-line pl-indent${item.isSaving ? ' is-saving' : ''}">
+      <span>${safeText(item.label)}</span>
+      <strong>${item.cost < 0 ? '+' : '−'}${money(Math.abs(item.cost))}</strong>
+    </div>`).join('');
+
+  const marketingBlock = s.marketingSpend ? `
+    <div class="pl-section-label">Expenses</div>
+    <div class="pl-line pl-indent"><span>📣 Marketing</span><strong>−${money(s.marketingSpend)}</strong></div>
+  ` : '';
+
   $('summary-content').innerHTML = `
-    <ul class="summary-list">
-      <li><span>Brownies sold</span><strong>${s.cupsSold}</strong></li>
-      ${s.freeCupsGiven ? `<li><span>Free bites given</span><strong>${s.freeCupsGiven}</strong></li>` : ''}
-      <li><span>Money earned (revenue)</span><strong>${money(s.revenue)}</strong></li>
-      <li><span>Ingredients cost</span><strong>${money(s.ingredientsCost)}</strong></li>
-      ${s.marketingSpend ? `<li><span>Marketing cost</span><strong>${money(s.marketingSpend)}</strong></li>` : ''}
-      <li class="summary-total ${s.profit >= 0 ? 'is-profit' : 'is-loss'}">
-        <span>${s.profit >= 0 ? 'Profit' : 'Loss'}</span><strong>${money(Math.abs(s.profit))}</strong>
-      </li>
-    </ul>
+    <div class="pl-statement">
+      <div class="pl-line pl-revenue">
+        <span>Revenue <span class="pl-note">(${safeText(revenueNote)})</span></span>
+        <strong>${money(s.revenue)}</strong>
+      </div>
+      <div class="pl-section-label">Cost of ingredients</div>
+      ${cogsLines}
+      <div class="pl-line pl-subtotal">
+        <span>Gross Profit</span><strong>${money(s.grossProfit)}</strong>
+      </div>
+      ${marketingBlock}
+      <div class="pl-line pl-total ${s.profit >= 0 ? 'is-profit' : 'is-loss'}">
+        <span>${s.profit >= 0 ? 'Net Profit' : 'Net Loss'}</span><strong>${money(Math.abs(s.profit))}</strong>
+      </div>
+    </div>
     <p class="feedback-text">${tip}</p>
   `;
+
+  $('next-day-btn').textContent = `Ready for Day ${state.day + 1}? →`;
 }
 
 function renderWordBank() {
@@ -915,6 +1096,28 @@ function renderInvestCrossroads(upgrade) {
     </div>`;
 }
 
+/** Offers 2 fresh flavours (never the one currently active) plus a "keep it" option.
+ * The only way the recipe ever changes after Day 1 — no daily re-prompt. */
+function renderFlavourCrossroads() {
+  const current = activeFlavour();
+  const pool = shuffle(INGREDIENTS.filter(i => !i.required && i.id !== state.flavourId)).slice(0, 2);
+  $('crossroads-content').innerHTML = `
+    <div class="cross-card">
+      <span class="cross-tag">🍫 Business in action</span>
+      <div class="cross-icon">✨</div>
+      <p class="cross-prompt">Fancy trying a new flavour twist in your brownies?</p>
+      <div class="cross-choices">
+        ${pool.map(f => `
+          <button type="button" class="cross-choice primary" data-flavour-pick="${f.id}">
+            ${f.emoji} ${safeText(f.name)} (+${money(f.cost)}/cup)
+          </button>`).join('')}
+        <button type="button" class="cross-choice secondary" data-flavour-pick="keep">
+          Keep ${current ? safeText(current.name) : 'it Classic'}
+        </button>
+      </div>
+    </div>`;
+}
+
 function renderTemptationCrossroads(item, price) {
   state.pendingTemptation = { item, price };
   $('crossroads-content').innerHTML = `
@@ -936,7 +1139,51 @@ function renderTemptationCrossroads(item, price) {
    Update state, then call the relevant render function(s).
    ============================================================ */
 
-function goHome() { renderHome(); showPhase('home'); }
+// drawTrailDust() is called here (not inside renderHome()) because the dust
+// canvas measures its own parent's size — that's only non-zero once the
+// phase is actually visible, which showPhase() hasn't done yet when
+// renderHome() runs.
+// Single choke point: the header's "Trail Map" button is always clickable,
+// even while the picker is showing with no profile chosen yet — without
+// this guard a child could play a whole day with nothing active to save it
+// to. Anything that tries to reach Home with no active profile lands back
+// on the picker instead.
+function goHome() {
+  if (!getActiveProfile()) { goToPicker(); return; }
+  renderHome();
+  showPhase('home');
+  drawTrailDust();
+}
+
+/* ── Player picker ── */
+
+function renderPicker() {
+  const cards = profiles.map(p => `
+    <button type="button" class="profile-card" data-profile="${p.id}">
+      <span class="profile-card-logo" aria-hidden="true">${p.logo}</span>
+      <span class="profile-card-name">${safeText(p.name)}</span>
+      <span class="profile-card-meta">Day ${p.day} · ${money(p.float)}</span>
+    </button>`).join('');
+  $('profile-grid').innerHTML = `
+    ${cards}
+    <button type="button" class="profile-card profile-card--new" id="new-profile-btn">
+      <span class="profile-card-logo" aria-hidden="true">➕</span>
+      <span class="profile-card-name">New Business</span>
+    </button>`;
+}
+
+function goToPicker() { renderPicker(); showPhase('picker'); }
+
+function selectProfile(id) {
+  const profile = profiles.find(p => p.id === id);
+  if (!profile) return;
+  activeProfileId = id;
+  saveProfiles();
+  applyProfileToState(profile);
+  renderHeader();
+  renderBrandDisplays();
+  goHome();
+}
 
 function selectCategory(id) { enterLearnCategory(id); }
 
@@ -991,16 +1238,116 @@ function quizNext() {
   renderQuizQuestion();
 }
 
+// Reachable only from the Trail Map, which itself only shows once a profile
+// is active — so there's always a founded business to resume here. Always
+// re-enters at Setup (never mid-selling/summary/crossroads) since those
+// screens hold transient numbers that were never meant to survive a reload —
+// same tolerance the game already had before profiles existed.
 function enterPlay() {
-  if (state.playStarted) showPhase(state.lastPlayPhase || 'setup');
-  else showPhase('play-intro');
-}
-
-function startGame() {
-  state.playStarted = true;
   renderSetup();
   showPhase('setup');
-  savePlayState();
+}
+
+/* ── Brand (founding a new profile, or renaming the active one) ──
+   One modal, two modes, tracked by _brandModalMode: 'create' makes a new
+   profile from the Picker's "+ New Business"; 'edit' renames whichever
+   profile is currently active, from the header's Rebrand button. Inputs
+   are always reset to the relevant starting values on open, so closing
+   without confirming just discards the in-progress edit. */
+
+let _brandModalMode = 'edit';
+
+function openBrandModalForCreate() {
+  _brandModalMode = 'create';
+  $('brand-name-input').value = '';
+  $('brand-tagline-input').value = '';
+  state.businessLogo = '🍫'; // just the picker's default selection — nothing is committed until confirmed
+  renderLogoGrid();
+  $('brand-reset-section').classList.add('hidden'); // resetting a business that doesn't exist yet makes no sense
+  openModal('brand-modal', $('new-profile-btn'));
+  $('brand-name-input').focus();
+}
+
+function openBrandModalForEdit(triggerEl) {
+  _brandModalMode = 'edit';
+  $('brand-name-input').value = state.businessName || '';
+  $('brand-tagline-input').value = state.businessTagline || '';
+  renderLogoGrid();
+  $('brand-reset-section').classList.remove('hidden');
+  openModal('brand-modal', triggerEl);
+  $('brand-name-input').focus();
+}
+
+function renderLogoGrid() {
+  $('brand-logo-grid').innerHTML = LOGO_OPTIONS.map(emoji => `
+    <button type="button" class="logo-option${state.businessLogo === emoji ? ' is-on' : ''}"
+      data-logo="${emoji}" aria-pressed="${state.businessLogo === emoji}" aria-label="Logo: ${emoji}">${emoji}</button>
+  `).join('');
+}
+
+function chooseLogo(emoji) {
+  state.businessLogo = emoji;
+  renderLogoGrid();
+}
+
+function confirmBrand() {
+  const typedName = $('brand-name-input').value.trim();
+  const name = typedName ? typedName.slice(0, 24) : 'Your Brownie Stand';
+  const tagline = $('brand-tagline-input').value.trim().slice(0, 40);
+
+  if (_brandModalMode === 'create') {
+    const profile = makeBlankProfile(name, state.businessLogo, tagline);
+    profiles.push(profile);
+    activeProfileId = profile.id;
+    saveProfiles();
+    applyProfileToState(profile);
+    closeModal('brand-modal');
+    renderHeader();
+    renderBrandDisplays();
+    enterPlay(); // straight into Day 1 Setup — the modal itself was the "getting started" ceremony
+  } else {
+    state.businessName = name;
+    state.businessTagline = tagline;
+    persistActiveProfile();
+    closeModal('brand-modal');
+    renderBrandDisplays();
+  }
+}
+
+/** Grown-ups only (tucked in the Brand modal's edit mode, same friction
+ * pattern as the Knowledge Coins reset — no confirmation dialog, the "you
+ * had to go find this" step is the safeguard). Resets this profile's Day,
+ * Float, Savings and recipe back to the start — name, logo, tagline,
+ * Knowledge Coins and quiz scores all stay, since those are the child's,
+ * not the business run's. To test as a genuinely new player, use "+ New
+ * Business" from the Picker instead — this only resets the current one. */
+function resetActiveBusiness() {
+  const profile = getActiveProfile();
+  if (!profile) return;
+  profile.day = 1;
+  profile.float = STARTING_FLOAT;
+  profile.savings = 0;
+  profile.upgradesOwned = [];
+  profile.flavourId = null;
+  profile.price = null;
+  saveProfiles();
+  applyProfileToState(profile);
+  closeModal('brand-modal');
+  renderBrandDisplays();
+  goHome();
+}
+
+/** Updates every place the business name/logo shows outside the modal itself. */
+function renderBrandDisplays() {
+  const label = state.businessName ? `${state.businessLogo} ${safeText(state.businessName)}` : null;
+  const ctaTitle = $('play-cta-title');
+  if (ctaTitle) ctaTitle.innerHTML = label || 'Run Your Stand';
+  const setupH = $('setup-heading');
+  if (setupH) setupH.innerHTML = label ? label : '🧺 Set Up Your Stand';
+  const sellingH = $('selling-heading');
+  if (sellingH) sellingH.innerHTML = label ? `${label} — Selling Time!` : '🍫 Sell Your Brownies!';
+  const rebrandBtn = $('rebrand-btn');
+  if (rebrandBtn) rebrandBtn.classList.toggle('hidden', !getActiveProfile());
 }
 
 function goToPricing() { renderPricing(); showPhase('pricing'); }
@@ -1009,14 +1356,16 @@ function goToMarketing() { renderMarketing(); showPhase('marketing'); }
 
 function goToPricingFromMarketing() { renderPricing(); showPhase('pricing'); }
 
-function toggleIngredient(id) {
-  if (state.selectedOptional.has(id)) state.selectedOptional.delete(id);
-  else state.selectedOptional.add(id);
+/** Day 1 only — picking (or re-picking) a starting flavour before the recipe locks in for the recap view. */
+function chooseInitialFlavour(id) {
+  state.flavourId = (id === 'classic') ? null : id;
+  savePlayState();
   renderSetup();
 }
 
 function setPrice(value) {
   state.price = value;
+  savePlayState();
   renderPricing();
 }
 
@@ -1055,7 +1404,7 @@ function dismissSample() {
 
 function handleServe() {
   const price = state.price;
-  const paid = COIN_VALUES.find(c => c > price) || COIN_VALUES[COIN_VALUES.length - 1];
+  const paid = pickPaymentCoin(price);
   const correct = paid - price;
   state.currentPayment = { paid, correct, choices: generateChangeChoices(correct, price, paid), feedback: '' };
   renderSelling();
@@ -1111,7 +1460,7 @@ function continueAfterSavings() {
   advanceAfterSavings();
 }
 
-/** Resolves the day's rolled secondary Crossroads using *current* (post-savings) Float — an upgrade or a temptation, never both. */
+/** Resolves the day's rolled secondary Crossroads using *current* (post-savings) Float — only ever one of these per day. */
 function advanceAfterSavings() {
   const type = state.pendingSecondaryType;
   state.pendingSecondaryType = null;
@@ -1125,6 +1474,12 @@ function advanceAfterSavings() {
     renderTemptationCrossroads(item, state.float);
     return;
   }
+  // Gated to Day 2+ finishing — the child already chose a starting flavour
+  // during Day 1's Setup, so this is the earliest a *change* makes sense.
+  if (type === 'flavour' && state.day >= 2) {
+    renderFlavourCrossroads();
+    return;
+  }
   nextDay();
 }
 
@@ -1133,6 +1488,12 @@ function chooseInvest(accept, upgrade) {
     state.float -= upgrade.cost;
     state.upgradesOwned.add(upgrade.id);
   }
+  savePlayState();
+  nextDay();
+}
+
+function chooseFlavour(flavourId) {
+  if (flavourId !== 'keep') state.flavourId = flavourId;
   savePlayState();
   nextDay();
 }
@@ -1148,8 +1509,10 @@ function chooseTemptation(accept, item, price) {
 
 function nextDay() {
   state.day += 1;
-  state.selectedOptional = new Set();
-  state.price = null;
+  // Price and flavourId are NOT reset — a real seller doesn't re-decide their
+  // price or recipe from scratch every morning. Both carry forward; price
+  // stays changeable any time on the Pricing screen, flavour only changes
+  // via the occasional "Try a new flavour?" Crossroads.
   state.selectedMarketing = new Set();
   state.marketingSpendToday = 0;
   state.queue = [];
@@ -1200,17 +1563,30 @@ function closeModal(modalId) {
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
-  loadKnowledgeCoins();
-  loadPlayState();
-  renderHeader();
+  loadProfiles();
   renderWordBank();
-  renderHome();
-  showPhase('home');
-  drawTrailDust();
+  const active = getActiveProfile();
+  if (active) {
+    applyProfileToState(active);
+    renderHeader();
+    renderBrandDisplays();
+    goHome();
+  } else {
+    // No profile yet (brand new player, or an empty roster) — the picker
+    // itself is the landing screen until at least one business exists.
+    renderPicker();
+    showPhase('picker');
+  }
   window.addEventListener('resize', drawTrailDust);
 
   // ── Header nav ──
   $('home-btn').addEventListener('click', goHome);
+  $('switch-profile-btn').addEventListener('click', goToPicker);
+  $('profile-grid').addEventListener('click', (e) => {
+    if (e.target.closest('#new-profile-btn')) { openBrandModalForCreate(); return; }
+    const card = e.target.closest('[data-profile]');
+    if (card) selectProfile(card.dataset.profile);
+  });
   $('wordbank-btn').addEventListener('click', (e) => openModal('wordbank-modal', e.currentTarget));
   $('wordbank-close').addEventListener('click', () => closeModal('wordbank-modal'));
   $('wordbank-modal').addEventListener('click', (e) => {
@@ -1231,6 +1607,20 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCoinPanel();
     renderHeader();
   });
+
+  // ── Brand (founding a new profile + editing the active one) ──
+  $('rebrand-btn').addEventListener('click', (e) => openBrandModalForEdit(e.currentTarget));
+  $('brand-modal-close').addEventListener('click', () => closeModal('brand-modal'));
+  $('brand-modal').addEventListener('click', (e) => {
+    if (e.target === $('brand-modal')) closeModal('brand-modal');
+  });
+  $('brand-logo-grid').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-logo]');
+    if (!btn) return;
+    chooseLogo(btn.dataset.logo);
+  });
+  $('brand-confirm-btn').addEventListener('click', confirmBrand);
+  $('reset-business-btn').addEventListener('click', resetActiveBusiness);
 
   // ── Run Your Stand CTA (big tile below the trail) ──
   $('play-cta').addEventListener('click', enterPlay);
@@ -1270,15 +1660,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.closest('#quiz-home-btn')) { goHome(); return; }
   });
 
-  // ── Play: intro ──
-  $('start-btn').addEventListener('click', startGame);
-  $('play-intro-home-btn').addEventListener('click', goHome);
-
   // ── Play: setup ──
   $('ingredient-list').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-ingredient]');
+    const btn = e.target.closest('[data-flavour]');
     if (!btn) return;
-    toggleIngredient(btn.dataset.ingredient);
+    chooseInitialFlavour(btn.dataset.flavour);
   });
   $('fallout-banner').addEventListener('click', (e) => {
     if (e.target.closest('#fallout-learn-btn')) openModal('wordbank-modal', e.target);
@@ -1336,5 +1722,7 @@ document.addEventListener('DOMContentLoaded', () => {
       chooseTemptation(temptBtn.dataset.temptation === 'yes', item, price);
       return;
     }
+    const flavourBtn = e.target.closest('[data-flavour-pick]');
+    if (flavourBtn) { chooseFlavour(flavourBtn.dataset.flavourPick); return; }
   });
 });

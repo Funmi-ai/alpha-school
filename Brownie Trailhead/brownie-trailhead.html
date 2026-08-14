@@ -17,17 +17,19 @@
       <div class="header-buttons">
         <button type="button" id="home-btn" class="btn btn-secondary" aria-label="Back to the trail map">🗺️ Trail Map</button>
         <button type="button" id="wordbank-btn" class="btn btn-secondary wordbank-btn" aria-haspopup="dialog">📜 Word Bank</button>
+        <button type="button" id="switch-profile-btn" class="btn btn-secondary" aria-label="Switch player">👤 Switch</button>
       </div>
     </div>
     <div class="stat-bar">
       <button type="button" id="coin-badge-btn" class="coin-badge" aria-haspopup="dialog">🪙 <span id="coin-badge-count">0</span></button>
+      <button type="button" id="rebrand-btn" class="btn btn-secondary rebrand-btn hidden" aria-haspopup="dialog">✏️ Rebrand</button>
     </div>
   </header>
 
   <main>
 
     <!-- HOME / TRAIL MAP (landing page — the 4 stops, nothing in front of them) -->
-    <section id="phase-home" class="phase card">
+    <section id="phase-home" class="phase card hidden" aria-hidden="true">
       <canvas id="dust-canvas" class="dust-canvas" aria-hidden="true"></canvas>
       <div class="phase-home-inner">
         <h2>Choose Your Stop on the Trail</h2>
@@ -37,7 +39,7 @@
         <button type="button" id="play-cta" class="play-cta">
           <span class="play-cta-icon" aria-hidden="true">🍫</span>
           <span class="play-cta-body">
-            <span class="play-cta-title">Run Your Stand</span>
+            <span class="play-cta-title" id="play-cta-title">Run Your Stand</span>
             <span class="play-cta-desc">Set up your own brownie stand and see if you can turn a profit!</span>
             <span class="play-cta-stats">
               <span class="play-cta-chip">Day <strong id="play-cta-day">1</strong></span>
@@ -76,25 +78,20 @@
       <div id="quiz-content"></div>
     </section>
 
-    <!-- PLAY: intro -->
-    <section id="phase-play-intro" class="phase card hidden" aria-hidden="true">
-      <h2>⛺ Run Your Stand</h2>
-      <p class="phase-intro-text">
-        Every day you'll run your own brownie stand. First you'll set it up, then pick a price,
-        then tell people about it, then sell to your customers — and see how much profit you made.
-      </p>
-      <p class="phase-intro-text">Ready to get baking?</p>
-      <div class="phase-actions">
-        <button type="button" id="play-intro-home-btn" class="btn btn-secondary">🗺️ Trail Map</button>
-        <button type="button" id="start-btn" class="btn btn-primary">Start Day 1 →</button>
-      </div>
+    <!-- PLAYER PICKER — gates the whole resource, not just Run Your Stand, since
+         Knowledge Coins and quiz scores are per-child now, not shared. Shown on
+         first-ever load and any time "👤 Switch" is clicked. -->
+    <section id="phase-picker" class="phase card hidden" aria-hidden="true">
+      <h2>👥 Who's Playing?</h2>
+      <p class="phase-intro-text">Pick your business, or start a new one.</p>
+      <div id="profile-grid" class="profile-grid"></div>
     </section>
 
     <!-- PLAY: setup -->
     <section id="phase-setup" class="phase card hidden" aria-hidden="true">
-      <h2>🧺 Set Up Your Stand</h2>
+      <h2 id="setup-heading">🧺 Set Up Your Stand</h2>
       <div id="fallout-banner" class="fallout-banner hidden" aria-live="polite"></div>
-      <p class="phase-intro-text">Every business needs supplies. Pick what goes in your brownies!</p>
+      <p class="phase-intro-text" id="setup-intro">Every business needs supplies. Pick what goes in your brownies!</p>
       <div id="ingredient-list" class="ingredient-grid"></div>
       <p class="cost-summary" id="cost-summary" aria-live="polite"></p>
       <p class="owned-upgrades" id="owned-upgrades"></p>
@@ -106,7 +103,7 @@
     <!-- PLAY: pricing -->
     <section id="phase-pricing" class="phase card hidden" aria-hidden="true">
       <h2>🏷️ Set Your Price</h2>
-      <p class="phase-intro-text">How much will you charge for one brownie?</p>
+      <p class="phase-intro-text" id="pricing-intro">How much will you charge for one brownie?</p>
       <div id="price-options" class="price-grid"></div>
       <p id="price-feedback" class="feedback-text" aria-live="polite"></p>
       <div class="phase-actions">
@@ -129,7 +126,7 @@
 
     <!-- PLAY: selling -->
     <section id="phase-selling" class="phase card hidden" aria-hidden="true">
-      <h2>🍫 Sell Your Brownies!</h2>
+      <h2 id="selling-heading">🍫 Sell Your Brownies!</h2>
       <p id="weather-line" class="phase-intro-text"></p>
       <p id="queue-status" class="queue-status" aria-live="polite"></p>
       <div id="customer-area" class="customer-area"></div>
@@ -138,7 +135,7 @@
 
     <!-- PLAY: summary -->
     <section id="phase-summary" class="phase card hidden" aria-hidden="true">
-      <h2>📊 Day <span id="summary-day"></span> Summary</h2>
+      <h2 id="summary-heading">📊 Day Summary</h2>
       <div id="summary-content"></div>
       <div class="phase-actions">
         <button type="button" id="summary-home-btn" class="btn btn-secondary">🗺️ Trail Map</button>
@@ -176,6 +173,31 @@
       <hr class="coin-divider">
       <p class="coin-grownup-label">🔒 For grown-ups</p>
       <button type="button" id="coin-reset-btn" class="btn btn-secondary coin-reset-btn">Reset after reward</button>
+    </div>
+  </div>
+
+  <div id="brand-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="brand-modal-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="brand-modal-title">🏪 Name Your Business</h2>
+        <button type="button" id="brand-modal-close" class="btn-icon" aria-label="Close">✕</button>
+      </div>
+      <p class="phase-intro-text">Entrepreneurs give their business a name and a look — that's called a <strong>Brand</strong>. What's yours?</p>
+      <label class="field-label" for="brand-name-input">Business name</label>
+      <input type="text" id="brand-name-input" class="text-input" maxlength="24" placeholder="e.g. Ava's Brownies" autocomplete="off">
+      <p class="field-label">Pick a logo</p>
+      <div id="brand-logo-grid" class="logo-grid"></div>
+      <label class="field-label" for="brand-tagline-input">Tagline (optional)</label>
+      <input type="text" id="brand-tagline-input" class="text-input" maxlength="40" placeholder="e.g. Best brownies in town!" autocomplete="off">
+      <div class="phase-actions">
+        <button type="button" id="brand-confirm-btn" class="btn btn-primary">Let's go! →</button>
+      </div>
+      <div id="brand-reset-section">
+        <hr class="coin-divider">
+        <p class="coin-grownup-label">🔒 For grown-ups</p>
+        <button type="button" id="reset-business-btn" class="btn btn-secondary coin-reset-btn">Reset this business</button>
+        <p class="grownup-note">Clears Day, Float, Savings and recipe back to the start. Name, logo, tagline, Knowledge Coins and quiz scores are kept. To test as a brand new player instead, use "+ New Business" from the player picker.</p>
+      </div>
     </div>
   </div>
 
