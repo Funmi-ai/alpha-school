@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brownie Business Ledger</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Ledger-specific additions — everything else (colours, .card, .btn,
+       .text-input, .field-label, .pl-* P&L classes) comes straight from
+       styles.css, the same file brownie-trailhead.html uses. ── */
+    .ledger-section { margin-bottom: 1.75rem; }
+    .ledger-section:last-child { margin-bottom: 0; }
+    .ledger-section h2 { display: flex; align-items: center; gap: 0.5rem; }
+
+    .sale-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .row-list { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem; }
+    .row-item { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .row-item .text-input { margin: 0; }
+    .row-item .row-name { flex: 1 1 140px; }
+    .row-item .row-qty { width: 3.6rem; flex: 0 0 auto; text-align: center; }
+    .row-item .row-cost { width: 5.5rem; flex: 0 0 auto; font-variant-numeric: tabular-nums; }
+    .row-connector { flex: 0 0 auto; color: var(--ink-soft); font-weight: 700; }
+    .row-total {
+      flex: 0 0 auto; width: 5rem; text-align: right;
+      font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums;
+    }
+    .row-remove-btn {
+      flex: 0 0 auto;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--parchment-dk);
+      border-radius: var(--radius-sm);
+      background: var(--parchment);
+      color: var(--wax);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .row-remove-btn:hover { background: var(--parchment-dk); }
+    .row-add-btn {
+      align-self: flex-start;
+      margin-top: 0.3rem;
+      font-size: 0.88rem;
+      padding: 0.5rem 0.9rem;
+    }
+    .row-empty { color: var(--ink-soft); font-size: 0.9rem; font-style: italic; }
+
+    .budget-input-row { max-width: 200px; margin-bottom: 0.75rem; }
+
+    .date-input-standalone { max-width: 200px; }
+
+    .tab-bar {
+      display: flex; gap: 0.25rem; margin: 1.5rem 0 1.5rem;
+      border-bottom: 2px solid var(--parchment-dk);
+    }
+    .tab-btn {
+      font: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer;
+      padding: 0.7rem 1.1rem; border: none; background: transparent; color: var(--ink-soft);
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+    }
+    .tab-btn:hover { color: var(--ink); }
+    .tab-btn.is-active { color: var(--brass-dk); border-bottom-color: var(--brass); }
+    .tab-btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+
+    .budget-status { margin-top: 1rem; }
+    .budget-status-line {
+      display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;
+      font-weight: 700; font-size: 0.92rem; margin-bottom: 0.4rem;
+    }
+    #budget-status-text.is-unset { color: var(--ink-soft); font-weight: 600; font-style: italic; }
+    #budget-status-remaining.is-good { color: var(--profit); }
+    #budget-status-remaining.is-caution { color: var(--brass-dk); }
+    #budget-status-remaining.is-over { color: var(--loss); }
+    #budget-progress-track { max-width: none; height: 10px; }
+    #budget-progress-fill.is-unset { background: var(--parchment-dk); }
+    #budget-progress-fill.is-good { background: var(--profit); }
+    #budget-progress-fill.is-caution { background: var(--brass); }
+    #budget-progress-fill.is-over { background: var(--loss); }
+
+    .history-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 2px dashed var(--parchment-dk); }
+    .history-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
+    .history-row {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      background: var(--parchment); border-radius: var(--radius-sm); padding: 0.55rem 0.85rem;
+    }
+    .history-date { font-weight: 800; flex: 1 1 100px; }
+    .history-rev { color: var(--ink-soft); font-size: 0.85rem; flex: 0 0 auto; font-variant-numeric: tabular-nums; }
+    .history-net { font-weight: 800; flex: 0 0 auto; font-variant-numeric: tabular-nums; min-width: 4.5rem; text-align: right; }
+    .history-net.is-profit { color: var(--profit); }
+    .history-net.is-loss { color: var(--loss); }
+    .history-row .row-remove-btn { width: 34px; height: 34px; font-size: 0.95rem; }
+
+    @media print {
+      .history-section { display: none; } /* today's sheet, not the whole archive */
+      .site-header .header-buttons, .phase-actions, .row-remove-btn, .row-add-btn { display: none !important; }
+      .tab-bar { display: none; }
+      /* A printed page should show the whole ledger, not just whichever tab
+         happened to be open on screen — override .hidden for every panel. */
+      .tab-panel.hidden { display: block !important; }
+      .tab-panel + .tab-panel { border-top: 2px dashed #ccc; margin-top: 1rem; padding-top: 1rem; }
+      body { background: #fff; }
+      .card { box-shadow: none; border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-top">
+      <div class="header-titles">
+        <h1 class="site-title">🧾 Brownie Business Ledger</h1>
+        <p class="site-subtitle">Tally up a real bake sale — what you spent, what you earned, what you kept.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="phase card">
+
+      <div class="ledger-section">
+        <label class="field-label" for="date-input">Date</label>
+        <input type="date" id="date-input" class="text-input date-input-standalone">
+      </div>
+
+      <div class="tab-bar" role="tablist" aria-label="Ledger sections">
+        <button type="button" class="tab-btn is-active" id="tab-btn-expenses" data-tab="expenses" role="tab" aria-selected="true" aria-controls="tab-expenses">🌾 Expenses</button>
+        <button type="button" class="tab-btn" id="tab-btn-income" data-tab="income" role="tab" aria-selected="false" aria-controls="tab-income">💰 Income</button>
+        <button type="button" class="tab-btn" id="tab-btn-summary" data-tab="summary" role="tab" aria-selected="false" aria-controls="tab-summary">📊 Summary</button>
+      </div>
+
+      <div id="tab-expenses" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-expenses">
+        <div class="ledger-section">
+          <h2>🌾 Ingredients</h2>
+          <p class="phase-intro-text">What you actually spent — one line per thing you bought.</p>
+
+          <div class="budget-input-row">
+            <label class="field-label" for="budget-input">Ingredient Budget</label>
+            <input type="text" id="budget-input" class="text-input" inputmode="decimal" placeholder="Type an amount, e.g. £5.00">
+          </div>
+
+          <div id="ingredient-rows" class="row-list"></div>
+          <button type="button" id="add-ingredient-btn" class="btn btn-secondary row-add-btn">+ Add ingredient</button>
+
+          <div class="budget-status">
+            <div class="budget-status-line">
+              <span id="budget-status-text"></span>
+              <span id="budget-status-remaining"></span>
+            </div>
+            <div class="progress-track" role="progressbar" aria-label="Budget spent" aria-valuemin="0" aria-valuemax="100" id="budget-progress-track">
+              <div class="progress-fill" id="budget-progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ledger-section">
+          <h2>📣 Other Expenses</h2>
+          <p class="phase-intro-text">Posters, bags, anything else — leave empty if there weren't any.</p>
+          <div id="expense-rows" class="row-list"></div>
+          <button type="button" id="add-expense-btn" class="btn btn-secondary row-add-btn">+ Add expense</button>
+        </div>
+      </div>
+
+      <div id="tab-income" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-btn-income">
+        <div class="ledger-section">
+          <h2>💰 Today's Sale</h2>
+          <div class="sale-grid">
+            <div>
+              <label class="field-label" for="price-input">Price per brownie</label>
+              <input type="text" id="price-input" class="text-input" inputmode="decimal" placeholder="£1.50">
+            </div>
+            <div>
+              <label class="field-label" for="sold-input">Brownies sold</label>
+              <input type="number" id="sold-input" class="text-input" min="0" step="1" placeholder="0">
+            </div>
+            <div>
+              <label class="field-label" for="free-input">Brownies given away</label>
+              <input type="number" id="free-input" class="text-input" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-summary" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-btn-summary">
+        <div class="ledger-section">
+          <h2>📊 Profit &amp; Loss</h2>
+          <p class="phase-intro-text">Where Income and Expenses come together.</p>
+          <div id="pl-output"></div>
+        </div>
+      </div>
+
+      <div class="phase-actions">
+        <button type="button" id="download-btn" class="btn btn-primary">⬇️ Download record</button>
+        <button type="button" id="print-btn" class="btn btn-secondary">🖨️ Print this</button>
+        <button type="button" id="reset-btn" class="btn btn-secondary">✅ Save &amp; start a new day</button>
+      </div>
+
+      <div class="ledger-section history-section">
+        <h2>📜 Past Sales</h2>
+        <p class="phase-intro-text" id="history-summary"></p>
+        <div id="history-table"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    'use strict';
+
+    const STORAGE_KEY = 'brownieLedger_current';
+
+    function todayISO() { return new Date().toISOString().slice(0, 10); }
+
+    function defaultState() {
+      return {
+        date: todayISO(),
+        price: 150,        // pence
+        ingredientBudget: 0, // pence, genuinely unset until typed in — depends on a real decision, not a game default
+        sold: 0,
+        free: 0,
+        ingredients: [
+          { name: 'Flour', qty: 1, unitCost: 20 },
+          { name: 'Sugar', qty: 1, unitCost: 20 },
+          { name: 'Butter', qty: 1, unitCost: 30 },
+          { name: 'Chocolate', qty: 1, unitCost: 40 },
+        ],
+        expenses: [],
+      };
+    }
+
+    const HISTORY_KEY = 'brownieLedger_history';
+
+    let state = defaultState();
+    let history = []; // past sales, newest first
+
+    function $(id) { return document.getElementById(id); }
+
+    function safeText(str) {
+      const d = document.createElement('div');
+      d.textContent = String(str);
+      return d.innerHTML;
+    }
+
+    function money(pence) { return `£${(pence / 100).toFixed(2)}`; }
+
+    /** Whole pence only, always — no fractional pennies anywhere in this tool. */
+    function poundsToPence(str) {
+      const cleaned = String(str).replace(/[£,\s]/g, '');
+      const val = parseFloat(cleaned);
+      if (!isFinite(val) || val < 0) return 0;
+      return Math.round(val * 100);
+    }
+
+    function save() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      catch (e) { /* storage may be unavailable — the ledger still works for this session */ }
+    }
+
+    /** Older saves used {name, cost}; current rows are {name, qty, unitCost}. */
+    function migrateRow(row) {
+      if (typeof row?.unitCost === 'number' && typeof row?.qty === 'number') return row;
+      return { name: row?.name || '', qty: 1, unitCost: typeof row?.cost === 'number' ? row.cost : 0 };
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (typeof parsed?.date === 'string') state.date = parsed.date;
+        if (typeof parsed?.price === 'number') state.price = parsed.price;
+        if (typeof parsed?.ingredientBudget === 'number') state.ingredientBudget = parsed.ingredientBudget;
+        if (typeof parsed?.sold === 'number') state.sold = parsed.sold;
+        if (typeof parsed?.free === 'number') state.free = parsed.free;
+        if (Array.isArray(parsed?.ingredients)) state.ingredients = parsed.ingredients.map(migrateRow);
+        if (Array.isArray(parsed?.expenses)) state.expenses = parsed.expenses.map(migrateRow);
+      } catch (e) { /* corrupt or missing — start fresh rather than break the page */ }
+    }
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return;
+        history = parsed.map(entry => ({
+          date: typeof entry?.date === 'string' ? entry.date : '',
+          price: typeof entry?.price === 'number' ? entry.price : 0,
+          ingredientBudget: typeof entry?.ingredientBudget === 'number' ? entry.ingredientBudget : 0,
+          sold: typeof entry?.sold === 'number' ? entry.sold : 0,
+          free: typeof entry?.free === 'number' ? entry.free : 0,
+          ingredients: Array.isArray(entry?.ingredients) ? entry.ingredients.map(migrateRow) : [],
+          expenses: Array.isArray(entry?.expenses) ? entry.expenses.map(migrateRow) : [],
+        }));
+      } catch (e) { /* corrupt or missing — start with an empty log rather than break the page */ }
+    }
+
+    function saveHistory() {
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }
+      catch (e) { /* storage may be unavailable — the log just won't persist this session */ }
+    }
+
+    function hasRealData(entry) {
+      return entry.sold > 0 || entry.free > 0 ||
+        entry.ingredients.some(i => i.unitCost > 0) ||
+        entry.expenses.some(i => i.unitCost > 0);
+    }
+
+    /** Called when starting a new day — moves today's entry into the log first
+     * (skipped if nothing was actually entered, so an accidental reset on an
+     * empty form doesn't clutter the log with a blank row). */
+    function archiveCurrentIfNeeded() {
+      if (!hasRealData(state)) return;
+      history.unshift(JSON.parse(JSON.stringify(state)));
+      saveHistory();
+    }
+
+    function lineTotal(item) { return (item.qty || 1) * (item.unitCost || 0); }
+    // "Of(entry)" variants work on any saved entry (today's or a past one from
+    // the log); the plain names stay as the existing shorthand for today's.
+    function revenueOf(entry) { return entry.price * entry.sold; }
+    function ingredientsTotalOf(entry) { return entry.ingredients.reduce((s, i) => s + lineTotal(i), 0); }
+    function expensesTotalOf(entry) { return entry.expenses.reduce((s, i) => s + lineTotal(i), 0); }
+    function netOf(entry) { return revenueOf(entry) - ingredientsTotalOf(entry) - expensesTotalOf(entry); }
+    function ingredientsTotal() { return ingredientsTotalOf(state); }
+    function expensesTotal() { return expensesTotalOf(state); }
+    function revenue() { return revenueOf(state); }
+
+    /** Shows the multiplication explicitly once there's more than one of something. */
+    function lineLabel(item) {
+      const name = item.name || 'Item';
+      return item.qty > 1 ? `${name} (${item.qty} × ${money(item.unitCost)})` : name;
+    }
+
+    function rowListHTML(items) {
+      if (items.length === 0) return '<p class="row-empty">Nothing added yet.</p>';
+      return items.map((item, i) => `
+        <div class="row-item" data-index="${i}">
+          <input type="text" class="text-input row-name" data-field="name" value="${safeText(item.name)}" placeholder="What did you buy?">
+          <input type="number" class="text-input row-qty" data-field="qty" value="${item.qty}" min="1" step="1" aria-label="Quantity">
+          <span class="row-connector" aria-hidden="true">×</span>
+          <input type="text" class="text-input row-cost" data-field="unitCost" value="${money(item.unitCost)}" inputmode="decimal" aria-label="Cost each">
+          <span class="row-connector" aria-hidden="true">=</span>
+          <span class="row-total">${money(lineTotal(item))}</span>
+          <button type="button" class="row-remove-btn" data-action="remove" aria-label="Remove this line">✕</button>
+        </div>`).join('');
+    }
+
+    function plHTML() {
+      const rev = revenue();
+      const cogs = ingredientsTotal();
+      const gross = rev - cogs;
+      const exp = expensesTotal();
+      const net = gross - exp;
+      const units = state.sold + state.free;
+      const saleNote = state.free
+        ? `${state.sold} sold + ${state.free} free`
+        : `${state.sold} sold`;
+
+      const cogsLines = state.ingredients.length
+        ? state.ingredients.map(i => `
+          <div class="pl-line pl-indent"><span>${safeText(lineLabel(i))}</span><strong>−${money(lineTotal(i))}</strong></div>`).join('')
+        : `<div class="pl-line pl-indent"><span>No ingredients added</span><strong>£0.00</strong></div>`;
+
+      const expBlock = state.expenses.length ? `
+        <div class="pl-section-label">Other expenses</div>
+        ${state.expenses.map(i => `
+          <div class="pl-line pl-indent"><span>${safeText(lineLabel(i))}</span><strong>−${money(lineTotal(i))}</strong></div>`).join('')}
+      ` : '';
+
+      let tip;
+      if (net > 0 && net === gross) tip = 'Nice — a clean profit with no other expenses to cover.';
+      else if (net > 0) tip = 'You made a profit — you earned more than everything cost, put together.';
+      else if (net === 0) tip = 'You broke even — spent exactly what you earned.';
+      else tip = "This one made a loss — you spent more than you earned. It happens to real businesses too.";
+
+      return `
+        <div class="pl-statement">
+          <div class="pl-line pl-revenue">
+            <span>Revenue <span class="pl-note">(${safeText(saleNote)}, ${units} brownie${units === 1 ? '' : 's'} total)</span></span>
+            <strong>${money(rev)}</strong>
+          </div>
+          <div class="pl-section-label">Cost of ingredients</div>
+          ${cogsLines}
+          <div class="pl-line pl-subtotal"><span>Gross Profit</span><strong>${money(gross)}</strong></div>
+          ${expBlock}
+          <div class="pl-line pl-total ${net >= 0 ? 'is-profit' : 'is-loss'}">
+            <span>${net >= 0 ? 'Net Profit' : 'Net Loss'}</span><strong>${money(Math.abs(net))}</strong>
+          </div>
+        </div>
+        <p class="feedback-text">${tip}</p>`;
+    }
+
+    /** How much of the ingredient budget has been spent — text + colour-coded
+     * progress bar. Under 80% reads as fine, 80-100% as a caution, over
+     * budget switches to the same loss colour the P&L uses. */
+    function renderBudgetStatus() {
+      const budget = state.ingredientBudget || 0;
+      const spent = ingredientsTotal();
+      const remaining = budget - spent;
+      const fillPct = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0;
+
+      let statusClass;
+      if (budget <= 0) statusClass = 'is-unset';
+      else if (remaining < 0) statusClass = 'is-over';
+      else if (spent / budget >= 0.8) statusClass = 'is-caution';
+      else statusClass = 'is-good';
+
+      const textEl = $('budget-status-text');
+      textEl.textContent = budget > 0
+        ? `Spent ${money(spent)} of ${money(budget)} budget`
+        : `Spent ${money(spent)} — no budget set yet`;
+      textEl.className = statusClass === 'is-unset' ? 'is-unset' : '';
+
+      const remainingEl = $('budget-status-remaining');
+      remainingEl.textContent = budget > 0
+        ? (remaining < 0 ? `${money(Math.abs(remaining))} over budget` : `${money(remaining)} left`)
+        : '';
+      remainingEl.className = statusClass;
+
+      const fillEl = $('budget-progress-fill');
+      fillEl.style.width = fillPct + '%';
+      fillEl.className = 'progress-fill ' + statusClass;
+      $('budget-progress-track').setAttribute('aria-valuenow', String(Math.round(fillPct)));
+    }
+
+    const TAB_IDS = ['expenses', 'income', 'summary'];
+    function showTab(tabId) {
+      TAB_IDS.forEach(id => {
+        const active = id === tabId;
+        $('tab-' + id).classList.toggle('hidden', !active);
+        const btn = $('tab-btn-' + id);
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-selected', String(active));
+      });
+    }
+
+    function render() {
+      $('date-input').value = state.date;
+      $('price-input').value = money(state.price);
+      $('budget-input').value = state.ingredientBudget > 0 ? money(state.ingredientBudget) : '';
+      $('sold-input').value = state.sold;
+      $('free-input').value = state.free;
+      $('ingredient-rows').innerHTML = rowListHTML(state.ingredients);
+      $('expense-rows').innerHTML = rowListHTML(state.expenses);
+      $('pl-output').innerHTML = plHTML();
+      renderBudgetStatus();
+      save();
+    }
+
+    function renderHistory() {
+      const summaryEl = $('history-summary');
+      if (history.length === 0) {
+        summaryEl.textContent = "Nothing logged yet — this fills up each time you start a new day.";
+        $('history-table').innerHTML = '';
+        return;
+      }
+      const lifetimeNet = history.reduce((s, e) => s + netOf(e), 0);
+      summaryEl.textContent =
+        `${history.length} sale${history.length === 1 ? '' : 's'} logged · lifetime ${lifetimeNet >= 0 ? 'profit' : 'loss'}: ${money(Math.abs(lifetimeNet))}`;
+
+      $('history-table').innerHTML = `<div class="history-list">${history.map((entry, i) => {
+        const net = netOf(entry);
+        return `
+          <div class="history-row">
+            <span class="history-date">${safeText(entry.date || 'Undated')}</span>
+            <span class="history-rev">${money(revenueOf(entry))} revenue</span>
+            <span class="history-net ${net >= 0 ? 'is-profit' : 'is-loss'}">${net >= 0 ? '+' : '−'}${money(Math.abs(net))}</span>
+            <button type="button" class="row-remove-btn" data-history-action="download" data-history-index="${i}" aria-label="Download this record">⬇️</button>
+            <button type="button" class="row-remove-btn" data-history-action="delete" data-history-index="${i}" aria-label="Remove from log">✕</button>
+          </div>`;
+      }).join('')}</div>`;
+    }
+
+    function wireRowList(containerId, list, onLiveChange) {
+      const container = $(containerId);
+      container.addEventListener('input', (e) => {
+        const row = e.target.closest('[data-index]');
+        if (!row) return;
+        const i = Number(row.dataset.index);
+        const field = e.target.dataset.field;
+        if (field === 'name') list[i].name = e.target.value;
+        if (field === 'qty') list[i].qty = Math.max(1, parseInt(e.target.value, 10) || 1);
+        if (field === 'unitCost') list[i].unitCost = poundsToPence(e.target.value);
+        // Targeted update — a full render() here would rebuild the input and
+        // steal focus mid-keystroke. Only this row's total and the overall
+        // P&L (and, for ingredients, the budget bar) need to stay live; the
+        // input itself keeps its own typed value.
+        const totalEl = row.querySelector('.row-total');
+        if (totalEl) totalEl.textContent = money(lineTotal(list[i]));
+        $('pl-output').innerHTML = plHTML();
+        if (onLiveChange) onLiveChange();
+        save();
+      });
+      container.addEventListener('change', (e) => {
+        // On blur/change, normalise qty/cost fields back to a clean display.
+        if (e.target.dataset.field === 'unitCost' || e.target.dataset.field === 'qty') render();
+      });
+      container.addEventListener('click', (e) => {
+        if (e.target.dataset.action !== 'remove') return;
+        const row = e.target.closest('[data-index]');
+        list.splice(Number(row.dataset.index), 1);
+        render();
+      });
+    }
+
+    /* ── CSV export — a real, dated record of what was bought at what price.
+       Pure client-side Blob download, no network request, so it stays within
+       the offline rule the rest of Alpha School follows. ── */
+
+    function csvField(val) {
+      const str = String(val ?? '');
+      if (/[",\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
+      return str;
+    }
+    function csvRow(cells) { return cells.map(csvField).join(',') + '\r\n'; }
+
+    function toCSV(entry) {
+      entry = entry || state;
+      const rev = revenueOf(entry);
+      const cogs = ingredientsTotalOf(entry);
+      const gross = rev - cogs;
+      const exp = expensesTotalOf(entry);
+      const net = gross - exp;
+
+      let csv = '';
+      csv += csvRow(['Brownie Business Ledger']);
+      csv += csvRow(['Date', entry.date]);
+      csv += csvRow([]);
+      csv += csvRow(["Sale"]);
+      csv += csvRow(['Price per brownie', money(entry.price)]);
+      csv += csvRow(['Brownies sold', entry.sold]);
+      csv += csvRow(['Brownies given away', entry.free]);
+      csv += csvRow([]);
+      csv += csvRow(['Ingredients', 'Quantity', 'Unit Cost', 'Line Total']);
+      entry.ingredients.forEach(i => { csv += csvRow([i.name || '', i.qty, money(i.unitCost), money(lineTotal(i))]); });
+      csv += csvRow([]);
+      csv += csvRow(['Ingredient Budget', money(entry.ingredientBudget || 0)]);
+      csv += csvRow(['Spent on Ingredients', money(cogs)]);
+      csv += csvRow([(entry.ingredientBudget || 0) - cogs >= 0 ? 'Under Budget By' : 'Over Budget By', money(Math.abs((entry.ingredientBudget || 0) - cogs))]);
+      csv += csvRow([]);
+      csv += csvRow(['Other Expenses', 'Quantity', 'Unit Cost', 'Line Total']);
+      if (entry.expenses.length === 0) csv += csvRow(['(none)', '', '', '']);
+      else entry.expenses.forEach(i => { csv += csvRow([i.name || '', i.qty, money(i.unitCost), money(lineTotal(i))]); });
+      csv += csvRow([]);
+      csv += csvRow(['Profit & Loss']);
+      csv += csvRow(['Revenue', money(rev)]);
+      csv += csvRow(['Cost of Ingredients', money(cogs)]);
+      csv += csvRow(['Gross Profit', money(gross)]);
+      csv += csvRow(['Other Expenses', money(exp)]);
+      csv += csvRow([net >= 0 ? 'Net Profit' : 'Net Loss', money(Math.abs(net))]);
+      return csv;
+    }
+
+    function downloadCSV(entry) {
+      entry = entry || state;
+      const blob = new Blob([toCSV(entry)], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `brownie-ledger-${entry.date || 'undated'}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      load();
+      loadHistory();
+      render();
+      renderHistory();
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => showTab(btn.dataset.tab));
+      });
+
+      $('date-input').addEventListener('change', (e) => { state.date = e.target.value; save(); });
+      $('price-input').addEventListener('change', (e) => { state.price = poundsToPence(e.target.value); render(); });
+      $('budget-input').addEventListener('change', (e) => { state.ingredientBudget = poundsToPence(e.target.value); render(); });
+      $('sold-input').addEventListener('input', (e) => { state.sold = Math.max(0, parseInt(e.target.value, 10) || 0); $('pl-output').innerHTML = plHTML(); save(); });
+      $('free-input').addEventListener('input', (e) => { state.free = Math.max(0, parseInt(e.target.value, 10) || 0); $('pl-output').innerHTML = plHTML(); save(); });
+
+      wireRowList('ingredient-rows', state.ingredients, renderBudgetStatus);
+      wireRowList('expense-rows', state.expenses);
+
+      $('add-ingredient-btn').addEventListener('click', () => { state.ingredients.push({ name: '', qty: 1, unitCost: 0 }); render(); });
+      $('add-expense-btn').addEventListener('click', () => { state.expenses.push({ name: '', qty: 1, unitCost: 0 }); render(); });
+
+      $('download-btn').addEventListener('click', () => downloadCSV());
+      $('print-btn').addEventListener('click', () => window.print());
+      $('reset-btn').addEventListener('click', () => {
+        // Archives today's entry into the log first — resetting is no longer
+        // destructive, it's "finish today's page and start a fresh one."
+        archiveCurrentIfNeeded();
+        const carriedBudget = state.ingredientBudget; // usually the same budget every time — no need to retype it
+        state = defaultState();
+        state.ingredientBudget = carriedBudget;
+        render();
+        renderHistory();
+      });
+
+      $('history-table').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-history-action]');
+        if (!btn) return;
+        const i = Number(btn.dataset.historyIndex);
+        if (btn.dataset.historyAction === 'download') {
+          downloadCSV(history[i]);
+        } else if (btn.dataset.historyAction === 'delete') {
+          // The one destructive action in this tool, and the log has no other
+          // "are you sure" gate the way the rest of the page does — worth a
+          // real confirmation here.
+          if (!confirm(`Remove the ${history[i].date || 'undated'} entry from the log? This can't be undone.`)) return;
+          history.splice(i, 1);
+          saveHistory();
+          renderHistory();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
