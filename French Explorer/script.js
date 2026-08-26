@@ -21,16 +21,29 @@ const VEHICLES = [
   { id: 'benne',        emoji: '🚛',  fr: 'le camion-benne',       en: 'garbage truck',     type: 'road'         },
   { id: 'scooter',      emoji: '🛵',  fr: 'le scooter',            en: 'scooter',           type: 'road'         },
   // Construction
-  { id: 'pelleteuse',   emoji: '🏗️',  fr: 'la pelleteuse',         en: 'digger',            type: 'construction' },
-  { id: 'bulldozer',    emoji: '🚜',  fr: 'le bulldozer',          en: 'bulldozer',         type: 'construction' },
-  { id: 'grue',         emoji: '🏗️',  fr: 'la grue',               en: 'crane',             type: 'construction' },
+  { id: 'pelleteuse',        emoji: '🏗️',  fr: 'la pelleteuse',          en: 'digger',            type: 'construction' },
+  { id: 'bulldozer',         emoji: '🚧',  fr: 'le bulldozer',           en: 'bulldozer',         type: 'construction' },
+  { id: 'grue',              emoji: '🏗️',  fr: 'la grue',                en: 'crane',             type: 'construction' },
+  { id: 'betonniare',        emoji: '🚛',  fr: 'la bétonnière',          en: 'cement mixer',      type: 'construction' },
+  { id: 'rouleau',           emoji: '🚧',  fr: 'le rouleau compresseur', en: 'steamroller',       type: 'construction' },
+  { id: 'chariot_elevateur', emoji: '🏭',  fr: 'le chariot élévateur',   en: 'forklift',          type: 'construction' },
+  { id: 'camion_poubelle',   emoji: '🚛',  fr: 'le camion poubelle',     en: 'rubbish truck',     type: 'road'         },
+  { id: 'voiture_electrique',emoji: '🚗',  fr: 'la voiture électrique',  en: 'electric car',      type: 'road'         },
+  { id: 'quad',              emoji: '🏍️',  fr: 'le quad',                en: 'quad bike',         type: 'road'         },
+  // Winter
+  { id: 'motoneige',         emoji: '🛷',  fr: 'la motoneige',           en: 'snowmobile',        type: 'winter'       },
+  { id: 'chasse_neige',      emoji: '🌨️',  fr: 'le chasse-neige',        en: 'snowplough',        type: 'winter'       },
+  { id: 'luge',              emoji: '🛷',  fr: 'la luge',                en: 'sledge',            type: 'winter'       },
   // Farm
   { id: 'tractor',      emoji: '🚜',  fr: 'le tracteur',           en: 'tractor',           type: 'farm'         },
   { id: 'moissonneuse', emoji: '🌾',  fr: 'la moissonneuse',       en: 'combine harvester', type: 'farm'         },
   // Air
   { id: 'plane',        emoji: '✈️',   fr: "l'avion",               en: 'plane',             type: 'air'          },
   { id: 'helicopter',   emoji: '🚁',  fr: "l'hélicoptère",         en: 'helicopter',        type: 'air'          },
-  { id: 'montgolfiere', emoji: '🎈',  fr: 'la montgolfière',       en: 'hot air balloon',   type: 'air'          },
+  { id: 'montgolfiere',      emoji: '🎈',  fr: 'la montgolfière',        en: 'hot air balloon',   type: 'air'          },
+  { id: 'navette_spatiale',  emoji: '🚀',  fr: 'la navette spatiale',    en: 'space shuttle',     type: 'air'          },
+  { id: 'dirigeable',        emoji: '🛸',  fr: 'le dirigeable',          en: 'blimp',             type: 'air'          },
+  { id: 'drone',             emoji: '🛸',  fr: 'le drone',               en: 'drone',             type: 'air'          },
   { id: 'rocket',       emoji: '🚀',  fr: 'la fusée',              en: 'rocket',            type: 'air'          },
   // Water
   { id: 'sailboat',     emoji: '⛵',  fr: 'le voilier',            en: 'sailboat',          type: 'water'        },
@@ -38,11 +51,15 @@ const VEHICLES = [
   { id: 'speedboat',    emoji: '🛥️',  fr: 'le bateau à moteur',   en: 'speedboat',         type: 'water'        },
   { id: 'ferry',        emoji: '⛴️',  fr: 'le ferry',              en: 'ferry',             type: 'water'        },
   { id: 'sous_marin',   emoji: '🤿',  fr: 'le sous-marin',         en: 'submarine',         type: 'water'        },
-  { id: 'canoe',        emoji: '🛶',  fr: 'le canoë',              en: 'canoe',             type: 'water'        },
+  { id: 'canoe',             emoji: '🛶',  fr: 'le canoë',               en: 'canoe',             type: 'water'        },
+  { id: 'kayak',             emoji: '🛶',  fr: 'le kayak',               en: 'kayak',             type: 'water'        },
+  { id: 'porte_conteneurs',  emoji: '🚢',  fr: 'le porte-conteneurs',    en: 'container ship',    type: 'water'        },
+  { id: 'hovercraft',        emoji: '🛥️',  fr: "l'aéroglisseur",          en: 'hovercraft',        type: 'water'        },
   // Rail
   { id: 'train',        emoji: '🚂',  fr: 'le train',              en: 'train',             type: 'rail'         },
   { id: 'metro',        emoji: '🚇',  fr: 'le métro',              en: 'metro',             type: 'rail'         },
-  { id: 'tram',         emoji: '🚊',  fr: 'le tram',               en: 'tram',              type: 'rail'         },
+  { id: 'tram',              emoji: '🚊',  fr: 'le tram',                en: 'tram',              type: 'rail'         },
+  { id: 'TGV',              emoji: '🚄',  fr: 'le TGV',                 en: 'high-speed train',  type: 'rail'         },
 ];
 
 const VEHICLE_FILTERS = [
@@ -53,6 +70,7 @@ const VEHICLE_FILTERS = [
   { id: 'air',          label: 'Air',        emoji: '☁️'  },
   { id: 'water',        label: 'Mer',        emoji: '🌊'  },
   { id: 'rail',         label: 'Rail',       emoji: '🚦'  },
+  { id: 'winter',      label: 'Hiver',      emoji: '❄️'   },
 ];
 
 // Animals grouped by the vehicle journey that finds them.
@@ -102,6 +120,47 @@ const ANIMALS = [
   { id: 'toucan',    emoji: '🦜', fr: 'le toucan',      en: 'toucan',     journey: 'sky',    journeyEmoji: '✈️' },
   { id: 'renard',    emoji: '🦊', fr: 'le renard',      en: 'fox',        journey: 'safari', journeyEmoji: '🚙' },
   { id: 'ours',      emoji: '🐻', fr: "l'ours",         en: 'bear',       journey: 'safari', journeyEmoji: '🚙' },
+  { id: 'loup',      emoji: '🐺', fr: 'le loup',        en: 'wolf',       journey: 'safari', journeyEmoji: '🚙' },
+  { id: 'leopard',   emoji: '🐆', fr: 'le léopard',     en: 'leopard',    journey: 'safari', journeyEmoji: '🚙' },
+  { id: 'guepard',   emoji: '🐆', fr: 'le guépard',     en: 'cheetah',    journey: 'safari', journeyEmoji: '🚙' },
+  // Ocean additions
+  { id: 'hippocampe',emoji: '🦄', fr: "l'hippocampe",   en: 'seahorse',   journey: 'ocean',  journeyEmoji: '⛵' },
+  { id: 'meduse',    emoji: '🪼', fr: 'la méduse',      en: 'jellyfish',  journey: 'ocean',  journeyEmoji: '⛵' },
+  { id: 'raie',      emoji: '🐟', fr: 'la raie manta',  en: 'manta ray',  journey: 'ocean',  journeyEmoji: '⛵' },
+  { id: 'homard',    emoji: '🦞', fr: 'le homard',      en: 'lobster',    journey: 'ocean',  journeyEmoji: '⛵' },
+  // Sky additions
+  { id: 'colibri',   emoji: '🐦', fr: 'le colibri',     en: 'hummingbird',journey: 'sky',    journeyEmoji: '✈️' },
+  { id: 'flamant_sky',emoji:'🦩', fr: 'le flamant',     en: 'flamingo',   journey: 'sky',    journeyEmoji: '✈️' },
+  // Australia — found by the 'roo-rover 🦘
+  { id: 'kangourou', emoji: '🦘', fr: 'le kangourou',   en: 'kangaroo',   journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'koala',     emoji: '🐨', fr: 'le koala',       en: 'koala',      journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'wombat',    emoji: '🦔', fr: 'le wombat',      en: 'wombat',     journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'echidne',   emoji: '🦔', fr: "l'échidné",      en: 'echidna',    journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'ornithorynque', emoji:'🦆', fr: "l'ornithorynque", en: 'platypus', journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'emeu',      emoji: '🐦', fr: "l'émeu",         en: 'emu',        journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'wallaby',   emoji: '🦘', fr: 'le wallaby',     en: 'wallaby',    journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'quokka',    emoji: '🐹', fr: 'le quokka',      en: 'quokka',     journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'dingo',     emoji: '🐕', fr: 'le dingo',       en: 'dingo',      journey: 'aussie', journeyEmoji: '🦘' },
+  { id: 'cacatoes',  emoji: '🦜', fr: 'le cacatoès',    en: 'cockatoo',   journey: 'aussie', journeyEmoji: '🦘' },
+  // Jungle — found from the rainforest trail 🌿
+  { id: 'cameleon',  emoji: '🦎', fr: 'le caméléon',    en: 'chameleon',  journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'boa',       emoji: '🐍', fr: 'le boa',         en: 'boa constrictor', journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'python',    emoji: '🐍', fr: 'le python',      en: 'python',     journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'gecko',     emoji: '🦎', fr: 'le gecko',       en: 'gecko',      journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'paresseux', emoji: '🦥', fr: 'le paresseux',   en: 'sloth',      journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'jaguar',    emoji: '🐆', fr: 'le jaguar',      en: 'jaguar',     journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'tapir',     emoji: '🐗', fr: 'le tapir',       en: 'tapir',      journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'grenouille',emoji: '🐸', fr: 'la grenouille',  en: 'frog',       journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'mamba',     emoji: '🐍', fr: 'le mamba',       en: 'mamba',      journey: 'jungle', journeyEmoji: '🌿' },
+  { id: 'tarantule', emoji: '🕷️', fr: 'la tarentule',   en: 'tarantula',  journey: 'jungle', journeyEmoji: '🌿' },
+  // Arctic — found on the ice expedition ❄️
+  { id: 'ours_polaire', emoji: '🐻‍❄️', fr: "l'ours polaire", en: 'polar bear', journey: 'arctique', journeyEmoji: '❄️' },
+  { id: 'morse',     emoji: '🦭', fr: 'le morse',       en: 'walrus',     journey: 'arctique', journeyEmoji: '❄️' },
+  { id: 'narval',    emoji: '🦄', fr: 'le narval',      en: 'narwhal',    journey: 'arctique', journeyEmoji: '❄️' },
+  { id: 'beluga',    emoji: '🐳', fr: 'le béluga',      en: 'beluga whale', journey: 'arctique', journeyEmoji: '❄️' },
+  { id: 'caribou',   emoji: '🦌', fr: 'le caribou',     en: 'reindeer',   journey: 'arctique', journeyEmoji: '❄️' },
+  { id: 'lemming',   emoji: '🐭', fr: 'le lemming',     en: 'lemming',    journey: 'arctique', journeyEmoji: '❄️' },
+  { id: 'boeuf_musque', emoji:'🦬', fr: 'le bœuf musqué', en: 'musk ox',  journey: 'arctique', journeyEmoji: '❄️' },
 ];
 
 const ANIMAL_JOURNEYS = [
@@ -109,7 +168,10 @@ const ANIMAL_JOURNEYS = [
   { id: 'farm',   label: 'Ferme',  emoji: '🌾', hint: 'Found by the tractor 🚜' },
   { id: 'safari', label: 'Safari', emoji: '🌍', hint: 'Found by the jeep 🚙' },
   { id: 'ocean',  label: 'Océan',  emoji: '🌊', hint: 'Found from the boat ⛵' },
-  { id: 'sky',    label: 'Ciel',   emoji: '☁️',  hint: 'Found from the plane ✈️' },
+  { id: 'sky',      label: 'Ciel',      emoji: '☁️',  hint: 'Found from the plane ✈️' },
+  { id: 'aussie',   label: 'Australie', emoji: '🦘', hint: "Found Down Under 🌏" },
+  { id: 'jungle',   label: 'Jungle',    emoji: '🌿', hint: 'Found in the rainforest 🌳' },
+  { id: 'arctique', label: 'Arctique',  emoji: '❄️',  hint: 'Found on the ice ❄️' },
 ];
 
 /* ── Level 2 data ── */
@@ -157,7 +219,12 @@ const BODY_PARTS = [
   { id: 'dos',     emoji: '🔙', fr: 'le dos',       en: 'back'      },
   { id: 'jambe',   emoji: '🦵', fr: 'la jambe',     en: 'leg'       },
   { id: 'genou',   emoji: '🦵', fr: 'le genou',     en: 'knee'      },
-  { id: 'pied',    emoji: '🦶', fr: 'le pied',      en: 'foot'      },
+  { id: 'pied',    emoji: '🦶', fr: 'le pied',       en: 'foot'      },
+  { id: 'orteil',  emoji: '🦶', fr: "l'orteil",      en: 'toe'       },
+  { id: 'cheville',emoji: '🦵', fr: 'la cheville',   en: 'ankle'     },
+  { id: 'poignet', emoji: '💪', fr: 'le poignet',    en: 'wrist'     },
+  { id: 'pouce',   emoji: '👍', fr: 'le pouce',      en: 'thumb'     },
+  { id: 'ongle',   emoji: '💅', fr: "l'ongle",       en: 'nail'      },
 ];
 
 const FAMILY = [
@@ -170,7 +237,11 @@ const FAMILY = [
   { id: 'grandpere', emoji: '👴',  fr: 'le grand-père',  en: 'grandad' },
   { id: 'oncle',     emoji: '👨',  fr: "l'oncle",        en: 'uncle'   },
   { id: 'tante',     emoji: '👩',  fr: 'la tante',       en: 'aunt'    },
-  { id: 'cousin',    emoji: '🧒',  fr: 'le cousin',      en: 'cousin'  },
+  { id: 'cousin',    emoji: '🧒',  fr: 'le cousin',      en: 'cousin'    },
+  { id: 'niece',     emoji: '👧',  fr: 'la nièce',       en: 'niece'     },
+  { id: 'neveu',     emoji: '👦',  fr: 'le neveu',       en: 'nephew'    },
+  { id: 'parrain',   emoji: '👨',  fr: 'le parrain',     en: 'godfather' },
+  { id: 'marraine',  emoji: '👩',  fr: 'la marraine',    en: 'godmother' },
 ];
 
 const FOOD = [
@@ -194,7 +265,25 @@ const FOOD = [
   { id: 'riz',       emoji: '🍚', fr: 'le riz',         en: 'rice'        },
   { id: 'pates',     emoji: '🍝', fr: 'les pâtes',      en: 'pasta'       },
   { id: 'poulet',    emoji: '🍗', fr: 'le poulet',      en: 'chicken'     },
-  { id: 'glace',     emoji: '🍦', fr: 'la glace',       en: 'ice cream'   },
+  { id: 'glace',          emoji: '🍦', fr: 'la glace',         en: 'ice cream'    },
+  { id: 'beurre',         emoji: '🧈', fr: 'le beurre',        en: 'butter'       },
+  { id: 'yaourt',         emoji: '🥛', fr: 'le yaourt',        en: 'yogurt'       },
+  { id: 'crepe',          emoji: '🥞', fr: 'la crêpe',         en: 'crêpe'        },
+  { id: 'ananas',         emoji: '🍍', fr: "l'ananas",         en: 'pineapple'    },
+  { id: 'mangue',         emoji: '🥭', fr: 'la mangue',        en: 'mango'        },
+  { id: 'pasteque',       emoji: '🍉', fr: 'la pastèque',      en: 'watermelon'   },
+  { id: 'citron',         emoji: '🍋', fr: 'le citron',        en: 'lemon'        },
+  { id: 'cerise',         emoji: '🍒', fr: 'la cerise',        en: 'cherry'       },
+  { id: 'peche',          emoji: '🍑', fr: 'la pêche',         en: 'peach'        },
+  { id: 'poire',          emoji: '🍐', fr: 'la poire',         en: 'pear'         },
+  { id: 'melon',          emoji: '🍈', fr: 'le melon',         en: 'melon'        },
+  { id: 'brocoli',        emoji: '🥦', fr: 'le brocoli',       en: 'broccoli'     },
+  { id: 'mais',           emoji: '🌽', fr: 'le maïs',          en: 'sweetcorn'    },
+  { id: 'avocat',         emoji: '🥑', fr: "l'avocat",         en: 'avocado'      },
+  { id: 'concombre',      emoji: '🥒', fr: 'le concombre',     en: 'cucumber'     },
+  { id: 'poivron',        emoji: '🫑', fr: 'le poivron',       en: 'pepper'       },
+  { id: 'pomme_de_terre', emoji: '🥔', fr: 'la pomme de terre',en: 'potato'       },
+  { id: 'pizza',          emoji: '🍕', fr: 'la pizza',         en: 'pizza'        },
 ];
 
 // Colours anchored to vehicles — "rouge? That's the fire engine colour!"
@@ -209,7 +298,12 @@ const COLOURS = [
   { id: 'violet', fr: 'violet',  en: 'purple', hex: '#a855f7', vehicleEmoji: '🚂', vehicleFr: 'le train'             },
   { id: 'rose',   fr: 'rose',    en: 'pink',   hex: '#f472b6', vehicleEmoji: '🛵', vehicleFr: 'le scooter rose'       },
   { id: 'marron', fr: 'marron',  en: 'brown',  hex: '#92400e', vehicleEmoji: '🚜', vehicleFr: 'le vieux tracteur'     },
-  { id: 'gris',   fr: 'gris',    en: 'grey',   hex: '#9ca3af', vehicleEmoji: '🚐', vehicleFr: 'la camionnette'        },
+  { id: 'gris',        fr: 'gris',        en: 'grey',      hex: '#9ca3af', vehicleEmoji: '🚐', vehicleFr: 'la camionnette'           },
+  { id: 'turquoise',   fr: 'turquoise',   en: 'turquoise', hex: '#06b6d4', vehicleEmoji: '🛥️', vehicleFr: 'le bateau turquoise'      },
+  { id: 'dore',        fr: 'doré',        en: 'gold',      hex: '#ca8a04', vehicleEmoji: '🏎️', vehicleFr: 'la voiture dorée'         },
+  { id: 'argente',     fr: 'argenté',     en: 'silver',    hex: '#94a3b8', vehicleEmoji: '🚀', vehicleFr: 'la fusée argentée'        },
+  { id: 'bordeaux',    fr: 'bordeaux',    en: 'burgundy',  hex: '#9f1239', vehicleEmoji: '🚂', vehicleFr: 'le vieux train'           },
+  { id: 'beige',       fr: 'beige',       en: 'beige',     hex: '#d6c4a0', vehicleEmoji: '🚙', vehicleFr: 'la jeep beige'            },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -378,18 +472,23 @@ function speakFrench(text) {
   if (!('speechSynthesis' in window)) return;
   if (_currentAudio) { _currentAudio.pause(); _currentAudio.currentTime = 0; }
   window.speechSynthesis.cancel();
-  const doSpeak = () => {
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = 'fr-FR';
-    utt.rate = 0.85;
+  // Chrome bug: cancel() is async — speak() called in the same tick is silently dropped.
+  // A 50 ms gap ensures cancel completes before the new utterance is queued.
+  setTimeout(() => {
+    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    const doSpeak = () => {
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'fr-FR';
+      utt.rate = 0.85;
+      const voices = window.speechSynthesis.getVoices();
+      const frVoice = voices.find(v => v.lang.startsWith('fr'));
+      if (frVoice) utt.voice = frVoice;
+      window.speechSynthesis.speak(utt);
+    };
     const voices = window.speechSynthesis.getVoices();
-    const frVoice = voices.find(v => v.lang.startsWith('fr'));
-    if (frVoice) utt.voice = frVoice;
-    window.speechSynthesis.speak(utt);
-  };
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length) { doSpeak(); }
-  else { window.speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true }); }
+    if (voices.length) { doSpeak(); }
+    else { window.speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true }); }
+  }, 50);
 }
 
 function cancelFrench() {
@@ -1932,8 +2031,7 @@ function handleClick(e) {
       zoomIntoPlanet(btn, renderPhonics);
       break;
     case 'play-phonic':
-      cancelFrench();
-      speakFrench(btn.dataset.tts);
+      speakFrench(btn.dataset.tts);  // speakFrench already cancels internally
       btn.classList.add('phonic-active');
       setTimeout(() => btn.classList.remove('phonic-active'), 500);
       break;
