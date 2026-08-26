@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button onclick="testTTS()">Test TTS</button>
+<div id="out">Not tested yet</div>
+<script>
+async function testTTS() {
+  const out = document.getElementById('out');
+  out.textContent = 'Sending...';
+  try {
+    const r = await fetch('http://localhost:8081/speak', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({text: 'Hello Cairo'})
+    });
+    const j = await r.json();
+    out.textContent = 'Response: ' + JSON.stringify(j);
+  } catch(e) {
+    out.textContent = 'ERROR: ' + e.message;
+  }
+}
+</script>
+</body>
+</html>

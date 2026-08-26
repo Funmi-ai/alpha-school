@@ -180,7 +180,7 @@ main {
   padding: 0.7rem 1.25rem;
   transition: background 0.12s, transform 0.1s;
 }
-button:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+button:focus-visible, .btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
 .btn:active { transform: scale(0.97); }
 
 .btn-primary { background: var(--brass); color: #FBF6E8; }

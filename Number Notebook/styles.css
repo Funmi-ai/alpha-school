@@ -1,0 +1,98 @@
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.hidden { display: none !important; }
+
+/* ── Design system (shared across all Alpha School resources) ── */
+:root {
+  --c-header:  #ff6b35;
+  --c-focus:   #e65100;
+  --c-bg:      #fff8f0;
+  --c-card:    #ffffff;
+  --c-text:    #1f2937;
+  --c-muted:   #6b7280;
+  --c-shadow:  0 3px 14px rgba(0,0,0,0.10);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+}
+
+/* ── Base ── */
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-size: 18px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.site-header {
+  background: var(--c-header);
+  color: #fff;
+  text-align: center;
+  padding: 1.5rem 1rem 1.25rem;
+}
+
+.site-title {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.site-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  opacity: 0.9;
+  margin-top: 0.4rem;
+}
+
+/* ── Main ── */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--c-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--c-shadow);
+  padding: 1.5rem;
+}
+
+/* ── Buttons (shared) ── */
+.btn {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: 48px;
+  padding: 0.7rem 1.25rem;
+  transition: background 0.12s, transform 0.1s;
+}
+.btn:focus-visible { outline: 3px solid var(--c-focus); outline-offset: 3px; }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary { background: var(--c-header); color: #fff; }
+.btn-primary:hover { background: var(--c-focus); }
+
+.btn-secondary { background: #f0f0f0; color: var(--c-text); }
+.btn-secondary:hover { background: #e0e0e0; }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+}
+
+/* ── Resource-specific styles below ── */

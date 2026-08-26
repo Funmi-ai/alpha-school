@@ -53,11 +53,20 @@ function startOfWeekMonday(d) {
   return date;
 }
 
-// Show the target word highlighted in its own story, rather than
-// blanked out — easy to spot, and the question is "find a synonym
-// for this", not "recall this exact word".
-function highlightStory(w) {
-  const re = new RegExp('\\b' + w.word + '\\b', 'i');
+// Find whichever of a word's synonyms actually appears in its story
+// (stories use a synonym in context, not the base word itself).
+function findSynonymInStory(w) {
+  for (const syn of w.synonyms) {
+    const re = new RegExp('\\b' + syn.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '\\b', 'i');
+    if (re.test(w.story)) return syn;
+  }
+  return w.synonyms[0]; // fallback: first synonym
+}
+
+// Highlight the rich/tricky word in the story so the child can see it
+// in context before answering what it means.
+function highlightStory(w, syn) {
+  const re = new RegExp('\\b' + syn.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '\\b', 'i');
   return w.story.replace(re, m => `<mark>${safeText(m)}</mark>`);
 }
 
@@ -69,15 +78,15 @@ function buildWeek() {
     return { day: label, ...wordOfDayFor(d) };
   });
 
-  // Each question: correct answer is one of the target word's own
-  // synonyms; the 3 distractors are one synonym each from this
-  // week's other 3 words — keeps the whole quiz self-contained to
-  // the 4 words actually taught this week.
+  // Each question: the tricky rich word is highlighted in the Hodger story;
+  // the correct answer is the simple base word (e.g. "enormous" → "big");
+  // distractors are the other three days' simple base words, keeping the
+  // whole quiz self-contained to the words actually taught this week.
   return { weekWords, order: weekWords.map((w, i) => {
-    const correct = w.synonyms[Math.floor(Math.random() * w.synonyms.length)];
-    const others = weekWords.filter((_, j) => j !== i);
-    const distractors = others.map(o => o.synonyms[Math.floor(Math.random() * o.synonyms.length)]);
-    return { ...w, correct, options: shuffle([correct, ...distractors]) };
+    const richWord   = findSynonymInStory(w);          // the hard word shown in the sentence
+    const correct    = w.word;                          // the simple base word is the answer
+    const distractors = weekWords.filter((_, j) => j !== i).map(o => o.word);
+    return { ...w, richWord, correct, options: shuffle([correct, ...distractors]) };
   })};
 }
 
@@ -100,8 +109,8 @@ function renderQuestion() {
   const q = state.order[state.i];
   state.answered = false;
   $('day-tag').textContent = q.day + "'s word";
-  $('sentence').innerHTML = highlightStory(q);
-  $('question').textContent = `Which word means the same as "${q.word}"?`;
+  $('sentence').innerHTML = highlightStory(q, q.richWord);
+  $('question').textContent = `What does "${q.richWord}" mean?`;
   $('options').innerHTML = q.options.map(opt =>
     `<button class="opt" data-word="${safeText(opt)}">${safeText(opt)}</button>`
   ).join('');
@@ -123,7 +132,7 @@ function renderComplete() {
     score === total ? 'Perfect recap!' : score >= total / 2 ? 'Great recap!' : 'Good try!';
   $('badge').textContent = score === total ? '🏆' : score >= total / 2 ? '🏅' : '📖';
   $('recap').innerHTML = state.order.map(w =>
-    `<div class="recap-item"><span class="recap-word">${safeText(w.word)}</span><span class="recap-syn">${safeText(w.synonyms.slice(0, 3).join(', '))}</span></div>`
+    `<div class="recap-item"><span class="recap-word">${safeText(w.richWord)}</span><span class="recap-syn">= ${safeText(w.word)}</span></div>`
   ).join('');
 }
 
@@ -154,7 +163,7 @@ function answerQuiz(word) {
   });
 
   const fb = $('feedback');
-  fb.textContent = correct ? '🌟 Correct!' : `Not quite — "${q.correct}" also means "${q.word}".`;
+  fb.textContent = correct ? '🌟 Correct!' : `Not quite — "${q.richWord}" means "${q.correct}".`;
   fb.className = 'feedback ' + (correct ? 'correct' : 'incorrect');
 
   setTimeout(() => {

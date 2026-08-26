@@ -116,6 +116,9 @@
         <h1 class="site-title">🧾 Brownie Business Ledger</h1>
         <p class="site-subtitle">Tally up a real bake sale — what you spent, what you earned, what you kept.</p>
       </div>
+      <div class="header-buttons">
+        <a href="brownie-trailhead.html" class="btn btn-secondary" aria-label="Back to the trail map">🥾 Brownie Trailhead</a>
+      </div>
     </div>
   </header>
 
@@ -187,8 +190,13 @@
 
       <div id="tab-summary" class="tab-panel hidden" role="tabpanel" aria-labelledby="tab-btn-summary">
         <div class="ledger-section">
-          <h2>📊 Profit &amp; Loss</h2>
-          <p class="phase-intro-text">Where Income and Expenses come together.</p>
+          <h2>📅 All Days So Far</h2>
+          <p class="phase-intro-text">Every day logged, added together — this is the one that keeps growing.</p>
+          <div id="alltime-output"></div>
+        </div>
+        <div class="ledger-section">
+          <h2>📊 Today's Profit &amp; Loss</h2>
+          <p class="phase-intro-text">Where Income and Expenses come together, just for today.</p>
           <div id="pl-output"></div>
         </div>
       </div>
@@ -222,6 +230,10 @@
         ingredientBudget: 0, // pence, genuinely unset until typed in — depends on a real decision, not a game default
         sold: 0,
         free: 0,
+        // First-day starter template only — real ingredient state (including
+        // rows removed or zeroed out) carries forward from the previous day
+        // on reset. See the "Save & start a new day" handler below; don't
+        // reintroduce a hard reset to these here.
         ingredients: [
           { name: 'Flour', qty: 1, unitCost: 20 },
           { name: 'Sugar', qty: 1, unitCost: 20 },
@@ -355,6 +367,7 @@
       const cogs = ingredientsTotal();
       const gross = rev - cogs;
       const exp = expensesTotal();
+      const totalExpenses = cogs + exp; // ingredients + other, in one figure — what the Expenses tab adds up to
       const net = gross - exp;
       const units = state.sold + state.free;
       const saleNote = state.free
@@ -381,18 +394,64 @@
       return `
         <div class="pl-statement">
           <div class="pl-line pl-revenue">
-            <span>Revenue <span class="pl-note">(${safeText(saleNote)}, ${units} brownie${units === 1 ? '' : 's'} total)</span></span>
+            <span>💰 Income <span class="pl-note">(${safeText(saleNote)}, ${units} brownie${units === 1 ? '' : 's'} total)</span></span>
             <strong>${money(rev)}</strong>
           </div>
           <div class="pl-section-label">Cost of ingredients</div>
           ${cogsLines}
           <div class="pl-line pl-subtotal"><span>Gross Profit</span><strong>${money(gross)}</strong></div>
           ${expBlock}
+          <div class="pl-line pl-subtotal">
+            <span>🌾 Total Expenses <span class="pl-note">(ingredients + other)</span></span>
+            <strong>−${money(totalExpenses)}</strong>
+          </div>
           <div class="pl-line pl-total ${net >= 0 ? 'is-profit' : 'is-loss'}">
-            <span>${net >= 0 ? 'Net Profit' : 'Net Loss'}</span><strong>${money(Math.abs(net))}</strong>
+            <span>${net >= 0 ? 'Net Profit' : 'Net Loss'} <span class="pl-note">(Income − Expenses)</span></span>
+            <strong>${money(Math.abs(net))}</strong>
           </div>
         </div>
         <p class="feedback-text">${tip}</p>`;
+    }
+
+    /** Today (if it has anything real in it yet) plus every archived day —
+     * the set "All Days So Far" rolls up. Today isn't in `history` until
+     * "Save & start a new day" archives it, so it has to be added in here
+     * or the running total would always lag one day behind. */
+    function allEntries() {
+      return hasRealData(state) ? [state, ...history] : history.slice();
+    }
+
+    function allTimeHTML() {
+      const entries = allEntries();
+      if (entries.length === 0) {
+        return `<p class="phase-intro-text">Nothing logged yet — fill in a day and it'll start adding up here.</p>`;
+      }
+      const income = entries.reduce((s, e) => s + revenueOf(e), 0);
+      const expenses = entries.reduce((s, e) => s + ingredientsTotalOf(e) + expensesTotalOf(e), 0);
+      const net = income - expenses;
+      const dayWord = `${entries.length} day${entries.length === 1 ? '' : 's'}`;
+      return `
+        <div class="pl-statement">
+          <div class="pl-line pl-revenue">
+            <span>💰 Total Income <span class="pl-note">(${dayWord})</span></span>
+            <strong>${money(income)}</strong>
+          </div>
+          <div class="pl-line pl-subtotal">
+            <span>🌾 Total Expenses <span class="pl-note">(ingredients + other)</span></span>
+            <strong>−${money(expenses)}</strong>
+          </div>
+          <div class="pl-line pl-total ${net >= 0 ? 'is-profit' : 'is-loss'}">
+            <span>${net >= 0 ? 'Net Profit' : 'Net Loss'} <span class="pl-note">(all days so far)</span></span>
+            <strong>${money(Math.abs(net))}</strong>
+          </div>
+        </div>`;
+    }
+
+    /** The two summary blocks (today's P&L and the all-time rollup) always
+     * change together — today's numbers feed straight into the total. */
+    function renderPL() {
+      $('pl-output').innerHTML = plHTML();
+      $('alltime-output').innerHTML = allTimeHTML();
     }
 
     /** How much of the ingredient budget has been spent — text + colour-coded
@@ -447,7 +506,7 @@
       $('free-input').value = state.free;
       $('ingredient-rows').innerHTML = rowListHTML(state.ingredients);
       $('expense-rows').innerHTML = rowListHTML(state.expenses);
-      $('pl-output').innerHTML = plHTML();
+      renderPL();
       renderBudgetStatus();
       save();
     }
@@ -457,23 +516,28 @@
       if (history.length === 0) {
         summaryEl.textContent = "Nothing logged yet — this fills up each time you start a new day.";
         $('history-table').innerHTML = '';
-        return;
-      }
-      const lifetimeNet = history.reduce((s, e) => s + netOf(e), 0);
-      summaryEl.textContent =
-        `${history.length} sale${history.length === 1 ? '' : 's'} logged · lifetime ${lifetimeNet >= 0 ? 'profit' : 'loss'}: ${money(Math.abs(lifetimeNet))}`;
+      } else {
+        // Just the count here — the actual running total lives in "All Days
+        // So Far" on the Summary tab, which (unlike this list) also includes
+        // whichever day is currently open. Two "lifetime" figures that could
+        // disagree would be worse than one clear one.
+        summaryEl.textContent = `${history.length} day${history.length === 1 ? '' : 's'} logged below.`;
 
-      $('history-table').innerHTML = `<div class="history-list">${history.map((entry, i) => {
-        const net = netOf(entry);
-        return `
-          <div class="history-row">
-            <span class="history-date">${safeText(entry.date || 'Undated')}</span>
-            <span class="history-rev">${money(revenueOf(entry))} revenue</span>
-            <span class="history-net ${net >= 0 ? 'is-profit' : 'is-loss'}">${net >= 0 ? '+' : '−'}${money(Math.abs(net))}</span>
-            <button type="button" class="row-remove-btn" data-history-action="download" data-history-index="${i}" aria-label="Download this record">⬇️</button>
-            <button type="button" class="row-remove-btn" data-history-action="delete" data-history-index="${i}" aria-label="Remove from log">✕</button>
-          </div>`;
-      }).join('')}</div>`;
+        $('history-table').innerHTML = `<div class="history-list">${history.map((entry, i) => {
+          const net = netOf(entry);
+          return `
+            <div class="history-row">
+              <span class="history-date">${safeText(entry.date || 'Undated')}</span>
+              <span class="history-rev">${money(revenueOf(entry))} income</span>
+              <span class="history-net ${net >= 0 ? 'is-profit' : 'is-loss'}">${net >= 0 ? '+' : '−'}${money(Math.abs(net))}</span>
+              <button type="button" class="row-remove-btn" data-history-action="download" data-history-index="${i}" aria-label="Download this record">⬇️</button>
+              <button type="button" class="row-remove-btn" data-history-action="delete" data-history-index="${i}" aria-label="Remove from log">✕</button>
+            </div>`;
+        }).join('')}</div>`;
+      }
+      // History changes (archiving a new day, deleting an old one) affect
+      // the all-time total even when nothing about *today* changed.
+      $('alltime-output').innerHTML = allTimeHTML();
     }
 
     function wireRowList(containerId, list, onLiveChange) {
@@ -492,7 +556,7 @@
         // input itself keeps its own typed value.
         const totalEl = row.querySelector('.row-total');
         if (totalEl) totalEl.textContent = money(lineTotal(list[i]));
-        $('pl-output').innerHTML = plHTML();
+        renderPL();
         if (onLiveChange) onLiveChange();
         save();
       });
@@ -525,6 +589,7 @@
       const cogs = ingredientsTotalOf(entry);
       const gross = rev - cogs;
       const exp = expensesTotalOf(entry);
+      const totalExpenses = cogs + exp;
       const net = gross - exp;
 
       let csv = '';
@@ -548,10 +613,11 @@
       else entry.expenses.forEach(i => { csv += csvRow([i.name || '', i.qty, money(i.unitCost), money(lineTotal(i))]); });
       csv += csvRow([]);
       csv += csvRow(['Profit & Loss']);
-      csv += csvRow(['Revenue', money(rev)]);
+      csv += csvRow(['Income', money(rev)]);
       csv += csvRow(['Cost of Ingredients', money(cogs)]);
       csv += csvRow(['Gross Profit', money(gross)]);
       csv += csvRow(['Other Expenses', money(exp)]);
+      csv += csvRow(['Total Expenses', money(totalExpenses)]);
       csv += csvRow([net >= 0 ? 'Net Profit' : 'Net Loss', money(Math.abs(net))]);
       return csv;
     }
@@ -582,8 +648,8 @@
       $('date-input').addEventListener('change', (e) => { state.date = e.target.value; save(); });
       $('price-input').addEventListener('change', (e) => { state.price = poundsToPence(e.target.value); render(); });
       $('budget-input').addEventListener('change', (e) => { state.ingredientBudget = poundsToPence(e.target.value); render(); });
-      $('sold-input').addEventListener('input', (e) => { state.sold = Math.max(0, parseInt(e.target.value, 10) || 0); $('pl-output').innerHTML = plHTML(); save(); });
-      $('free-input').addEventListener('input', (e) => { state.free = Math.max(0, parseInt(e.target.value, 10) || 0); $('pl-output').innerHTML = plHTML(); save(); });
+      $('sold-input').addEventListener('input', (e) => { state.sold = Math.max(0, parseInt(e.target.value, 10) || 0); renderPL(); save(); });
+      $('free-input').addEventListener('input', (e) => { state.free = Math.max(0, parseInt(e.target.value, 10) || 0); renderPL(); save(); });
 
       wireRowList('ingredient-rows', state.ingredients, renderBudgetStatus);
       wireRowList('expense-rows', state.expenses);
@@ -598,8 +664,15 @@
         // destructive, it's "finish today's page and start a fresh one."
         archiveCurrentIfNeeded();
         const carriedBudget = state.ingredientBudget; // usually the same budget every time — no need to retype it
+        // Carry yesterday's actual ingredient list forward too — including
+        // any row that was removed or set to £0 (already-stocked leftovers,
+        // a swapped-out flavour). Without this, defaultState()'s starter
+        // four rows quietly came back at full price every single day, which
+        // undid exactly the edits this is meant to preserve.
+        const carriedIngredients = JSON.parse(JSON.stringify(state.ingredients));
         state = defaultState();
         state.ingredientBudget = carriedBudget;
+        state.ingredients = carriedIngredients;
         render();
         renderHistory();
       });
