@@ -307,6 +307,87 @@ const COLOURS = [
 ];
 
 /* ═══════════════════════════════════════════════════════════════
+   OBJECTS DATA  — everyday things: home, school, garden, table
+═══════════════════════════════════════════════════════════════ */
+
+const OBJECTS = [
+  // Home
+  { id: 'table',      emoji: '🪑', fr: 'la table',        en: 'table',        group: 'maison' },
+  { id: 'chaise',     emoji: '🪑', fr: 'la chaise',       en: 'chair',        group: 'maison' },
+  { id: 'lit',        emoji: '🛏️', fr: 'le lit',          en: 'bed',          group: 'maison' },
+  { id: 'fenetre',    emoji: '🪟', fr: 'la fenêtre',      en: 'window',       group: 'maison' },
+  { id: 'porte',      emoji: '🚪', fr: 'la porte',        en: 'door',         group: 'maison' },
+  { id: 'lampe',      emoji: '💡', fr: 'la lampe',        en: 'lamp',         group: 'maison' },
+  { id: 'canape',     emoji: '🛋️', fr: 'le canapé',       en: 'sofa',         group: 'maison' },
+  { id: 'horloge',    emoji: '🕐', fr: "l'horloge",       en: 'clock',        group: 'maison' },
+  { id: 'television', emoji: '📺', fr: 'la télévision',   en: 'television',   group: 'maison' },
+  { id: 'telephone',  emoji: '📱', fr: 'le téléphone',    en: 'phone',        group: 'maison' },
+  // Clothes & accessories
+  { id: 'chapeau',    emoji: '👒', fr: 'le chapeau',      en: 'hat',          group: 'habits' },
+  { id: 'chaussure',  emoji: '👟', fr: 'la chaussure',    en: 'shoe',         group: 'habits' },
+  { id: 'sac',        emoji: '👜', fr: 'le sac',          en: 'bag',          group: 'habits' },
+  { id: 'lunettes',   emoji: '👓', fr: 'les lunettes',    en: 'glasses',      group: 'habits' },
+  { id: 'parapluie',  emoji: '☂️', fr: 'le parapluie',    en: 'umbrella',     group: 'habits' },
+  // School
+  { id: 'livre',      emoji: '📚', fr: 'le livre',        en: 'book',         group: 'ecole'  },
+  { id: 'stylo',      emoji: '🖊️', fr: 'le stylo',        en: 'pen',          group: 'ecole'  },
+  { id: 'crayon',     emoji: '✏️', fr: 'le crayon',       en: 'pencil',       group: 'ecole'  },
+  { id: 'cahier',     emoji: '📓', fr: 'le cahier',       en: 'exercise book',group: 'ecole'  },
+  { id: 'cartable',   emoji: '🎒', fr: 'le cartable',     en: 'school bag',   group: 'ecole'  },
+  // Table / kitchen
+  { id: 'tasse',      emoji: '☕', fr: 'la tasse',        en: 'cup',          group: 'cuisine'},
+  { id: 'assiette',   emoji: '🍽️', fr: "l'assiette",      en: 'plate',        group: 'cuisine'},
+  { id: 'fourchette', emoji: '🍴', fr: 'la fourchette',   en: 'fork',         group: 'cuisine'},
+  { id: 'cuillere',   emoji: '🥄', fr: 'la cuillère',     en: 'spoon',        group: 'cuisine'},
+  { id: 'verre',      emoji: '🥛', fr: 'le verre',        en: 'glass',        group: 'cuisine'},
+  { id: 'couteau',    emoji: '🔪', fr: 'le couteau',      en: 'knife',        group: 'cuisine'},
+  // Garden / outdoors
+  { id: 'arbre',      emoji: '🌳', fr: "l'arbre",         en: 'tree',         group: 'jardin' },
+  { id: 'fleur',      emoji: '🌸', fr: 'la fleur',        en: 'flower',       group: 'jardin' },
+  { id: 'buisson',    emoji: '🌿', fr: 'le buisson',      en: 'bush',         group: 'jardin' },
+  { id: 'maison',     emoji: '🏠', fr: 'la maison',       en: 'house',        group: 'jardin' },
+  { id: 'ballon',     emoji: '⚽', fr: 'le ballon',       en: 'ball',         group: 'jardin' },
+];
+
+const OBJECT_FILTERS = [
+  { id: 'all',     label: 'Tout',    emoji: '⭐' },
+  { id: 'maison',  label: 'Maison',  emoji: '🏠' },
+  { id: 'habits',  label: 'Habits',  emoji: '👒' },
+  { id: 'ecole',   label: 'École',   emoji: '📚' },
+  { id: 'cuisine', label: 'Cuisine', emoji: '🍽️' },
+  { id: 'jardin',  label: 'Jardin',  emoji: '🌳' },
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   PHRASES DATA — French sentence starters for ages 6–9
+   fr = full example sentence (for audio + TTS)
+   verb_fr / verb_en = the pattern shown on the card
+═══════════════════════════════════════════════════════════════ */
+
+const PHRASES = [
+  { id: 'jaime',        emoji: '❤️',  fr: "J'aime les animaux !",        en: "I like animals!",       verb_fr: "J'aime...",         verb_en: "I like..."          },
+  { id: 'jadore',       emoji: '🥰',  fr: "J'adore le chocolat !",        en: "I love chocolate!",     verb_fr: "J'adore...",        verb_en: "I love..."          },
+  { id: 'je_joue',      emoji: '⚽',  fr: "Je joue au foot !",            en: "I play football!",      verb_fr: "Je joue...",        verb_en: "I play..."          },
+  { id: 'jecoute',      emoji: '🎵',  fr: "J'écoute de la musique !",     en: "I listen to music!",    verb_fr: "J'écoute...",       verb_en: "I listen..."        },
+  { id: 'je_mange',     emoji: '🍎',  fr: "Je mange une pomme !",         en: "I eat an apple!",       verb_fr: "Je mange...",       verb_en: "I eat..."           },
+  { id: 'je_bois',      emoji: '🥛',  fr: "Je bois du lait !",            en: "I drink milk!",         verb_fr: "Je bois...",        verb_en: "I drink..."         },
+  { id: 'je_lis',       emoji: '📚',  fr: "Je lis un livre !",            en: "I read a book!",        verb_fr: "Je lis...",         verb_en: "I read..."          },
+  { id: 'je_dors',      emoji: '😴',  fr: "Je dors dans mon lit !",       en: "I sleep in my bed!",    verb_fr: "Je dors...",        verb_en: "I sleep..."         },
+  { id: 'je_cours',     emoji: '🏃',  fr: "Je cours vite !",              en: "I run fast!",           verb_fr: "Je cours...",       verb_en: "I run..."           },
+  { id: 'je_chante',    emoji: '🎤',  fr: "Je chante une chanson !",      en: "I sing a song!",        verb_fr: "Je chante...",      verb_en: "I sing..."          },
+  { id: 'je_dessine',   emoji: '🎨',  fr: "Je dessine une maison !",      en: "I draw a house!",       verb_fr: "Je dessine...",     verb_en: "I draw..."          },
+  { id: 'je_regarde',   emoji: '👀',  fr: "Je regarde les étoiles !",     en: "I watch the stars!",    verb_fr: "Je regarde...",     verb_en: "I watch..."         },
+  { id: 'je_nage',      emoji: '🏊',  fr: "Je nage dans la piscine !",    en: "I swim in the pool!",   verb_fr: "Je nage...",        verb_en: "I swim..."          },
+  { id: 'je_saute',     emoji: '🐸',  fr: "Je saute très haut !",         en: "I jump very high!",     verb_fr: "Je saute...",       verb_en: "I jump..."          },
+  { id: 'je_parle',     emoji: '💬',  fr: "Je parle français !",          en: "I speak French!",       verb_fr: "Je parle...",       verb_en: "I speak..."         },
+  { id: 'je_marche',    emoji: '🚶',  fr: "Je marche au parc !",          en: "I walk to the park!",   verb_fr: "Je marche...",      verb_en: "I walk..."          },
+  { id: 'je_veux',      emoji: '🙋',  fr: "Je veux une glace !",          en: "I want an ice cream!",  verb_fr: "Je veux...",        verb_en: "I want..."          },
+  { id: 'cest',         emoji: '⭐',  fr: "C'est un lion !",              en: "It is a lion!",         verb_fr: "C'est...",          verb_en: "It is..."           },
+  { id: 'ilya',         emoji: '🔍',  fr: "Il y a un chat !",             en: "There is a cat!",       verb_fr: "Il y a...",         verb_en: "There is..."        },
+  { id: 'je_naime_pas', emoji: '🙅',  fr: "Je n'aime pas les légumes !",  en: "I don't like vegetables!", verb_fr: "Je n'aime pas...", verb_en: "I don't like..." },
+];
+
+/* ═══════════════════════════════════════════════════════════════
    PHONICS DATA
 ═══════════════════════════════════════════════════════════════ */
 
@@ -362,13 +443,15 @@ const PHONICS = [
 ═══════════════════════════════════════════════════════════════ */
 
 const CAT_CFG = {
-  vehicles: { labelFr: 'Les Véhicules', emoji: '🏎️', quizPrompt: 'Quel est ce véhicule ?' },
-  animals:  { labelFr: 'Les Animaux',   emoji: '🦁', quizPrompt: 'Quel est cet animal ?' },
-  colours:  { labelFr: 'Les Couleurs',  emoji: '🎨', quizPrompt: 'Quelle est cette couleur ?' },
-  numbers:  { labelFr: 'Les Chiffres',  emoji: '🔢', quizPrompt: 'Quel est ce chiffre ?' },
-  body:     { labelFr: 'Le Corps',      emoji: '💪', quizPrompt: 'Quelle est cette partie ?' },
-  family:   { labelFr: 'La Famille',    emoji: '👨‍👩‍👧', quizPrompt: 'Qui est-ce ?' },
-  food:     { labelFr: 'La Nourriture', emoji: '🍎', quizPrompt: "Qu'est-ce que c'est ?" },
+  vehicles: { labelFr: 'Les Véhicules',  emoji: '🏎️',  quizPrompt: 'Quel est ce véhicule ?' },
+  animals:  { labelFr: 'Les Animaux',    emoji: '🦁',  quizPrompt: 'Quel est cet animal ?' },
+  colours:  { labelFr: 'Les Couleurs',   emoji: '🎨',  quizPrompt: 'Quelle est cette couleur ?' },
+  numbers:  { labelFr: 'Les Chiffres',   emoji: '🔢',  quizPrompt: 'Quel est ce chiffre ?' },
+  body:     { labelFr: 'Le Corps',       emoji: '💪',  quizPrompt: 'Quelle est cette partie ?' },
+  family:   { labelFr: 'La Famille',     emoji: '👨‍👩‍👧', quizPrompt: 'Qui est-ce ?' },
+  food:     { labelFr: 'La Nourriture',  emoji: '🍎',  quizPrompt: "Qu'est-ce que c'est ?" },
+  objects:  { labelFr: 'Les Objets',     emoji: '🏠',  quizPrompt: "Qu'est-ce que c'est ?" },
+  phrases:  { labelFr: 'Les Phrases',    emoji: '💬',  quizPrompt: 'Quelle phrase ?', noQuiz: true },
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -388,6 +471,7 @@ let state = {
   quizIndex:     0,
   quizScore:     0,
   quizAnswered:  false,
+  objectFilter:  'all',
   // modal
   modalItem:     null,
   modalCat:      null,
@@ -429,6 +513,8 @@ function getAllItems(cat) {
   if (cat === 'body')     return BODY_PARTS;
   if (cat === 'family')   return FAMILY;
   if (cat === 'food')     return FOOD;
+  if (cat === 'objects')  return OBJECTS;
+  if (cat === 'phrases')  return PHRASES;
   return [];
 }
 
@@ -442,6 +528,11 @@ function getFilteredItems() {
     return state.animalFilter === 'all'
       ? ANIMALS
       : ANIMALS.filter(a => a.journey === state.animalFilter);
+  }
+  if (state.category === 'objects') {
+    return state.objectFilter === 'all'
+      ? OBJECTS
+      : OBJECTS.filter(o => o.group === state.objectFilter);
   }
   return getAllItems(state.category);
 }
@@ -1320,18 +1411,20 @@ function openParentSettings() {
 function homeCatButtons() {
   if (state.level === 1) {
     return [
-      planetCard('p-earth',  'earth',  '🦁', 'Les Animaux', 'Animals',          'open-cat', 'data-cat="animals"'),
-      planetCard('p-metal',  'metal',  '🏎️', 'Le Garage',   'Vehicles',         'open-cat', 'data-cat="vehicles"'),
-      planetCard('p-saturn', 'saturn', '🎨', 'Les Couleurs','Colours',           'open-cat', 'data-cat="colours"'),
-      planetFloat('p-astro',               '🧑‍🚀', 'Parler',     'Say it in French!', 'open-practice'),
+      planetCard('p-earth',  'earth',  '🦁', 'Les Animaux',  'Animals',          'open-cat', 'data-cat="animals"'),
+      planetCard('p-metal',  'metal',  '🏎️', 'Le Garage',    'Vehicles',         'open-cat', 'data-cat="vehicles"'),
+      planetCard('p-saturn', 'saturn', '🎨', 'Les Couleurs', 'Colours',          'open-cat', 'data-cat="colours"'),
+      planetCard('p-coral',  'coral',  '🏠', 'Les Objets',   'Things',           'open-cat', 'data-cat="objects"'),
+      planetFloat('p-astro',               '🧑‍🚀', 'Parler',      'Say it in French!', 'open-practice'),
     ].join('');
   }
   return [
-    planetCard('p-jupiter', 'jupiter', '🔢', 'Les Chiffres', 'Numbers',   'open-cat', 'data-cat="numbers"'),
+    planetCard('p-jupiter', 'jupiter', '🔢', 'Les Chiffres', 'Numbers',    'open-cat', 'data-cat="numbers"'),
     planetCard('p-ice',     'ice',     '💪', 'Le Corps',     'Body parts', 'open-cat', 'data-cat="body"'),
-    planetCard('p-neptune', 'neptune', '👨‍👩‍👧', 'La Famille',  'Family',    'open-cat', 'data-cat="family"'),
+    planetCard('p-neptune', 'neptune', '👨‍👩‍👧', 'La Famille',   'Family',    'open-cat', 'data-cat="family"'),
     planetCard('p-forest',  'forest',  '🍎', 'La Nourriture','Food',       'open-cat', 'data-cat="food"'),
-    planetFloat('p-astro',              '🧑‍🚀', 'Parler',      'Say it in French!', 'open-practice'),
+    planetCard('p-cyan',    'cyan',    '💬', 'Les Phrases',  'Phrases',    'open-cat', 'data-cat="phrases"'),
+    planetFloat('p-astro',               '🧑‍🚀', 'Parler',      'Say it in French!', 'open-practice'),
   ].join('');
 }
 
@@ -1387,6 +1480,12 @@ const PLANET_SVG = {
   neptune: `<svg viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="na" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#ede9fe"/><stop offset="22%" stop-color="#a78bfa"/><stop offset="55%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#2e1065"/></radialGradient><radialGradient id="ns" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.62)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="nh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.42)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="nc"><circle cx="80" cy="60" r="38"/></clipPath><clipPath id="nrb"><rect x="0" y="0" width="160" height="60"/></clipPath><clipPath id="nrf"><rect x="0" y="60" width="160" height="60"/></clipPath></defs><g clip-path="url(#nrb)"><ellipse cx="80" cy="60" rx="70" ry="10" fill="none" stroke="rgba(221,214,254,0.18)" stroke-width="3"/><ellipse cx="80" cy="60" rx="62" ry="8" fill="none" stroke="rgba(221,214,254,0.30)" stroke-width="4"/><ellipse cx="80" cy="60" rx="54" ry="7" fill="none" stroke="rgba(196,181,253,0.20)" stroke-width="2.5"/></g><circle cx="80" cy="60" r="38" fill="url(#na)"/><g clip-path="url(#nc)"><ellipse cx="72" cy="52" rx="10" ry="6" fill="rgba(255,255,255,0.16)" transform="rotate(-12,72,52)"/><ellipse cx="90" cy="66" rx="8" ry="5" fill="rgba(255,255,255,0.12)" transform="rotate(8,90,66)"/></g><circle cx="80" cy="60" r="38" fill="url(#ns)"/><circle cx="80" cy="60" r="38" fill="url(#nh)"/><g clip-path="url(#nrf)"><ellipse cx="80" cy="60" rx="54" ry="7" fill="none" stroke="rgba(196,181,253,0.24)" stroke-width="2.5"/><ellipse cx="80" cy="60" rx="62" ry="8" fill="none" stroke="rgba(221,214,254,0.36)" stroke-width="4"/><ellipse cx="80" cy="60" rx="70" ry="10" fill="none" stroke="rgba(221,214,254,0.22)" stroke-width="3"/></g></svg>`,
 
   forest: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fa" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(16,185,129,0.32)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="fb" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#99f6e4"/><stop offset="22%" stop-color="#2dd4bf"/><stop offset="55%" stop-color="#0d9488"/><stop offset="100%" stop-color="#042f2e"/></radialGradient><radialGradient id="fs" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.6)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="fh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.44)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="fc"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#fa)"/><circle cx="60" cy="60" r="43" fill="url(#fb)"/><g clip-path="url(#fc)"><ellipse cx="55" cy="55" rx="18" ry="22" fill="rgba(5,150,105,0.55)" transform="rotate(-15,55,55)"/><ellipse cx="74" cy="65" rx="14" ry="16" fill="rgba(6,78,59,0.60)" transform="rotate(10,74,65)"/><ellipse cx="42" cy="70" rx="12" ry="14" fill="rgba(5,150,105,0.48)" transform="rotate(5,42,70)"/><ellipse cx="65" cy="38" rx="9" ry="11" fill="rgba(4,120,87,0.45)" transform="rotate(-5,65,38)"/><ellipse cx="60" cy="45" rx="43" ry="10" fill="rgba(153,246,228,0.12)"/></g><circle cx="60" cy="60" r="43" fill="url(#fs)"/><circle cx="60" cy="60" r="43" fill="url(#fh)"/></svg>`,
+
+  // Objects planet — warm terracotta rocky world with geometric surface markings
+  coral: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="coa" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(234,88,12,0.32)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="cob" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#fed7aa"/><stop offset="22%" stop-color="#fb923c"/><stop offset="55%" stop-color="#ea580c"/><stop offset="100%" stop-color="#7c2d12"/></radialGradient><radialGradient id="cos" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.62)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="coh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.45)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="cocc"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#coa)"/><circle cx="60" cy="60" r="43" fill="url(#cob)"/><g clip-path="url(#cocc)"><rect x="30" y="44" width="24" height="18" rx="3" fill="rgba(124,45,18,0.38)"/><rect x="62" y="52" width="18" height="24" rx="3" fill="rgba(124,45,18,0.30)"/><rect x="38" y="68" width="14" height="14" rx="2" fill="rgba(124,45,18,0.32)"/><rect x="56" y="36" width="12" height="10" rx="2" fill="rgba(253,186,116,0.25)"/><ellipse cx="60" cy="25" rx="12" ry="5" fill="rgba(255,255,255,0.3)"/></g><circle cx="60" cy="60" r="43" fill="url(#cos)"/><circle cx="60" cy="60" r="43" fill="url(#coh)"/></svg>`,
+
+  // Phrases planet — bright cyan-blue with speech bubble wisps
+  cyan: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="cya" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(6,182,212,0.35)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="cyb" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#cffafe"/><stop offset="22%" stop-color="#22d3ee"/><stop offset="55%" stop-color="#0891b2"/><stop offset="100%" stop-color="#083344"/></radialGradient><radialGradient id="cys" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.60)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="cyh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.50)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="cycc"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#cya)"/><circle cx="60" cy="60" r="43" fill="url(#cyb)"/><g clip-path="url(#cycc)"><ellipse cx="48" cy="46" rx="14" ry="8" rx="14" ry="8" fill="rgba(255,255,255,0.18)" transform="rotate(-8,48,46)"/><ellipse cx="72" cy="58" rx="12" ry="7" fill="rgba(255,255,255,0.14)" transform="rotate(6,72,58)"/><ellipse cx="52" cy="68" rx="10" ry="6" fill="rgba(255,255,255,0.16)" transform="rotate(-4,52,68)"/><ellipse cx="60" cy="25" rx="14" ry="5" fill="rgba(255,255,255,0.35)"/><ellipse cx="60" cy="95" rx="9" ry="4" fill="rgba(255,255,255,0.22)"/></g><circle cx="60" cy="60" r="43" fill="url(#cys)"/><circle cx="60" cy="60" r="43" fill="url(#cyh)"/></svg>`,
 };
 
 function planetCard(cls, svgKey, emoji, fr, en, action, extra = '') {
@@ -1534,6 +1633,17 @@ function renderCategory(cat) {
           </button>
         `).join('')}
       </div>`;
+  } else if (cat === 'objects') {
+    filterHtml = `
+      <div class="filter-row" role="group" aria-label="Filter by room">
+        ${OBJECT_FILTERS.map(f => `
+          <button class="filter-chip${state.objectFilter === f.id ? ' active' : ''}"
+            data-action="filter-o" data-filter="${safeText(f.id)}"
+            aria-pressed="${state.objectFilter === f.id}">
+            ${f.emoji} ${safeText(f.label)}
+          </button>
+        `).join('')}
+      </div>`;
   }
 
   $('app').innerHTML = `
@@ -1541,7 +1651,7 @@ function renderCategory(cat) {
       <header class="cat-header ${cat}">
         <button class="back-btn" data-action="go-home" aria-label="Back to home">←</button>
         <h2 class="cat-title">${cfg.emoji} ${safeText(cfg.labelFr)}</h2>
-        <button class="quiz-btn" data-action="start-quiz" aria-label="Start quiz">Quiz ⚡</button>
+        ${cfg.noQuiz ? '<div style="width:64px"></div>' : '<button class="quiz-btn" data-action="start-quiz" aria-label="Start quiz">Quiz ⚡</button>'}
       </header>
 
       ${filterHtml}
@@ -1600,8 +1710,16 @@ function buildSingleCard(slideDir) {
       <div class="card-vehicle-row" aria-hidden="true">${item.vehicleEmoji}</div>`;
   } else if (cat === 'numbers') {
     visual = `<div class="card-numeral" aria-label="${safeText(item.en)}">${item.num}</div>`;
+  } else if (cat === 'phrases') {
+    visual = `
+      <div class="card-phrase-display">
+        <div class="card-phrase-emoji">${item.emoji}</div>
+        <div class="card-phrase-verb" lang="fr">${safeText(item.verb_fr)}</div>
+        <div class="card-phrase-verb-en">${safeText(item.verb_en)}</div>
+        <div class="card-phrase-example" lang="fr">${safeText(item.fr)}</div>
+      </div>`;
   } else {
-    // vehicles, animals, food, body, family — photo with emoji fallback
+    // vehicles, animals, food, body, family, objects — photo with emoji fallback
     const imgSrc = `images/${safeText(item.id)}.jpg`;
     visual = `
       <div class="card-img-wrap" style="--bg-img:url('${imgSrc}')">
@@ -1971,6 +2089,7 @@ function handleClick(e) {
       zoomIntoPlanet(btn, () => {
         state.vehicleFilter = 'all';
         state.animalFilter  = 'all';
+        state.objectFilter  = 'all';
         renderCategory(btn.dataset.cat);
       });
       break;
@@ -1999,6 +2118,11 @@ function handleClick(e) {
       break;
     case 'filter-a':
       state.animalFilter = btn.dataset.filter;
+      state.cardIndex = 0;
+      renderCategory(state.category);
+      break;
+    case 'filter-o':
+      state.objectFilter = btn.dataset.filter;
       state.cardIndex = 0;
       renderCategory(state.category);
       break;
