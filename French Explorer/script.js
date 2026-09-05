@@ -400,42 +400,42 @@ const PHONICS_GROUPS = [
 ];
 
 const PHONICS = [
-  // Simple vowels
-  { group: 'vowels',    grapheme: 'a',    tts: 'a',    hint: 'ah',   ex: 'chat'     },
-  { group: 'vowels',    grapheme: 'e',    tts: 'e',    hint: 'uh',   ex: 'le'       },
-  { group: 'vowels',    grapheme: 'é',    tts: 'é',    hint: 'ay',   ex: 'été'      },
-  { group: 'vowels',    grapheme: 'è',    tts: 'è',    hint: 'eh',   ex: 'mère'     },
-  { group: 'vowels',    grapheme: 'i',    tts: 'i',    hint: 'ee',   ex: 'ami'      },
-  { group: 'vowels',    grapheme: 'o',    tts: 'o',    hint: 'oh',   ex: 'mot'      },
-  { group: 'vowels',    grapheme: 'u',    tts: 'u',    hint: 'ew',   ex: 'lune'     },
+  // Simple vowels — tts repeated 3× for clarity; id used for pre-recorded .m4a
+  { id: 'ph_a',   group: 'vowels',    grapheme: 'a',    tts: 'a, a, a',          hint: 'ah',   ex: 'chat'     },
+  { id: 'ph_e',   group: 'vowels',    grapheme: 'e',    tts: 'e, e, e',          hint: 'uh',   ex: 'le'       },
+  { id: 'ph_e1',  group: 'vowels',    grapheme: 'é',    tts: 'é, é, é',          hint: 'ay',   ex: 'été'      },
+  { id: 'ph_e2',  group: 'vowels',    grapheme: 'è',    tts: 'è, è, è',          hint: 'eh',   ex: 'mère'     },
+  { id: 'ph_i',   group: 'vowels',    grapheme: 'i',    tts: 'i, i, i',          hint: 'ee',   ex: 'ami'      },
+  { id: 'ph_o',   group: 'vowels',    grapheme: 'o',    tts: 'o, o, o',          hint: 'oh',   ex: 'mot'      },
+  { id: 'ph_u',   group: 'vowels',    grapheme: 'u',    tts: 'u, u, u',          hint: 'ew',   ex: 'lune'     },
   // Vowel combinations
-  { group: 'combos',    grapheme: 'ou',   tts: 'ou',   hint: 'oo',   ex: 'loup'     },
-  { group: 'combos',    grapheme: 'au',   tts: 'au',   hint: 'oh',   ex: 'bateau'   },
-  { group: 'combos',    grapheme: 'eau',  tts: 'eau',  hint: 'oh',   ex: 'eau'      },
-  { group: 'combos',    grapheme: 'eu',   tts: 'eu',   hint: 'uh',   ex: 'feu'      },
-  { group: 'combos',    grapheme: 'ai',   tts: 'ai',   hint: 'ay',   ex: 'maison'   },
-  { group: 'combos',    grapheme: 'oi',   tts: 'oi',   hint: 'wa',   ex: 'voiture'  },
+  { id: 'ph_ou',  group: 'combos',    grapheme: 'ou',   tts: 'ou, ou, ou',       hint: 'oo',   ex: 'loup'     },
+  { id: 'ph_au',  group: 'combos',    grapheme: 'au',   tts: 'au, au, au',       hint: 'oh',   ex: 'bateau'   },
+  { id: 'ph_eau', group: 'combos',    grapheme: 'eau',  tts: 'eau, eau, eau',    hint: 'oh',   ex: 'eau'      },
+  { id: 'ph_eu',  group: 'combos',    grapheme: 'eu',   tts: 'eu, eu, eu',       hint: 'uh',   ex: 'feu'      },
+  { id: 'ph_ai',  group: 'combos',    grapheme: 'ai',   tts: 'ai, ai, ai',       hint: 'ay',   ex: 'maison'   },
+  { id: 'ph_oi',  group: 'combos',    grapheme: 'oi',   tts: 'oi, oi, oi',       hint: 'wa',   ex: 'voiture'  },
   // Nasal vowels
-  { group: 'nasal',     grapheme: 'an',   tts: 'an',   hint: 'ahn',  ex: 'enfant'   },
-  { group: 'nasal',     grapheme: 'en',   tts: 'en',   hint: 'ahn',  ex: 'enfant'   },
-  { group: 'nasal',     grapheme: 'in',   tts: 'in',   hint: 'an',   ex: 'lapin'    },
-  { group: 'nasal',     grapheme: 'on',   tts: 'on',   hint: 'ohn',  ex: 'lion'     },
-  { group: 'nasal',     grapheme: 'un',   tts: 'un',   hint: 'uhn',  ex: 'un'       },
-  // Special consonants (carrier syllable so TTS produces the right onset sound)
-  { group: 'special',   grapheme: 'ch',   tts: 'cha',  hint: 'sh',   ex: 'chat'     },
-  { group: 'special',   grapheme: 'j',    tts: 'ja',   hint: 'zh',   ex: 'jardin'   },
-  { group: 'special',   grapheme: 'gn',   tts: 'gna',  hint: 'ny',   ex: 'montagne' },
-  { group: 'special',   grapheme: 'qu',   tts: 'qua',  hint: 'k',    ex: 'quatre'   },
-  { group: 'special',   grapheme: 'r',    tts: 'ra',   hint: 'r',    ex: 'rouge'    },
-  { group: 'special',   grapheme: 'ç',    tts: 'ça',   hint: 's',    ex: 'garçon'   },
-  // Common short words children will decode in the vocabulary
-  { group: 'syllables', grapheme: 'le',   tts: 'le',   hint: 'luh',  ex: 'le chat'  },
-  { group: 'syllables', grapheme: 'la',   tts: 'la',   hint: 'lah',  ex: 'la vache' },
-  { group: 'syllables', grapheme: 'les',  tts: 'les',  hint: 'lay',  ex: 'les animaux' },
-  { group: 'syllables', grapheme: 'de',   tts: 'de',   hint: 'duh',  ex: 'camion de pompiers' },
-  { group: 'syllables', grapheme: 'du',   tts: 'du',   hint: 'dü',   ex: 'du lait'  },
-  { group: 'syllables', grapheme: 'une',  tts: 'une',  hint: 'ün',   ex: 'une vache' },
-  { group: 'syllables', grapheme: 'est',  tts: 'est',  hint: 'ay',   ex: "c'est"    },
+  { id: 'ph_an',  group: 'nasal',     grapheme: 'an',   tts: 'an, an, an',       hint: 'ahn',  ex: 'enfant'   },
+  { id: 'ph_en',  group: 'nasal',     grapheme: 'en',   tts: 'en, en, en',       hint: 'ahn',  ex: 'enfant'   },
+  { id: 'ph_in',  group: 'nasal',     grapheme: 'in',   tts: 'in, in, in',       hint: 'an',   ex: 'lapin'    },
+  { id: 'ph_on',  group: 'nasal',     grapheme: 'on',   tts: 'on, on, on',       hint: 'ohn',  ex: 'lion'     },
+  { id: 'ph_un',  group: 'nasal',     grapheme: 'un',   tts: 'un, un, un',       hint: 'uhn',  ex: 'un'       },
+  // Special consonants
+  { id: 'ph_ch',  group: 'special',   grapheme: 'ch',   tts: 'cha, cha, cha',    hint: 'sh',   ex: 'chat'     },
+  { id: 'ph_j',   group: 'special',   grapheme: 'j',    tts: 'ja, ja, ja',       hint: 'zh',   ex: 'jardin'   },
+  { id: 'ph_gn',  group: 'special',   grapheme: 'gn',   tts: 'gna, gna, gna',    hint: 'ny',   ex: 'montagne' },
+  { id: 'ph_qu',  group: 'special',   grapheme: 'qu',   tts: 'qua, qua, qua',    hint: 'k',    ex: 'quatre'   },
+  { id: 'ph_r',   group: 'special',   grapheme: 'r',    tts: 'ra, ra, ra',       hint: 'r',    ex: 'rouge'    },
+  { id: 'ph_c',   group: 'special',   grapheme: 'ç',    tts: 'ça, ça, ça',       hint: 's',    ex: 'garçon'   },
+  // Common short words
+  { id: 'ph_le',  group: 'syllables', grapheme: 'le',   tts: 'le',               hint: 'luh',  ex: 'le chat'  },
+  { id: 'ph_la',  group: 'syllables', grapheme: 'la',   tts: 'la',               hint: 'lah',  ex: 'la vache' },
+  { id: 'ph_les', group: 'syllables', grapheme: 'les',  tts: 'les',              hint: 'lay',  ex: 'les animaux' },
+  { id: 'ph_de',  group: 'syllables', grapheme: 'de',   tts: 'de',               hint: 'duh',  ex: 'camion de pompiers' },
+  { id: 'ph_du',  group: 'syllables', grapheme: 'du',   tts: 'du',               hint: 'dü',   ex: 'du lait'  },
+  { id: 'ph_une', group: 'syllables', grapheme: 'une',  tts: 'une',              hint: 'ün',   ex: 'une vache' },
+  { id: 'ph_est', group: 'syllables', grapheme: 'est',  tts: "c'est",            hint: 'ay',   ex: "c'est"    },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -562,12 +562,10 @@ if ('speechSynthesis' in window) {
 function speakFrench(text) {
   if (!('speechSynthesis' in window)) return;
   if (_currentAudio) { _currentAudio.pause(); _currentAudio.currentTime = 0; }
-  window.speechSynthesis.cancel();
-  // Chrome bug: cancel() is async — speak() called in the same tick is silently dropped.
-  // A 50 ms gap ensures cancel completes before the new utterance is queued.
-  setTimeout(() => {
+
+  const doSpeak = () => {
     if (window.speechSynthesis.paused) window.speechSynthesis.resume();
-    const doSpeak = () => {
+    const fire = () => {
       const utt = new SpeechSynthesisUtterance(text);
       utt.lang = 'fr-FR';
       utt.rate = 0.85;
@@ -577,9 +575,19 @@ function speakFrench(text) {
       window.speechSynthesis.speak(utt);
     };
     const voices = window.speechSynthesis.getVoices();
-    if (voices.length) { doSpeak(); }
-    else { window.speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true }); }
-  }, 50);
+    if (voices.length) { fire(); }
+    else { window.speechSynthesis.addEventListener('voiceschanged', fire, { once: true }); }
+  };
+
+  // Only cancel (and wait) if something is already playing — avoids breaking
+  // iOS's user-gesture requirement when the synth is idle.
+  // Chrome bug: cancel() is async, so speak() must follow after ≥50ms.
+  if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+    window.speechSynthesis.cancel();
+    setTimeout(doSpeak, 50);
+  } else {
+    doSpeak();
+  }
 }
 
 function cancelFrench() {
@@ -1437,6 +1445,7 @@ function renderPhonics() {
     const tiles = PHONICS.filter(p => p.group === g.id);
     const tilesHTML = tiles.map(p => `
       <button class="phonic-tile" data-action="play-phonic"
+        data-id="${safeText(p.id)}"
         data-tts="${safeText(p.tts)}"
         style="--tc:${g.colour}"
         aria-label="${safeText(p.grapheme)}, sounds like ${safeText(p.hint)}, as in ${safeText(p.ex)}">
@@ -2155,7 +2164,7 @@ function handleClick(e) {
       zoomIntoPlanet(btn, renderPhonics);
       break;
     case 'play-phonic':
-      speakFrench(btn.dataset.tts);  // speakFrench already cancels internally
+      speak(btn.dataset.id, btn.dataset.tts);  // pre-recorded .m4a; TTS fallback
       btn.classList.add('phonic-active');
       setTimeout(() => btn.classList.remove('phonic-active'), 500);
       break;
