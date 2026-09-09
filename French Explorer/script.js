@@ -1418,14 +1418,17 @@ function openParentSettings() {
 
 function homeCatButtons() {
   if (state.level === 1) {
+    // 6 items → fills 3×2 grid exactly: 4 planets + Parler + Sound mat
     return [
-      planetCard('p-earth',  'earth',  '🦁', 'Les Animaux',  'Animals',          'open-cat', 'data-cat="animals"'),
-      planetCard('p-metal',  'metal',  '🏎️', 'Le Garage',    'Vehicles',         'open-cat', 'data-cat="vehicles"'),
-      planetCard('p-saturn', 'saturn', '🎨', 'Les Couleurs', 'Colours',          'open-cat', 'data-cat="colours"'),
-      planetCard('p-coral',  'coral',  '🏠', 'Les Objets',   'Things',           'open-cat', 'data-cat="objects"'),
-      planetFloat('p-astro',               '🧑‍🚀', 'Parler',      'Say it in French!', 'open-practice'),
+      planetCard('p-earth',   'earth',  '🦁', 'Les Animaux',  'Animals',          'open-cat', 'data-cat="animals"'),
+      planetCard('p-metal',   'metal',  '🏎️', 'Le Garage',    'Vehicles',         'open-cat', 'data-cat="vehicles"'),
+      planetCard('p-saturn',  'saturn', '🎨', 'Les Couleurs', 'Colours',          'open-cat', 'data-cat="colours"'),
+      planetCard('p-coral',   'coral',  '🏠', 'Les Objets',   'Things',           'open-cat', 'data-cat="objects"'),
+      planetFloat('p-astro',                '🧑‍🚀', 'Parler',     'Say it in French!', 'open-practice'),
+      planetFloat('p-station',              '🛸',  'Les Sons',   'Sound mat',         'open-phonics'),
     ].join('');
   }
+  // Level 2: 6 items → fills 3×2 grid exactly: 5 planets + Parler
   return [
     planetCard('p-jupiter', 'jupiter', '🔢', 'Les Chiffres', 'Numbers',    'open-cat', 'data-cat="numbers"'),
     planetCard('p-ice',     'ice',     '💪', 'Le Corps',     'Body parts', 'open-cat', 'data-cat="body"'),
@@ -1599,7 +1602,6 @@ function renderHome() {
       </header>
       <nav class="planet-grid" aria-label="Choose a topic">
         ${homeCatButtons()}
-        ${planetFloat('p-station', '🛸', 'Les Sons', 'Sound mat', 'open-phonics')}
       </nav>
     </div>
   `;
@@ -1617,6 +1619,9 @@ function renderCategory(cat) {
   const cfg      = CAT_CFG[cat];
   const items    = getFilteredItems();
   const total    = items.length;
+  // Defensive clamp — prevents crashes when cardIndex is stale from a longer list
+  if (state.cardIndex >= total) state.cardIndex = Math.max(0, total - 1);
+  if (state.cardIndex < 0)      state.cardIndex = 0;
   const idx      = state.cardIndex;
 
   let filterHtml = '';
@@ -1705,6 +1710,9 @@ function renderCategory(cat) {
 function buildSingleCard(slideDir) {
   const items = getFilteredItems();
   if (!items.length) return '<p style="color:rgba(255,255,255,0.4);text-align:center">No words here.</p>';
+  // Defensive clamp — guard against stale index from a different (longer) category
+  if (state.cardIndex >= items.length) state.cardIndex = items.length - 1;
+  if (state.cardIndex < 0)             state.cardIndex = 0;
 
   const item    = items[state.cardIndex];
   const cat     = state.category;
@@ -1800,7 +1808,9 @@ function goCard(dir) {
 function speakCurrentCard() {
   const items = getFilteredItems();
   if (!items.length) return;
+  if (state.cardIndex >= items.length) state.cardIndex = items.length - 1;
   const item = items[state.cardIndex];
+  if (!item) return;  // belt-and-suspenders guard
   speak(item.id, item.fr);
 
   // Pulse the speaker button
@@ -2099,6 +2109,7 @@ function handleClick(e) {
         state.vehicleFilter = 'all';
         state.animalFilter  = 'all';
         state.objectFilter  = 'all';
+        state.cardIndex     = 0;   // always start at card 0 when entering a category
         renderCategory(btn.dataset.cat);
       });
       break;
