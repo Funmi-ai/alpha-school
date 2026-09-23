@@ -388,6 +388,25 @@ const PHRASES = [
 ];
 
 /* ═══════════════════════════════════════════════════════════════
+   BUILDER DATA — starters for the drag-and-drop phrase builder
+═══════════════════════════════════════════════════════════════ */
+
+const BUILDER_STARTERS = [
+  { id: 'jaime',        fr: "J'aime",        en: "I like"       },
+  { id: 'jadore',       fr: "J'adore",       en: "I love"       },
+  { id: 'je_naime_pas', fr: "Je n'aime pas", en: "I don't like" },
+  { id: 'je_veux',      fr: "Je veux",       en: "I want"       },
+  { id: 'je_mange',     fr: "Je mange",      en: "I eat"        },
+];
+
+const BUILDER_CATS = [
+  { id: 'food',     label: 'Nourriture', emoji: '🍎' },
+  { id: 'objects',  label: 'Objets',     emoji: '🏠' },
+  { id: 'animals',  label: 'Animaux',    emoji: '🦁' },
+  { id: 'vehicles', label: 'Véhicules',  emoji: '🚗' },
+];
+
+/* ═══════════════════════════════════════════════════════════════
    PHONICS DATA
 ═══════════════════════════════════════════════════════════════ */
 
@@ -482,6 +501,12 @@ let state = {
   _practiceRec:  null,
   // inline card recording
   _cardRec:      null,
+  // phrase builder
+  builderStarter:  null,
+  builderCat:      'food',
+  builderSelected: null,
+  builderPlaced:   null,
+  builderDragging: null,
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -503,6 +528,11 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function getBuilderWords(cat) {
+  const src = cat === 'food' ? FOOD : cat === 'objects' ? OBJECTS : cat === 'animals' ? ANIMALS : VEHICLES;
+  return src.map(w => ({ id: w.id, fr: w.fr, en: w.en, emoji: w.emoji || '⭐' }));
 }
 
 function getAllItems(cat) {
@@ -1435,7 +1465,8 @@ function homeCatButtons() {
     planetCard('p-neptune', 'neptune', '👨‍👩‍👧', 'La Famille',   'Family',    'open-cat', 'data-cat="family"'),
     planetCard('p-forest',  'forest',  '🍎', 'La Nourriture','Food',       'open-cat', 'data-cat="food"'),
     planetCard('p-cyan',    'cyan',    '💬', 'Les Phrases',  'Phrases',    'open-cat', 'data-cat="phrases"'),
-    planetFloat('p-astro',               '🧑‍🚀', 'Parler',      'Say it in French!', 'open-practice'),
+    planetFloat('p-astro',   '🧑‍🚀', 'Parler',      'Say it in French!', 'open-practice'),
+    planetFloat('p-builder', '🏗️',  'Construis !', 'Phrase builder',    'open-builder'),
   ].join('');
 }
 
@@ -2071,6 +2102,182 @@ function handleQuizAnswer(btn) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   RENDER — PHRASE BUILDER
+═══════════════════════════════════════════════════════════════ */
+
+function renderBuilder() {
+  stopRocketCanvas();
+  state.screen = 'builder';
+  if (!state.builderStarter) state.builderStarter = BUILDER_STARTERS[0];
+
+  const starter  = state.builderStarter;
+  const cat      = state.builderCat;
+  const words    = getBuilderWords(cat);
+  const placed   = state.builderPlaced;
+  const selected = state.builderSelected;
+
+  const zoneClass = placed ? 'bz-filled' : selected ? 'bz-primed' : 'bz-idle';
+  const zoneInner = placed
+    ? `<div class="bz-placed">
+        <img class="bz-placed-img" src="images/${safeText(placed.id)}.jpg" alt="${safeText(placed.en)}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="bz-placed-emoji" style="display:none">${placed.emoji}</span>
+        <span class="bz-placed-fr">${safeText(placed.fr)}</span>
+       </div>`
+    : `<span class="bz-hint">${selected ? '👆 Tap ici !' : '✋ glisser ici'}</span>`;
+
+  const sentenceFr = placed ? `${starter.fr} ${placed.fr} !` : '';
+  const sentenceEn = placed ? `${starter.en} ${placed.en}!` : '';
+
+  $('app').innerHTML = `
+    <div class="builder-screen">
+      <header class="builder-header">
+        <button class="back-btn" data-action="go-home" aria-label="Back">←</button>
+        <h2 class="builder-title">🏗️ Construis ta phrase !</h2>
+        <div class="builder-header-spacer"></div>
+      </header>
+
+      <div class="builder-starters">
+        ${BUILDER_STARTERS.map(s => `
+          <button class="builder-chip${starter.id === s.id ? ' active' : ''}"
+            data-action="builder-starter" data-id="${safeText(s.id)}">
+            ${safeText(s.fr)}…
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="builder-stage">
+        <div class="builder-sentence-row">
+          <span class="bld-starter-txt">${safeText(starter.fr)}</span>
+          <div class="builder-zone ${safeText(zoneClass)}" id="bld-zone"
+               data-action="builder-tap-zone" role="button" tabindex="0"
+               aria-label="Dépose un mot ici">
+            ${zoneInner}
+          </div>
+          <span class="bld-punct">!</span>
+        </div>
+        ${placed ? `
+          <div class="builder-result">
+            <div class="builder-result-fr">${safeText(sentenceFr)}</div>
+            <div class="builder-result-en">${safeText(sentenceEn)}</div>
+          </div>
+          <div class="builder-result-actions">
+            <button class="bld-speak-btn" data-action="builder-speak"
+              data-sentence="${safeText(sentenceFr)}">🔊 Écouter</button>
+            <button class="bld-reset-btn" data-action="builder-reset">Essaie encore →</button>
+          </div>
+        ` : ''}
+      </div>
+
+      <div class="builder-cat-row">
+        ${BUILDER_CATS.map(c => `
+          <button class="builder-cat-tab${cat === c.id ? ' active' : ''}"
+            data-action="builder-cat" data-cat="${safeText(c.id)}">
+            ${c.emoji} ${safeText(c.label)}
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="builder-word-grid">
+        ${words.map(w => `
+          <div class="bld-word-card${selected && selected.id === w.id ? ' selected' : ''}${placed && placed.id === w.id ? ' used' : ''}"
+            draggable="true"
+            data-action="builder-word"
+            data-word-id="${safeText(w.id)}"
+            role="button" tabindex="0"
+            aria-label="${safeText(w.fr)} — ${safeText(w.en)}">
+            <div class="bld-img-wrap">
+              <img class="bld-img" src="images/${safeText(w.id)}.jpg" alt="${safeText(w.en)}"
+                onerror="this.closest('.bld-img-wrap').classList.add('no-img');this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="bld-emoji-fb" style="display:none">${w.emoji}</div>
+            </div>
+            <div class="bld-card-fr">${safeText(w.fr)}</div>
+            <div class="bld-card-en">${safeText(w.en)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  setupBuilderDragDrop();
+}
+
+function setupBuilderDragDrop() {
+  const zone = $('bld-zone');
+  if (!zone || state.builderPlaced) return;
+
+  document.querySelectorAll('.bld-word-card[draggable]').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      state.builderDragging = card.dataset.wordId;
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+  });
+
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('bz-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('bz-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('bz-over');
+    if (state.builderDragging) {
+      const word = getBuilderWords(state.builderCat).find(w => w.id === state.builderDragging);
+      if (word) placeBuilderWord(word);
+      state.builderDragging = null;
+    }
+  });
+}
+
+function playBuilderSentence() {
+  if (!state.builderStarter || !state.builderPlaced) return;
+  const starterId = state.builderStarter.id;
+  const word      = state.builderPlaced;
+
+  // Chain: starter .m4a → short gap → word .m4a (both Thomas voice, no Web Speech API needed)
+  const starterAudio = new Audio(`audio/starter_${starterId}.m4a`);
+  const wordAudio    = new Audio(`audio/${word.id}.m4a`);
+
+  if (_currentAudio) { _currentAudio.pause(); _currentAudio.currentTime = 0; }
+  _currentAudio = starterAudio;
+
+  starterAudio.onended = () => {
+    setTimeout(() => {
+      _currentAudio = wordAudio;
+      wordAudio.play().catch(() => speakFrench(`${state.builderStarter.fr} ${word.fr} !`));
+    }, 160);
+  };
+  starterAudio.onerror = () => {
+    // Starter file missing — fall back to TTS for whole sentence
+    speakFrench(`${state.builderStarter.fr} ${word.fr} !`);
+  };
+  starterAudio.play().catch(() => speakFrench(`${state.builderStarter.fr} ${word.fr} !`));
+}
+
+function placeBuilderWord(word) {
+  state.builderPlaced   = word;
+  state.builderSelected = null;
+  renderBuilder();
+
+  const zone = $('bld-zone');
+  if (zone) celebrateBuilder(zone.getBoundingClientRect());
+
+  setTimeout(playBuilderSentence, 350);
+}
+
+function celebrateBuilder(rect) {
+  const sparks = ['⭐','🌟','✨','💫','🎉','⭐','🌟'];
+  sparks.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.textContent = s;
+    el.style.cssText = `position:fixed;z-index:9999;pointer-events:none;
+      font-size:${1.1 + Math.random() * 0.9}rem;
+      left:${rect.left + rect.width / 2 + (Math.random() - 0.5) * 90}px;
+      top:${rect.top  + rect.height / 2 + (Math.random() - 0.5) * 40}px;
+      animation:builder-star 1.1s ease-out ${i * 0.08}s both;`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1400 + i * 80);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
    EVENT DELEGATION
 ═══════════════════════════════════════════════════════════════ */
 
@@ -2170,6 +2377,44 @@ function handleClick(e) {
       break;
     case 'retry-quiz':
       startQuiz();
+      break;
+    case 'open-builder':
+      zoomIntoPlanet(btn, renderBuilder);
+      break;
+    case 'builder-starter':
+      state.builderStarter = BUILDER_STARTERS.find(s => s.id === btn.dataset.id) || state.builderStarter;
+      renderBuilder();
+      break;
+    case 'builder-cat':
+      state.builderCat = btn.dataset.cat;
+      state.builderSelected = null;
+      renderBuilder();
+      break;
+    case 'builder-word': {
+      const _bw = getBuilderWords(state.builderCat).find(w => w.id === btn.dataset.wordId);
+      if (_bw && !(state.builderPlaced && state.builderPlaced.id === _bw.id)) {
+        state.builderSelected = _bw;
+        speak(_bw.id, _bw.fr);  // plays Thomas .m4a for the individual word
+        renderBuilder();
+      }
+      break;
+    }
+    case 'builder-tap-zone':
+      if (state.builderPlaced) {
+        state.builderPlaced = null;
+        state.builderSelected = null;
+        renderBuilder();
+      } else if (state.builderSelected) {
+        placeBuilderWord(state.builderSelected);
+      }
+      break;
+    case 'builder-reset':
+      state.builderPlaced = null;
+      state.builderSelected = null;
+      renderBuilder();
+      break;
+    case 'builder-speak':
+      playBuilderSentence();
       break;
     case 'open-phonics':
       zoomIntoPlanet(btn, renderPhonics);
