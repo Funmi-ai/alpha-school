@@ -406,56 +406,6 @@ const BUILDER_CATS = [
   { id: 'vehicles', label: 'Véhicules',  emoji: '🚗' },
 ];
 
-/* ═══════════════════════════════════════════════════════════════
-   PHONICS DATA
-═══════════════════════════════════════════════════════════════ */
-
-const PHONICS_GROUPS = [
-  { id: 'vowels',    label: 'Voyelles',     colour: '#b91c1c' },
-  { id: 'combos',   label: 'Mélanges',     colour: '#1d4ed8' },
-  { id: 'nasal',    label: 'Sons Nasaux',  colour: '#6d28d9' },
-  { id: 'special',  label: 'Sons Spéciaux',colour: '#15803d' },
-  { id: 'syllables',label: 'Petits Mots',  colour: '#c2570e' },
-];
-
-const PHONICS = [
-  // Simple vowels — tts repeated 3× for clarity; id used for pre-recorded .m4a
-  { id: 'ph_a',   group: 'vowels',    grapheme: 'a',    tts: 'a, a, a',          hint: 'ah',   ex: 'chat'     },
-  { id: 'ph_e',   group: 'vowels',    grapheme: 'e',    tts: 'e, e, e',          hint: 'uh',   ex: 'le'       },
-  { id: 'ph_e1',  group: 'vowels',    grapheme: 'é',    tts: 'é, é, é',          hint: 'ay',   ex: 'été'      },
-  { id: 'ph_e2',  group: 'vowels',    grapheme: 'è',    tts: 'è, è, è',          hint: 'eh',   ex: 'mère'     },
-  { id: 'ph_i',   group: 'vowels',    grapheme: 'i',    tts: 'i, i, i',          hint: 'ee',   ex: 'ami'      },
-  { id: 'ph_o',   group: 'vowels',    grapheme: 'o',    tts: 'o, o, o',          hint: 'oh',   ex: 'mot'      },
-  { id: 'ph_u',   group: 'vowels',    grapheme: 'u',    tts: 'u, u, u',          hint: 'ew',   ex: 'lune'     },
-  // Vowel combinations
-  { id: 'ph_ou',  group: 'combos',    grapheme: 'ou',   tts: 'ou, ou, ou',       hint: 'oo',   ex: 'loup'     },
-  { id: 'ph_au',  group: 'combos',    grapheme: 'au',   tts: 'au, au, au',       hint: 'oh',   ex: 'bateau'   },
-  { id: 'ph_eau', group: 'combos',    grapheme: 'eau',  tts: 'eau, eau, eau',    hint: 'oh',   ex: 'eau'      },
-  { id: 'ph_eu',  group: 'combos',    grapheme: 'eu',   tts: 'eu, eu, eu',       hint: 'uh',   ex: 'feu'      },
-  { id: 'ph_ai',  group: 'combos',    grapheme: 'ai',   tts: 'ai, ai, ai',       hint: 'ay',   ex: 'maison'   },
-  { id: 'ph_oi',  group: 'combos',    grapheme: 'oi',   tts: 'oi, oi, oi',       hint: 'wa',   ex: 'voiture'  },
-  // Nasal vowels
-  { id: 'ph_an',  group: 'nasal',     grapheme: 'an',   tts: 'an, an, an',       hint: 'ahn',  ex: 'enfant'   },
-  { id: 'ph_en',  group: 'nasal',     grapheme: 'en',   tts: 'en, en, en',       hint: 'ahn',  ex: 'enfant'   },
-  { id: 'ph_in',  group: 'nasal',     grapheme: 'in',   tts: 'in, in, in',       hint: 'an',   ex: 'lapin'    },
-  { id: 'ph_on',  group: 'nasal',     grapheme: 'on',   tts: 'on, on, on',       hint: 'ohn',  ex: 'lion'     },
-  { id: 'ph_un',  group: 'nasal',     grapheme: 'un',   tts: 'un, un, un',       hint: 'uhn',  ex: 'un'       },
-  // Special consonants
-  { id: 'ph_ch',  group: 'special',   grapheme: 'ch',   tts: 'cha, cha, cha',    hint: 'sh',   ex: 'chat'     },
-  { id: 'ph_j',   group: 'special',   grapheme: 'j',    tts: 'ja, ja, ja',       hint: 'zh',   ex: 'jardin'   },
-  { id: 'ph_gn',  group: 'special',   grapheme: 'gn',   tts: 'gna, gna, gna',    hint: 'ny',   ex: 'montagne' },
-  { id: 'ph_qu',  group: 'special',   grapheme: 'qu',   tts: 'qua, qua, qua',    hint: 'k',    ex: 'quatre'   },
-  { id: 'ph_r',   group: 'special',   grapheme: 'r',    tts: 'ra, ra, ra',       hint: 'r',    ex: 'rouge'    },
-  { id: 'ph_c',   group: 'special',   grapheme: 'ç',    tts: 'ça, ça, ça',       hint: 's',    ex: 'garçon'   },
-  // Common short words
-  { id: 'ph_le',  group: 'syllables', grapheme: 'le',   tts: 'le',               hint: 'luh',  ex: 'le chat'  },
-  { id: 'ph_la',  group: 'syllables', grapheme: 'la',   tts: 'la',               hint: 'lah',  ex: 'la vache' },
-  { id: 'ph_les', group: 'syllables', grapheme: 'les',  tts: 'les',              hint: 'lay',  ex: 'les animaux' },
-  { id: 'ph_de',  group: 'syllables', grapheme: 'de',   tts: 'de',               hint: 'duh',  ex: 'camion de pompiers' },
-  { id: 'ph_du',  group: 'syllables', grapheme: 'du',   tts: 'du',               hint: 'dü',   ex: 'du lait'  },
-  { id: 'ph_une', group: 'syllables', grapheme: 'une',  tts: 'une',              hint: 'ün',   ex: 'une vache' },
-  { id: 'ph_est', group: 'syllables', grapheme: 'est',  tts: "c'est",            hint: 'ay',   ex: "c'est"    },
-];
 
 /* ═══════════════════════════════════════════════════════════════
    CONFIG
@@ -1455,7 +1405,6 @@ function homeCatButtons() {
       planetCard('p-saturn',  'saturn', '🎨', 'Les Couleurs', 'Colours',          'open-cat', 'data-cat="colours"'),
       planetCard('p-coral',   'coral',  '🏠', 'Les Objets',   'Things',           'open-cat', 'data-cat="objects"'),
       planetFloat('p-astro',                '🧑‍🚀', 'Parler',     'Say it in French!', 'open-practice'),
-      planetFloat('p-station',              '🛸',  'Les Sons',   'Sound mat',         'open-phonics'),
     ].join('');
   }
   // Level 2: 6 items → fills 3×2 grid exactly: 5 planets + Parler
@@ -1470,44 +1419,6 @@ function homeCatButtons() {
   ].join('');
 }
 
-function renderPhonics() {
-  cancelFrench();
-  cancelCardRecording();
-  state.screen = 'phonics';
-
-  const groupsHTML = PHONICS_GROUPS.map(g => {
-    const tiles = PHONICS.filter(p => p.group === g.id);
-    const tilesHTML = tiles.map(p => `
-      <button class="phonic-tile" data-action="play-phonic"
-        data-id="${safeText(p.id)}"
-        data-tts="${safeText(p.tts)}"
-        style="--tc:${g.colour}"
-        aria-label="${safeText(p.grapheme)}, sounds like ${safeText(p.hint)}, as in ${safeText(p.ex)}">
-        <span class="phonic-grapheme">${safeText(p.grapheme)}</span>
-        <span class="phonic-hint">${safeText(p.hint)}</span>
-        <span class="phonic-ex">${safeText(p.ex)}</span>
-      </button>`).join('');
-    return `
-      <div class="phonic-group">
-        <h3 class="phonic-group-label" style="color:${g.colour}">${g.label}</h3>
-        <div class="phonic-grid">${tilesHTML}</div>
-      </div>`;
-  }).join('');
-
-  $('app').innerHTML = `
-    <div class="phonics-screen">
-      <header class="phonics-header">
-        <button class="phonics-back" data-action="go-home" aria-label="Back to home">← Back</button>
-        <div class="phonics-title-block">
-          <h2 class="phonics-title">Les Sons</h2>
-          <p class="phonics-sub">Tap a sound to hear it</p>
-        </div>
-      </header>
-      <div class="phonics-body" aria-label="Sound mat">
-        ${groupsHTML}
-      </div>
-    </div>`;
-}
 
 const PLANET_SVG = {
   earth: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ea" cx="50%" cy="50%" r="50%"><stop offset="78%" stop-color="transparent"/><stop offset="90%" stop-color="rgba(59,130,246,0.38)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="eb" cx="34%" cy="28%" r="85%"><stop offset="0%" stop-color="#bfdbfe"/><stop offset="22%" stop-color="#60a5fa"/><stop offset="55%" stop-color="#2563eb"/><stop offset="100%" stop-color="#1e3a8a"/></radialGradient><radialGradient id="es" cx="78%" cy="76%" r="62%"><stop offset="0%" stop-color="rgba(0,0,0,0.62)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient><radialGradient id="eh" cx="30%" cy="24%" r="38%"><stop offset="0%" stop-color="rgba(255,255,255,0.5)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient><clipPath id="ec"><circle cx="60" cy="60" r="43"/></clipPath></defs><circle cx="60" cy="60" r="56" fill="url(#ea)"/><circle cx="60" cy="60" r="43" fill="url(#eb)"/><g clip-path="url(#ec)"><ellipse cx="66" cy="50" rx="15" ry="22" fill="rgba(21,128,61,0.75)" transform="rotate(-18,66,50)"/><ellipse cx="43" cy="66" rx="11" ry="14" fill="rgba(22,163,74,0.65)" transform="rotate(12,43,66)"/><ellipse cx="76" cy="72" rx="8" ry="10" fill="rgba(21,128,61,0.55)" transform="rotate(8,76,72)"/><ellipse cx="60" cy="21" rx="16" ry="7" fill="rgba(255,255,255,0.72)"/><ellipse cx="60" cy="99" rx="10" ry="5" fill="rgba(255,255,255,0.5)"/><ellipse cx="48" cy="44" rx="14" ry="4" fill="rgba(255,255,255,0.28)" transform="rotate(-8,48,44)"/><ellipse cx="70" cy="61" rx="11" ry="3" fill="rgba(255,255,255,0.22)" transform="rotate(5,70,61)"/></g><circle cx="60" cy="60" r="43" fill="url(#es)"/><circle cx="60" cy="60" r="43" fill="url(#eh)"/></svg>`,
@@ -2415,14 +2326,6 @@ function handleClick(e) {
       break;
     case 'builder-speak':
       playBuilderSentence();
-      break;
-    case 'open-phonics':
-      zoomIntoPlanet(btn, renderPhonics);
-      break;
-    case 'play-phonic':
-      speak(btn.dataset.id, btn.dataset.tts);  // pre-recorded .m4a; TTS fallback
-      btn.classList.add('phonic-active');
-      setTimeout(() => btn.classList.remove('phonic-active'), 500);
       break;
     case 'open-practice':
       if (!localStorage.getItem('why_api_key')) {
